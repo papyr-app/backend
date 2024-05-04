@@ -6,7 +6,7 @@ bcrypt = Bcrypt()
 
 
 class User(Document):
-    username = StringField(primary_key=True)
+    username = StringField(required=True)
     email = StringField(required=True)
     first_name = StringField(required=True)
     last_name = StringField(required=True)
