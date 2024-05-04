@@ -9,9 +9,7 @@ class DB:
     MongoEngine database instance and methods
     """
 
-    def __init__(self, db_name: str = None):
-        self.client = self.connect(db_name)
-
+    @staticmethod
     def connect(db_name: str = None):
         db_host = os.getenv("MONGO_HOST") or "mongo"
         db_user = os.getenv("MONGO_USER") or None

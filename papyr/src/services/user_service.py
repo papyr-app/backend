@@ -1,0 +1,19 @@
+from datetime import datetime
+from models.user import User
+
+
+def create_user(user_data):
+    if User.objects(username=user_data['username']).first():
+        raise ValueError('Username already exists')
+
+    new_user = User(
+        username=user_data['username'],
+        email=user_data['email'],
+        first_name=user_data.get('first_name', ''),
+        last_name=user_data.get('last_name', ''),
+        role=user_data.get('role', 'User'),
+        created_at=datetime.utcnow()
+    )
+    new_user.set_password(user_data['password'])
+    new_user.save()
+    return new_user.to_dict()
