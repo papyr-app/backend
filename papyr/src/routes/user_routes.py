@@ -1,19 +1,21 @@
-from flask import request, jsonify, Blueprint
-
-from services import user_service
-
-
-user_bp = Blueprint('user_route', __name__, url_prefix='/api/user', template_folder='templates')
+from flask import jsonify, Blueprint
+from src.services.user_service import get_user
 
 
-@user_bp.route('', methods=['POST'])
-def create_user():
-    user_data = request.json
-    if 'email' not in user_data or 'password' not in user_data:
-        return jsonify({"error": "Missing data"}), 400
+user_bp = Blueprint('user', __name__, url_prefix='/user')
 
-    try:
-        user = user_service.create_user(user_data)
-        return jsonify(user), 201
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 400
+
+@user_bp.route('/<username>', methods=['GET'])
+def user_detail(username):
+    user = get_user(username)
+    if user:
+        user_info = {
+            "username": user.username,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "role": user.role
+        }
+        return jsonify(user_info), 200
+    else:
+        return jsonify({"error": "User not found"}), 404

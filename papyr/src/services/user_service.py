@@ -2,6 +2,11 @@ from datetime import datetime
 from models.user import User
 
 
+def get_user(username):
+    user = User.objects(username=username).first()
+    return user
+
+
 def create_user(user_data):
     if User.objects(username=user_data['username']).first():
         raise ValueError('Username already exists')
@@ -16,4 +21,4 @@ def create_user(user_data):
     )
     new_user.set_password(user_data['password'])
     new_user.save()
-    return new_user.to_dict()
+    return new_user
