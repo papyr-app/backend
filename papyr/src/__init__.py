@@ -22,7 +22,7 @@ def init_app(config_path: str):
     app.config.from_object(config_path)
     app.json = MongoJSONProvider(app)
 
-    socketio.init_app(app)
+    socketio.init_app(app, cors_allowed_origins="*")
     bcrypt.init_app(app)
     CORS(app)
 
