@@ -16,6 +16,7 @@ MarkupSafe==2.1.5
 mongoengine==0.28.2
 PyJWT==2.8.0
 pymongo==4.7.1
+python-dotenv==1.0.1
 python-engineio==4.9.0
 python-socketio==5.11.2
 simple-websocket==1.0.0

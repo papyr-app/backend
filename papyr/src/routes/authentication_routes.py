@@ -20,7 +20,7 @@ def register():
 
     try:
         user = user_service.create_user(data)
-        return jsonify(user), 201
+        return jsonify(user.to_mongo().to_dict()), 201
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
