@@ -4,11 +4,11 @@ from models.user import User
 
 from services import user_service
 
-auth = Blueprint('auth', __name__)
+auth_bp = Blueprint('auth', __name__)
 bcrypt = Bcrypt()
 
 
-@auth.route('/register', methods=['POST'])
+@auth_bp.route('/register', methods=['POST'])
 def register():
     data = request.json
     username = data.get('username')
@@ -25,7 +25,7 @@ def register():
         return jsonify({"error": str(e)}), 400
 
 
-@auth.route('/login', methods=['POST'])
+@auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.json
     username = data.get('username')

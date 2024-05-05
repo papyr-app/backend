@@ -1,19 +1,19 @@
-import os
 import logging
 from urllib.parse import quote_plus
+from flask import current_app
 from mongoengine import connect
 
 
 class DB:
     """
-    MongoEngine database instance and methods
+    MongoEngine database instance
     """
 
-    @staticmethod
-    def connect(db_name: str = None):
-        db_host = os.getenv("MONGO_HOST") or "mongo"
-        db_user = os.getenv("MONGO_USER") or None
-        db_pass = os.getenv("MONGO_PASS") or None
+    def connect():
+        db_host = current_app.config.get('MONGO_HOST')
+        db_name = current_app.config.get('MONGO_NAME')
+        db_user = current_app.config.get('MONGO_USER')
+        db_pass = current_app.config.get('MONGO_PASS')
 
         if db_user:
             db_user_quote = quote_plus(db_user)
