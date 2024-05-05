@@ -1,13 +1,13 @@
 from flask import jsonify, Blueprint
-from services.user_service import get_user
+from services import user_service
 
 
-user_bp = Blueprint('user', __name__, url_prefix='/user')
+user_bp = Blueprint('user', __name__, url_prefix='/users')
 
 
 @user_bp.route('/<username>', methods=['GET'])
 def user_detail(username):
-    user = get_user(username)
+    user = user_service.get_user(username)
     if user:
         user_info = {
             "username": user.username,
@@ -19,3 +19,8 @@ def user_detail(username):
         return jsonify(user_info), 200
     else:
         return jsonify({"error": "User not found"}), 404
+
+
+@user_bp.route('', methods=['GET'])
+def users():
+    pass

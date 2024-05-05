@@ -34,6 +34,7 @@ def login():
     user = User.objects(username=username).first()
 
     if user and user.check_password(password):
+        # TODO - return a token
         return jsonify({'message': 'Login successful'}), 200
     else:
         return jsonify({'error': 'Invalid username or password'}), 401
