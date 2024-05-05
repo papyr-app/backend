@@ -26,10 +26,10 @@ def init_app(config_path: str):
     bcrypt.init_app(app)
     CORS(app)
 
-    with app.app_context():
-        debug = app.config.get('MONGO_HOST', True)
-        set_up_logger(debug, 'log.txt')
+    debug = app.config.get('MONGO_HOST', True)
+    set_up_logger(debug, 'log.txt')
 
+    with app.app_context():
         db = DB()
         db.connect()
 
