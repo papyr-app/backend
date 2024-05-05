@@ -1,15 +1,16 @@
-from flask_socketio import SocketIO, emit, join_room, leave_room, disconnect
+import logging
+from flask_socketio import emit, join_room, leave_room
 
 
 def handle_chat(socketio):
     @socketio.on('connect')
     def handle_connect():
-        print('A user connected.')
+        logging.info('A user connected.')
         emit('server_response', {'message': 'You are connected!'})
 
     @socketio.on('disconnect')
     def handle_disconnect():
-        print('User disconnected.')
+        logging.info('User disconnected.')
 
     @socketio.on('join_room')
     def on_join(data):
@@ -28,5 +29,5 @@ def handle_chat(socketio):
     @socketio.on('send_message')
     def handle_message(data):
         room = data.get('room', 'default_room')
-        print(f"Message received: {data['message']} from {data.get('username', 'Anonymous')}")
+        logging.info(f"Message received: {data['message']} from {data.get('username', 'Anonymous')}")
         emit('new_message', {'username': data.get('username', 'Anonymous'), 'message': data['message']}, room=room)
