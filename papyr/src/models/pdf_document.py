@@ -1,4 +1,4 @@
-from mongoengine import Document, StringField, ReferenceField, DateTimeField
+from mongoengine import Document, ListField, StringField, ReferenceField, DateTimeField
 from datetime import datetime
 from models.user import User
 
@@ -8,6 +8,7 @@ class PDFDocument(Document):
     file_path = StringField(required=True)
     title = StringField(required=True)
     description = StringField()
+    collaborators = ListField(ReferenceField(User))
     created_at = DateTimeField(default=datetime.utcnow)
     updated_at = DateTimeField(default=datetime.utcnow)
 

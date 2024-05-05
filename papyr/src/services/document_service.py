@@ -1,14 +1,26 @@
 from typing import List, Dict
 from datetime import datetime
 from models.pdf_document import PDFDocument
+from models.user import User
 
 
 def get_document(document_id: int) -> PDFDocument:
     return PDFDocument.objects(id=document_id).get()
 
 
-def get_documents(user_id: int) -> List[PDFDocument]:
-    return list(PDFDocument.objects(user_id=user_id).all())
+def get_documents_by_owner(user_id: int) -> List[PDFDocument]:
+    return list(PDFDocument.objects(owner_id=user_id).all())
+
+
+def get_documents_by_collaborator(user_id: int) -> List[PDFDocument]:
+    return list(PDFDocument.objects(collaborators=user_id).all())
+
+
+def add_collaborator(user: User, document: PDFDocument) -> PDFDocument:
+    if user not in document.collaborators:
+        document.collaborators.append(user)
+        document.save()
+    return document
 
 
 def create_document(document_data: Dict) -> PDFDocument:

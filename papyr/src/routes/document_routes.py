@@ -1,6 +1,11 @@
 from flask import request, jsonify, Blueprint
 from mongoengine.errors import ValidationError, DoesNotExist, NotUniqueError
+
 from services import document_service
+from services import user_service
+from models.user import User
+from models.document import PDFDocument
+
 
 document_bp = Blueprint('document', __name__, '/documents')
 
@@ -47,6 +52,26 @@ def create_document():
         return jsonify({'error': 'Document already exists'}), 409
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+@document_bp.route('/documents/<document_id>/add_collaborator', methods=['POST'])
+def add_collaborator(document_id: int):
+    data = request.get_json()
+
+    email = data.get('email')
+
+    if not email:
+        return jsonify({'error': 'Missing required field'}), 404
+
+    try:
+        document = document_service.get_document(document_id)
+        user = user_service.get_user_by_email(email)
+        document_service.add_collaborator(user, document)
+        return jsonify({'message': 'Collaborator added'}), 200
+    except PDFDocument.DoesNotExist:
+        return jsonify({'error': 'Document not found'}), 404
+    except User.DoesNotExist:
+        return jsonify({'error': 'User not found'}), 404
 
 
 @document_bp.route('/documents/<document_id>', methods=['UPDATE'])

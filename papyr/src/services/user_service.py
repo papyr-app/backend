@@ -1,9 +1,12 @@
 from models.user import User
 
 
-def get_user(username):
-    user = User.objects(username=username).first()
-    return user
+def get_user_by_username(username: str):
+    return User.objects(username=username).first()
+
+
+def get_user_by_email(email: str):
+    return User.objects(email=email).first()
 
 
 def create_user(user_data):

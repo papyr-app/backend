@@ -7,7 +7,7 @@ user_bp = Blueprint('user', __name__, url_prefix='/users')
 
 @user_bp.route('/<username>', methods=['GET'])
 def user_detail(username):
-    user = user_service.get_user(username)
+    user = user_service.get_user_by_username(username)
     if user:
         user_info = {
             "username": user.username,
