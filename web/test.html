@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Socket.IO Client</title>
+    <!-- Load the Socket.IO client library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+</head>
+<body>
+    <h1>Socket.IO Test</h1>
+    <script type="text/javascript">
+        // Connect to the WebSocket server
+        var socket = io('http://localhost:5000');
+        
+        // Event listener for successfully connecting to the server
+        socket.on('connect', function() {
+            console.log('Connected to the server');
+            // Emit an event with a message upon connection
+            socket.emit('my event', {data: 'I\'m connected!'});
+        });
+
+        // Listen for a custom event from the server
+        socket.on('server_response', function(data) {
+            console.log('Received from server:', data.message);
+        });
+
+        // Handle disconnection
+        socket.on('disconnect', function() {
+            console.log('Disconnected from the server');
+        });
+    </script>
+</body>
+</html>
