@@ -10,6 +10,7 @@ from utils.mongo_json_provider import MongoJSONProvider
 from routes.health_routes import health_bp
 from routes.user_routes import user_bp
 from routes.authentication_routes import auth_bp
+from sockets.general import handle_general
 from sockets.chat import handle_chat
 
 
