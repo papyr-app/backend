@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_bcrypt import Bcrypt
-from models.user import User
+from mongoengine.errors import NotUniqueError
 
 from services import user_service
 
@@ -21,7 +21,7 @@ def register():
     try:
         user = user_service.create_user(data)
         return jsonify(user.to_mongo().to_dict()), 201
-    except ValueError as e:
+    except NotUniqueError as e:
         return jsonify({"error": str(e)}), 400
 
 
@@ -31,10 +31,13 @@ def login():
     username = data.get('username')
     password = data.get('password')
 
-    user = User.objects(username=username).first()
+    if not username or not password:
+        return jsonify({'error': 'Missing required fields'}), 400
+
+    user = user_service.get_user_by_username(username)
 
     if user and user.check_password(password):
-        # TODO - return a token
+        # TODO - Return a token
         return jsonify({'message': 'Login successful'}), 200
     else:
         return jsonify({'error': 'Invalid username or password'}), 401

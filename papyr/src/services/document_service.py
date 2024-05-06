@@ -16,13 +16,6 @@ def get_documents_by_collaborator(user_id: int) -> List[PDFDocument]:
     return list(PDFDocument.objects(collaborators=user_id).all())
 
 
-def add_collaborator(user: User, document: PDFDocument) -> PDFDocument:
-    if user not in document.collaborators:
-        document.collaborators.append(user)
-        document.save()
-    return document
-
-
 def create_document(document_data: Dict) -> PDFDocument:
     if PDFDocument.objects(title=document_data['title']).first():
         raise ValueError('Document with this title already exists')
@@ -48,3 +41,17 @@ def update_document(document: PDFDocument, document_data: Dict) -> PDFDocument:
 def delete_document(document_id: int):
     document = PDFDocument.objects(id=document_id).get()
     document.delete()
+
+
+def add_collaborator(user: User, document: PDFDocument) -> PDFDocument:
+    if user not in document.collaborators:
+        document.collaborators.append(user)
+        document.save()
+    return document
+
+
+def remove_collaborator(user: User, document: PDFDocument) -> PDFDocument:
+    if user in document.collaborators:
+        document.collaborators.remove(user)
+        document.save()
+    return document
