@@ -1,16 +1,19 @@
+from datetime import datetime
 from flask import request, jsonify, Blueprint
 from mongoengine.errors import ValidationError, DoesNotExist, NotUniqueError
 
 from services import document_service
 from services import user_service
+from services import invitation_service
 from models.user import User
 from models.document import PDFDocument
+from models.invitation import Invitation
 
 
 document_bp = Blueprint('document', __name__, '/documents')
 
 
-@document_bp.route('/documents/<document_id>', methods=['GET'])
+@document_bp.route('/<document_id>', methods=['GET'])
 def get_document(document_id: int):
     try:
         document = document_service.get_document(document_id)
@@ -21,7 +24,7 @@ def get_document(document_id: int):
         return jsonify({'error': str(e)}), 500
 
 
-@document_bp.route('/documents/<user_id>', methods=['GET'])
+@document_bp.route('/<user_id>', methods=['GET'])
 def get_documents(user_id: int):
     try:
         documents = document_service.get_documents(user_id)
@@ -32,7 +35,7 @@ def get_documents(user_id: int):
         return jsonify({'error': str(e)}), 500
 
 
-@document_bp.route('/documents', methods=['POST'])
+@document_bp.route('', methods=['POST'])
 def create_document():
     data = request.get_json()
 
@@ -54,7 +57,7 @@ def create_document():
         return jsonify({'error': str(e)}), 500
 
 
-@document_bp.route('/documents/<document_id>', methods=['UPDATE'])
+@document_bp.route('/<document_id>', methods=['UPDATE'])
 def update_document(document_id: int):
     data = request.get_json()
 
@@ -72,7 +75,7 @@ def update_document(document_id: int):
         return jsonify({'error': str(e)}), 500
 
 
-@document_bp.route('/documents/<document_id>', methods=['DELETE'])
+@document_bp.route('/<document_id>', methods=['DELETE'])
 def delete_document(document_id):
     try:
         document_service.delete_document(document_id)
@@ -83,7 +86,7 @@ def delete_document(document_id):
         return jsonify({'error': str(e)}), 500
 
 
-@document_bp.route('/documents/<document_id>/add_collaborator', methods=['POST'])
+@document_bp.route('/<document_id>/add_collaborator', methods=['POST'])
 def add_collaborator(document_id: int):
     data = request.get_json()
 
@@ -103,7 +106,7 @@ def add_collaborator(document_id: int):
         return jsonify({'error': 'User not found'}), 404
 
 
-@document_bp.route('/documents/<document_id>/add_collaborator', methods=['POST'])
+@document_bp.route('/<document_id>/add_collaborator', methods=['POST'])
 def remove_collaborator(document_id: int):
     data = request.get_json()
 
@@ -121,3 +124,18 @@ def remove_collaborator(document_id: int):
         return jsonify({'error': 'Document not found'}), 404
     except User.DoesNotExist:
         return jsonify({'error': 'User not found'}), 404
+
+
+@document_bp.route('/<document_id>/invite/<invite_id>')
+def handle_invitation(document_id, invite_id):
+    try:
+        invitation = invitation_service.get_invitation(invite_id)
+        if invitation.expires_at < datetime.now():
+            return jsonify({'error': 'Invitation is expired'}), 400
+
+        document_service.add_collaborator()
+        # TODO - get user and add as collaborator
+        # Also change user stuff to .get() so we can catch the error here
+        return "You have been granted access to the document."
+    except Invitation.DoesNotExist:
+        return jsonify({'error': 'Invitation does not exist'}), 400
