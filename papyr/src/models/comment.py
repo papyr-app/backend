@@ -6,8 +6,8 @@ from models.user import User
 
 
 class Comment(Document):
-    document_id = ReferenceField(PDFDocument, required=True)
-    user_id = ReferenceField(User, required=True)
+    document = ReferenceField(PDFDocument, required=True)
+    user = ReferenceField(User, required=True)
     text = StringField(required=True)
     created_at = DateTimeField(default=datetime.utcnow)
     updated_at = DateTimeField(default=datetime.utcnow)

@@ -4,7 +4,7 @@ from models.user import User
 
 
 class PDFDocument(Document):
-    owner_id = ReferenceField(User, required=True)
+    owner = ReferenceField(User, required=True)
     file_path = StringField(required=True)
     title = StringField(required=True)
     description = StringField()

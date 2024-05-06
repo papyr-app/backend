@@ -7,8 +7,8 @@ from models.user import User
 
 
 class Annotation(Document):
-    document_id = ReferenceField(PDFDocument, required=True)
-    user_id = ReferenceField(User, required=True)
+    document = ReferenceField(PDFDocument, required=True)
+    user = ReferenceField(User, required=True)
     page_number = IntField(required=True)
     annotation_type = StringField(required=True)
     position = StringField(required=True)
