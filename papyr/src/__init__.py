@@ -10,8 +10,11 @@ from utils.mongo_json_provider import MongoJSONProvider
 from routes.health_routes import health_bp
 from routes.user_routes import user_bp
 from routes.authentication_routes import auth_bp
-from sockets.general import handle_general
+from routes.document_routes import document_bp
+from sockets.connection import handle_connections
 from sockets.chat import handle_chat
+from sockets.comment import handle_comments
+from sockets.annotation import handle_annotations
 
 
 socketio = SocketIO()
@@ -35,12 +38,16 @@ def init_app(config_path: str):
         db.connect()
 
         # Set up WebSocket handlers
+        handle_connections(socketio)
         handle_chat(socketio)
+        handle_comments(socketio)
+        handle_annotations(socketio)
 
         # Connect API blueprints
         app.register_blueprint(health_bp)
         app.register_blueprint(user_bp)
         app.register_blueprint(auth_bp)
+        app.register_blueprint(document_bp)
 
         return app
 

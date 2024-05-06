@@ -2,7 +2,7 @@ import logging
 from flask_socketio import emit, join_room, leave_room
 
 
-def handle_general(socketio):
+def handle_connections(socketio):
     @socketio.on('connect')
     def handle_connect():
         logging.info('A user connected.')
