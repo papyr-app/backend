@@ -12,6 +12,7 @@ class Annotation(Document):
     page_number = IntField(required=True)
     annotation_type = StringField(required=True)
     position = StringField(required=True)
+    layer = IntField(required=True)
     comments = ListField(ReferenceField(Comment))
     created_at = DateTimeField(default=datetime.utcnow)
     updated_at = DateTimeField(default=datetime.utcnow)

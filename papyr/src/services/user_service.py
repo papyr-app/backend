@@ -14,6 +14,9 @@ def create_user(user_data):
     if User.objects(username=user_data['username']).first():
         raise NotUniqueError('Username already exists')
 
+    if User.objects(email=user_data['email']).first():
+        raise NotUniqueError('Email already exists')
+
     new_user = User(
         username=user_data['username'],
         email=user_data['email'],

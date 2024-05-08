@@ -126,16 +126,25 @@ def remove_collaborator(document_id: int):
         return jsonify({'error': 'User not found'}), 404
 
 
-@document_bp.route('/<document_id>/invite/<invite_id>')
+@document_bp.route('/<document_id>/invite/<invite_id>', methods=['POST'])
 def handle_invitation(document_id, invite_id):
+    data = request.get_json()
+
+    email = data.get('email', None)
+
+    if not email:
+        return jsonify({'error': 'Missing required fields'})
+
     try:
         invitation = invitation_service.get_invitation(invite_id)
         if invitation.expires_at < datetime.now():
             return jsonify({'error': 'Invitation is expired'}), 400
 
-        document_service.add_collaborator()
-        # TODO - get user and add as collaborator
-        # Also change user stuff to .get() so we can catch the error here
-        return "You have been granted access to the document."
+        user = user_service.get_user_by_email(email)
+        document_service.add_collaborator(user, invitation.document)
+
+        return "You have been granted access to the document.", 200
     except Invitation.DoesNotExist:
         return jsonify({'error': 'Invitation does not exist'}), 400
+    except User.DoesNotExist:
+        return jsonify({'error': 'User does not exist'}), 400

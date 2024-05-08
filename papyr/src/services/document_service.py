@@ -1,5 +1,7 @@
 from typing import List, Dict
 from datetime import datetime
+from mongoengine.errors import NotUniqueError
+
 from models.pdf_document import PDFDocument
 from models.user import User
 
@@ -18,7 +20,7 @@ def get_documents_by_collaborator(user_id: int) -> List[PDFDocument]:
 
 def create_document(document_data: Dict) -> PDFDocument:
     if PDFDocument.objects(title=document_data['title']).first():
-        raise ValueError('Document with this title already exists')
+        raise NotUniqueError('Document with this title already exists')
 
     new_document = PDFDocument(
         owner_id=document_data['owner_id'],
