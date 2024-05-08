@@ -10,6 +10,11 @@ class Config:
     MONGO_USER = getenv('MONGO_USER')
     MONGO_PASS = getenv('MONGO_PASS')
 
+    AWS_ACCESS_KEY_ID = getenv('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = getenv('AWS_SECRET_ACCESS_KEY')
+    AWS_DEFAULT_REGION = getenv('AWS_DEFAULT_REGION')
+    S3_BUCKET_NAME = getenv('S3_BUCKET_NAME')
+
 
 class DevelopmentConfig(Config):
     DEBUG = True

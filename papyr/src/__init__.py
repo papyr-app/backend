@@ -5,12 +5,14 @@ from flask_socketio import SocketIO
 from flask_bcrypt import Bcrypt
 
 from db import DB
+from s3.s3_client import S3Client
 from utils.log import set_up_logger
 from utils.mongo_json_provider import MongoJSONProvider
-from routes.health_routes import health_bp
-from routes.user_routes import user_bp
-from routes.authentication_routes import auth_bp
-from routes.document_routes import document_bp
+from routes.health_routes import create_health_bp
+from routes.user_routes import create_user_bp
+from routes.authentication_routes import create_auth_bp
+from routes.document_routes import create_document_bp
+from routes.file_routes import create_file_blueprint
 from sockets.connection import handle_connections
 from sockets.chat import handle_chat
 from sockets.comment import handle_comments
@@ -33,6 +35,9 @@ def init_app(config_path: str):
     debug = app.config.get('MONGO_HOST', True)
     set_up_logger(debug, 'log.txt')
 
+    s3_bucket_name = app.config['S3_BUCKET_NAME']
+    s3_client = S3Client(s3_bucket_name)
+
     with app.app_context():
         db = DB()
         db.connect()
@@ -43,11 +48,17 @@ def init_app(config_path: str):
         handle_comments(socketio)
         handle_annotations(socketio)
 
-        # Connect API blueprints
+        # Create and connect API blueprints
+        health_bp = create_health_bp()
+        user_bp = create_user_bp()
+        auth_bp = create_auth_bp(bcrypt)
+        document_bp = create_document_bp()
+        file_bp = create_file_blueprint(s3_client)
         app.register_blueprint(health_bp)
         app.register_blueprint(user_bp)
         app.register_blueprint(auth_bp)
         app.register_blueprint(document_bp)
+        app.register_blueprint(file_bp)
 
         return app
 

@@ -1,9 +1,11 @@
 from flask import Blueprint
 
 
-health_bp = Blueprint('health', __name__, url_prefix='/health')
+def create_health_bp():
+    health_bp = Blueprint('health', __name__, url_prefix='/health')
 
+    @health_bp.route('', methods=['GET'])
+    def health_check():
+        return "OK", 200
 
-@health_bp.route('', methods=['GET'])
-def health_check():
-    return "OK", 200
+    return health_bp
