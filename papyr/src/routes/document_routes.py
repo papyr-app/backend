@@ -126,6 +126,26 @@ def remove_collaborator(document_id: int):
         return jsonify({'error': 'User not found'}), 404
 
 
+@document_bp.route('/<document_id>/invite', methods=['POST'])
+def create_invitation(document_id):
+    data = request.get_json()
+
+    email = data.get('email', None)
+
+    if not email:
+        return jsonify({'error': 'Missing required fields'})
+
+    try:
+        user = user_service.get_user_by_email(email)
+        document = document_service.get_document(document_id)
+        invitation = invitation_service.create_invitation(user, document)
+        return jsonify(invitation.to_mongo().to_dict()), 200
+    except Invitation.DoesNotExist:
+        return jsonify({'error': 'Invitation does not exist'}), 400
+    except User.DoesNotExist:
+        return jsonify({'error': 'User does not exist'}), 400
+
+
 @document_bp.route('/<document_id>/invite/<invite_id>', methods=['POST'])
 def handle_invitation(document_id, invite_id):
     data = request.get_json()
