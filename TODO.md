@@ -1,0 +1,12 @@
+- [X] Create frontend boilerplate
+- [ ] Add logic for annotation management in WebSockets
+- [ ] Test and validate API and WebSockets
+- [ ] Add JWTs in backend + authorization
+- [ ] Create frontend design in Figma
+- [ ] Implement frontend design in React
+    - [ ] Login / Register
+    - [ ] Dashboard
+    - [ ] Review space
+    - [ ] Profile (?)
+- [ ] Connext frontend and backend
+- [ ] 
