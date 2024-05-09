@@ -11,23 +11,13 @@ from models.invitation import Invitation
 
 
 def create_document_bp():
-    document_bp = Blueprint('document', __name__, '/documents')
+    document_bp = Blueprint('document', __name__, url_prefix='/api/documents')
 
     @document_bp.route('/<document_id>', methods=['GET'])
     def get_document(document_id: int):
         try:
             document = document_service.get_document(document_id)
             return jsonify(document.to_mongo().to_dict()), 201
-        except DoesNotExist:
-            return jsonify({'error': 'Document not found'}), 404
-        except Exception as e:
-            return jsonify({'error': str(e)}), 500
-
-    @document_bp.route('/<user_id>', methods=['GET'])
-    def get_documents(user_id: int):
-        try:
-            documents = document_service.get_documents(user_id)
-            return jsonify([doc.to_mongo().to_dict() for doc in documents]), 201
         except DoesNotExist:
             return jsonify({'error': 'Document not found'}), 404
         except Exception as e:

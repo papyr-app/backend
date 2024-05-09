@@ -1,4 +1,5 @@
 from typing import List, Dict
+from bson import ObjectId
 from datetime import datetime
 from mongoengine.errors import NotUniqueError
 
@@ -7,11 +8,11 @@ from models.user import User
 
 
 def get_document(document_id: int) -> PDFDocument:
-    return PDFDocument.objects(id=document_id).get()
+    return PDFDocument.objects(id=ObjectId(document_id)).get()
 
 
 def get_documents_by_owner(user_id: int) -> List[PDFDocument]:
-    return list(PDFDocument.objects(owner_id=user_id).all())
+    return list(PDFDocument.objects(owner=ObjectId(user_id)).all())
 
 
 def get_documents_by_collaborator(user_id: int) -> List[PDFDocument]:

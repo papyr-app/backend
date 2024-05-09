@@ -4,7 +4,7 @@ from s3.s3_client import S3Client
 
 
 def create_file_blueprint(s3_client: S3Client) -> Blueprint:
-    file_bp = Blueprint('file', __name__, '/files')
+    file_bp = Blueprint('file', __name__, url_prefix='/api/files')
 
     @file_bp.route('/upload', methods=['POST'])
     def upload():
