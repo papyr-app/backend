@@ -19,7 +19,6 @@ class PDFDocument(Document):
         'collection': 'pdf_documents',
         'indexes': [
             'title',
-            'owner_id'
         ],
         'ordering': ['-created_at']
     }

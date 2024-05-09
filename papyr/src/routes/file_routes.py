@@ -1,6 +1,6 @@
 from flask import request, jsonify, send_file, Blueprint
 from io import BytesIO
-from s3_utils import S3Client
+from s3.s3_client import S3Client
 
 
 def create_file_blueprint(s3_client: S3Client) -> Blueprint:

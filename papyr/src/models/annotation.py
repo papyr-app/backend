@@ -10,7 +10,6 @@ class Annotation(Document):
     document = ReferenceField(PDFDocument, required=True)
     user = ReferenceField(User, required=True)
     page_number = IntField(required=True)
-    annotation_type = StringField(required=True)
     position = StringField(required=True)
     layer = IntField(required=True)
     comments = ListField(ReferenceField(Comment))

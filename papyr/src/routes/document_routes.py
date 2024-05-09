@@ -6,7 +6,7 @@ from services import document_service
 from services import user_service
 from services import invitation_service
 from models.user import User
-from models.document import PDFDocument
+from models.pdf_document import PDFDocument
 from models.invitation import Invitation
 
 
@@ -33,7 +33,7 @@ def create_document_bp():
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    @document_bp.route('', methods=['POST'])
+    @document_bp.route('/', methods=['POST'])
     def create_document():
         data = request.get_json()
 

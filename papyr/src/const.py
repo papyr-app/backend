@@ -1,7 +1,12 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class DocumentStatus(Enum):
-    PENDING = 1
-    ONGOING = 2
-    COMPLETE = 3
+class DocumentStatus(StrEnum):
+    PENDING = 'pending'
+    ONGOING = 'ongoing'
+    COMPLETE = 'complete'
+
+
+class AnnotationType(StrEnum):
+    HIGHLIGHT = 'highlight'
+    DRAWING = 'drawing'
