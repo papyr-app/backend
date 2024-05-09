@@ -2,47 +2,89 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Socket.IO Client</title>
+    <title>Socket.IO & API Test</title>
     <!-- Load the Socket.IO client library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
 </head>
 <body>
-    <h1>Socket.IO Test</h1>
-    
-    <!-- Input for sending messages -->
-    <input type="text" id="messageInput" placeholder="Type a message...">
-    <button onclick="sendMessage()">Send Message</button>
+    <h1>Socket.IO & API Test</h1>
 
-    <!-- Input for joining rooms -->
-    <input type="text" id="roomInput" placeholder="Enter room name">
-    <button onclick="joinRoom()">Join Room</button>
+    <!-- WebSocket Section -->
+    <section>
+        <h2>WebSocket</h2>
+        <!-- Input for sending messages -->
+        <input type="text" id="messageInput" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send Message</button>
 
-    <script type="text/javascript">
-        var socket = io('http://localhost:5000');
-        
-        socket.on('connect', function() {
-            console.log('Connected to the server');
-        });
+        <!-- Input for joining rooms -->
+        <input type="text" id="roomInput" placeholder="Enter room name">
+        <button onclick="joinRoom()">Join Room</button>
 
-        socket.on('server_response', function(data) {
-            console.log('Received from server:', data.message);
-        });
+        <!-- Add more WebSocket buttons here -->
 
-        socket.on('disconnect', function() {
-            console.log('Disconnected from the server');
-        });
+        <script type="text/javascript">
+            var socket = io('http://localhost:5000');
 
-        function sendMessage() {
-            var message = document.getElementById('messageInput').value;
-            socket.emit('send_message', {message: message});
-            document.getElementById('messageInput').value = '';
-        }
+            socket.on('connect', function() {
+                console.log('Connected to the server');
+            });
 
-        function joinRoom() {
-            var room = document.getElementById('roomInput').value;
-            socket.emit('join_room', {room: room});
-            console.log('Requested to join room:', room);
-        }
-    </script>
+            socket.on('server_response', function(data) {
+                console.log('Received from server:', data.message);
+            });
+
+            socket.on('disconnect', function() {
+                console.log('Disconnected from the server');
+            });
+
+            function sendMessage() {
+                var message = document.getElementById('messageInput').value;
+                socket.emit('send_message', {message: message});
+                document.getElementById('messageInput').value = '';
+            }
+
+            function joinRoom() {
+                var room = document.getElementById('roomInput').value;
+                socket.emit('join_room', {room: room, username: 'erik'});
+                console.log('Requested to join room:', room);
+            }
+        </script>
+    </section>
+
+    <hr>
+
+    <!-- API Section -->
+    <section>
+        <h2>API</h2>
+        <!-- Add more API buttons here -->
+        <button onclick="testAPIRequest1()">API Request 1</button>
+        <button onclick="testAPIRequest2()">API Request 2</button>
+
+        <script type="text/javascript">
+            function testAPIRequest1() {
+                // Example fetch request
+                fetch('http://localhost:5000/api/test1', {
+                    method: 'GET'
+                })
+                .then(response => response.json())
+                .then(data => console.log('API Request 1 Response:', data))
+                .catch(error => console.error('API Request 1 Error:', error));
+            }
+
+            function testAPIRequest2() {
+                // Example fetch request
+                fetch('http://localhost:5000/api/test2', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({key: 'value'})
+                })
+                .then(response => response.json())
+                .then(data => console.log('API Request 2 Response:', data))
+                .catch(error => console.error('API Request 2 Error:', error));
+            }
+        </script>
+    </section>
 </body>
 </html>

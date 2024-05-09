@@ -14,6 +14,7 @@ def handle_connections(socketio):
 
     @socketio.on('join_room')
     def on_join(data):
+        logging.info(data)
         username = data['username']
         room = data.get('room', 'default_room')
         join_room(room)
