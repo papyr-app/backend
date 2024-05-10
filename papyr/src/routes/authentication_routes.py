@@ -34,7 +34,7 @@ def create_auth_bp(bcrypt: Bcrypt):
             return jsonify({'error': 'Missing required fields'}), 400
 
         try:
-            # TODO - Return a token
+            # TODO - Return JWT
             user = user_service.get_user_by_username(username)
             if user.check_password(password):
                 return jsonify({'message': 'Login successful'}), 200

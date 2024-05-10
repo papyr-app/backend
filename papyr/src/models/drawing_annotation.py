@@ -8,6 +8,4 @@ class DrawingAnnotation(Annotation):
     path = StringField(required=True)
     color = StringField(required=True)
     width = FloatField(required=True)
-    annotation_type = StringField(default=AnnotationType.DRAWING)
-
-    meta = {'collection': 'annotations'}
+    annotation_type = StringField(AnnotationType.DRAWING)

@@ -13,10 +13,10 @@ from routes.user_routes import create_user_bp
 from routes.authentication_routes import create_auth_bp
 from routes.document_routes import create_document_bp
 from routes.file_routes import create_file_blueprint
-from sockets.connection import handle_connections
-from sockets.chat import handle_chat
-from sockets.comment import handle_comments
-from sockets.annotation import handle_annotations
+from sockets.connection_socket import handle_connections
+from sockets.chat_socket import handle_chat
+from sockets.comment_socket import handle_comments
+from sockets.annotation_socket import handle_annotations
 
 
 socketio = SocketIO()
@@ -42,13 +42,11 @@ def init_app(config_path: str):
         db = DB()
         db.connect()
 
-        # Set up WebSocket handlers
         handle_connections(socketio)
         handle_chat(socketio)
         handle_comments(socketio)
         handle_annotations(socketio)
 
-        # Create and connect API blueprints
         health_bp = create_health_bp()
         user_bp = create_user_bp()
         auth_bp = create_auth_bp(bcrypt)

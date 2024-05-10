@@ -2,9 +2,13 @@ from enum import StrEnum
 
 
 class DocumentStatus(StrEnum):
-    PENDING = 'pending'
-    ONGOING = 'ongoing'
-    COMPLETE = 'complete'
+    ACTIVE = 'active'
+    ARCHIVED = 'archived'
+
+
+class AnnotationStatus(StrEnum):
+    ACTIVE = 'active'
+    ARCHIVED = 'archived'
 
 
 class AnnotationType(StrEnum):

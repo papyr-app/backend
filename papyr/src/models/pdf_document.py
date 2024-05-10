@@ -10,7 +10,7 @@ class PDFDocument(Document):
     file_path = StringField(required=True)
     title = StringField(required=True)
     description = StringField()
-    status = StringField(default=DocumentStatus.PENDING)
+    status = StringField(default=DocumentStatus.ACTIVE)
     collaborators = ListField(ReferenceField(User))
     created_at = DateTimeField(default=datetime.utcnow)
     updated_at = DateTimeField(default=datetime.utcnow)
