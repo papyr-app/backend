@@ -39,6 +39,7 @@ def update_document(document: PDFDocument, document_data: Dict) -> PDFDocument:
     document.file_path = document_data.get('file_path', document.file_path)
     document.updated_at = datetime.now()
     document.save()
+    return document
 
 
 def delete_document(document_id: int):

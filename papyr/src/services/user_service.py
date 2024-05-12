@@ -16,6 +16,7 @@ def get_user_by_email(email: str):
 
 
 def create_user(user_data):
+    # TODO - pass arguments instead of user_data dict
     if User.objects(username=user_data['username']).first():
         raise NotUniqueError('Username already exists')
 

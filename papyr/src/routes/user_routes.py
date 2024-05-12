@@ -26,4 +26,14 @@ def create_user_bp():
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
+    @user_bp.route('/<user_id>/review_documents', methods=['GET'])
+    def get_review_documents(user_id: int):
+        try:
+            documents = document_service.get_documents_by_collaborator(user_id)
+            return jsonify([doc.to_mongo().to_dict() for doc in documents]), 201
+        except DoesNotExist:
+            return jsonify({'error': 'Document not found'}), 404
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
     return user_bp

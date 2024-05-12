@@ -1,3 +1,4 @@
+from datetime import datetime
 from bson import ObjectId
 
 from models.annotation import Annotation
@@ -38,8 +39,20 @@ def create_drawing_annotation(document, user, page_number, position, layer, path
     return annotation
 
 
-def update_annotation(data) -> Annotation:
-    pass
+def update_annotation(annotation: Annotation, annotation_data) -> Annotation:
+    for field in ['page_number', 'position', 'layer', 'comments', 'status']:
+        if field in annotation_data:
+            if field == 'comments':
+                # comments_schema = CommentSchema(many=True)
+                # comments = comments_schema.load(validated_data[field])
+                # annotation.comments = [
+                #     Comment.objects.get(id=comment['id']) for comment in comments
+                # ]
+                pass
+            else:
+                setattr(annotation, field, annotation_data[field])
+    annotation.updated_at = datetime.now()
+    annotation.save()
 
 
 def delete_annotation(annotation_id: int):

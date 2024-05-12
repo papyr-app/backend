@@ -67,25 +67,12 @@ def handle_annotations(socketio):
             payload = data['payload']
 
             schema = AnnotationUpdateSchema()
-            validated_data = schema.load(data)
+            validated_data = schema.load(payload)
 
-            annotation = annotation_service.get
-
-            for field in ['page_number', 'position', 'layer', 'comments', 'status']:
-                if field in validated_data:
-                    if field == 'comments':
-                        comments_schema = CommentSchema(many=True)
-                        comments = comments_schema.load(validated_data[field])
-                        annotation.comments = [
-                            Comment.objects.get(id=comment['id']) for comment in comments
-                        ]
-                    else:
-                        setattr(annotation, field, validated_data[field])
-
-            annotation.save()
+            annotation = annotation_service.get_annotation(validated_data['id'])
+            annotation = annotation_service.update_annotation(annotation, validated_data)
 
             emit('updated_annotation', annotation.to_json(), room=room, broadcast=True)
-
         except ValidationError as e:
             emit('annotation_error', {'error': str(e)})
         except DoesNotExist as e:
