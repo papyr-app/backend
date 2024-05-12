@@ -13,6 +13,7 @@ class User(Document):
     role = StringField(required=True)
     password_hash = StringField()
     created_at = DateTimeField(default=datetime.utcnow)
+    last_updated = DateTimeField(default=datetime.utcnow)
     last_login = DateTimeField(default=datetime.utcnow)
 
     meta = {'collection': 'users',
@@ -29,3 +30,7 @@ class User(Document):
 
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password_hash, password)
+
+    def record_login(self):
+        self.last_login = datetime.utcnow()
+        self.save()

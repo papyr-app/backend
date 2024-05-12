@@ -9,7 +9,7 @@ class Invitation(Document):
     invite_id = StringField(required=True)
     document = ReferenceField(PDFDocument, required=True)
     invited_by = ReferenceField(User, required=True)
-    expires_at = DateTimeField(default=lambda: datetime.now() + timedelta(days=7))
+    expires_at = DateTimeField(default=lambda: datetime.utcnow() + timedelta(days=7))
 
     meta = {
         'collection': 'invitations',

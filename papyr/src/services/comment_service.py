@@ -23,7 +23,7 @@ def create_comment(document: PDFDocument, user: User, text: str) -> Comment:
 
 def update_comment(comment: Comment, comment_data: Dict) -> Comment:
     comment.text = comment_data.get('text', comment.text)
-    comment.updated_at = datetime.now()
+    comment.updated_at = datetime.utcnow()
     comment.save()
     return comment
 

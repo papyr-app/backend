@@ -37,7 +37,7 @@ def update_document(document: PDFDocument, document_data: Dict) -> PDFDocument:
     document.title = document_data.get('title', document.title)
     document.description = document_data.get('description', document.description)
     document.file_path = document_data.get('file_path', document.file_path)
-    document.updated_at = datetime.now()
+    document.updated_at = datetime.utcnow()
     document.save()
     return document
 

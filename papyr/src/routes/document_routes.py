@@ -139,7 +139,7 @@ def create_document_bp():
 
         try:
             invitation = invitation_service.get_invitation(invite_id)
-            if invitation.expires_at < datetime.now():
+            if invitation.expires_at < datetime.utcnow():
                 return jsonify({'error': 'Invitation is expired'}), 400
 
             user = user_service.get_user_by_email(email)

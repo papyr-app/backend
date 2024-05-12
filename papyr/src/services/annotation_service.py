@@ -51,7 +51,7 @@ def update_annotation(annotation: Annotation, annotation_data) -> Annotation:
                 pass
             else:
                 setattr(annotation, field, annotation_data[field])
-    annotation.updated_at = datetime.now()
+    annotation.updated_at = datetime.utcnow()
     annotation.save()
 
 

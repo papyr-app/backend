@@ -1,11 +1,10 @@
-import logging
 from flask import Flask
 from flask_cors import CORS
 from flask_socketio import SocketIO
 from flask_bcrypt import Bcrypt
 
 from db import DB
-from s3.s3_client import S3Client
+from file_manager.s3_client import S3Client
 from utils.log import set_up_logger
 from utils.mongo_json_provider import MongoJSONProvider
 from routes.health_routes import create_health_bp
@@ -19,7 +18,7 @@ from sockets.comment_socket import handle_comments
 from sockets.annotation_socket import handle_annotations
 
 
-socketio = SocketIO()
+socketio = SocketIO(async_mode='gevent')
 bcrypt = Bcrypt()
 
 
@@ -59,9 +58,3 @@ def init_app(config_path: str):
         app.register_blueprint(file_bp)
 
         return app
-
-
-if __name__ == '__main__':
-    app = init_app("config.DevelopmentConfig")
-    logging.info('Starting app...')
-    socketio.run(app, host='0.0.0.0', port=5000, debug=True)

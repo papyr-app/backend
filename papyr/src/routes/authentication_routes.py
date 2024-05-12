@@ -37,6 +37,7 @@ def create_auth_bp(bcrypt: Bcrypt):
             # TODO - Return JWT
             user = user_service.get_user_by_username(username)
             if user.check_password(password):
+                user.record_login()
                 return jsonify({'message': 'Login successful'}), 200
             else:
                 return jsonify({'error': 'Invalid username or password'}), 401

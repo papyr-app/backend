@@ -21,8 +21,6 @@ def create_user_bp():
         try:
             documents = document_service.get_documents_by_owner(user_id)
             return jsonify([doc.to_mongo().to_dict() for doc in documents]), 201
-        except DoesNotExist:
-            return jsonify({'error': 'Document not found'}), 404
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
@@ -31,8 +29,6 @@ def create_user_bp():
         try:
             documents = document_service.get_documents_by_collaborator(user_id)
             return jsonify([doc.to_mongo().to_dict() for doc in documents]), 201
-        except DoesNotExist:
-            return jsonify({'error': 'Document not found'}), 404
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
