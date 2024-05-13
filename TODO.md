@@ -1,7 +1,20 @@
 - [X] Create frontend boilerplate
+- [ ] Create way to share document with token
+    - [X] Create token in document
+    - [ ] Create endpoint that checks if given token is correct
+    - [ ] Add user as collaborator
+- [ ] Consistent test data
+    - [ ] Create test database
+    - [ ] Create seed script that populates database with data
+    - [ ] Create endpoint that calls the script
+- [ ] JWTs
+    - [ ] Create JWT secret and pass to JWT module
+    - [ ] Create decorator script that decodes token and returns user info
+    - [ ] Create decorator with different roles/permissions
+    - [ ] Put decorators on the right routes
 - [ ] Create validation schemas
-- [ ] Test and validate endpoints
-- [ ] Add JWTs and auth logic
+    - [ ] Do it for most endpoints unless really simple
+- [ ] Test and validate endpoints using Postman
 - [ ] Create frontend design in Figma
 - [ ] Implement MVP frontend design (ugly)
     - [ ] Login / Register
@@ -17,7 +30,8 @@
     - [ ] Create test database
     - [ ] Create test S3 bucket
     - [ ] Create test suite
+    - [ ] Export Postman collection
+- [ ] Allow anonymous users / temp accounts
 - [ ] Create GitHub CI/CD pipeline
 - [ ] Create a nice readme
-- [ ] Allow anonymous users / temp accounts
 - [ ] Move to host on AWS

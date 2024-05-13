@@ -83,8 +83,8 @@ def create_document_bp():
             return jsonify({'error': 'Missing required field'}), 404
 
         try:
-            document = document_service.get_document(document_id)
             user = user_service.get_user_by_email(email)
+            document = document_service.get_document(document_id)
             document_service.add_collaborator(user, document)
             return jsonify({'message': 'Collaborator added'}), 200
         except PDFDocument.DoesNotExist:

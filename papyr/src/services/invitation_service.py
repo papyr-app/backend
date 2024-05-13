@@ -6,8 +6,8 @@ from models.pdf_document import PDFDocument
 from models.user import User
 
 
-def get_invitation(invite_id: int) -> Invitation:
-    return Invitation.objects(id=ObjectId(invite_id)).get()
+def get_invitation(invitation_id: int) -> Invitation:
+    return Invitation.objects(id=ObjectId(invitation_id)).get()
 
 
 def get_sent_invitations(user_id: int) -> List[Invitation]:
