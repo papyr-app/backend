@@ -1,5 +1,4 @@
 from flask import request, jsonify, send_file, Blueprint
-from io import BytesIO
 from file_manager.s3_client import S3Client
 
 
@@ -9,9 +8,10 @@ def create_file_blueprint(s3_client: S3Client) -> Blueprint:
     @file_bp.route('/upload', methods=['POST'])
     def upload():
         # TODO
+        # 0. If the file is not PDF, return error
         # 1. get the username from the JWT
-        # 2. construct a file_path that looks like this username/file_path
-        # 3. check if that file path already exists, if it does return error
+        # 2. construct a key that looks like this: username/path/title
+        # 3. check if file path already exists, if it does return error
         # 4. otherwise upload the file
         file = request.files['file']
         filename = file.filename

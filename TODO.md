@@ -1,12 +1,23 @@
 - [X] Create frontend boilerplate
-- [ ] Add logic for annotation management in WebSockets
-- [ ] Test and validate API and WebSockets
-- [ ] Add JWTs in backend + authorization
+- [ ] Create validation schemas
+- [ ] Test and validate endpoints
+- [ ] Add JWTs and auth logic
 - [ ] Create frontend design in Figma
-- [ ] Implement frontend design in React
+- [ ] Implement MVP frontend design (ugly)
     - [ ] Login / Register
     - [ ] Dashboard
     - [ ] Review space
-    - [ ] Profile (?)
-- [ ] Connext frontend and backend
-- [ ] 
+    - [ ] Profile (maybe)
+- [ ] Connect frontend and backend
+- [ ] Add logic for annotation management in WebSockets
+- [ ] Test and validate WebSockets
+- [ ] Connect WebSocket server and frontend
+- [ ] Create a nice and simple frontend
+- [ ] Create comprehensive test environment
+    - [ ] Create test database
+    - [ ] Create test S3 bucket
+    - [ ] Create test suite
+- [ ] Create GitHub CI/CD pipeline
+- [ ] Create a nice readme
+- [ ] Allow anonymous users / temp accounts
+- [ ] Move to host on AWS

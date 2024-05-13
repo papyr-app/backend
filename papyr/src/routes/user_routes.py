@@ -1,4 +1,4 @@
-from flask import jsonify, Blueprint
+from flask import request, jsonify, Blueprint
 from mongoengine.errors import DoesNotExist
 
 from services import user_service
@@ -9,9 +9,21 @@ def create_user_bp():
     user_bp = Blueprint('user', __name__, url_prefix='/api/users')
 
     @user_bp.route('/<user_id>', methods=['GET'])
-    def user_detail(user_id: int):
+    def get_user(user_id: int):
+        try:
+            # TODO - something is causing last_updated to be set
+            user = user_service.get_user_by_id(user_id)
+            return jsonify(user.to_mongo().to_dict()), 200
+        except DoesNotExist:
+            return jsonify({"error": "User not found"}), 404
+
+    @user_bp.route('/<user_id>', methods=['GET'])
+    def update_user(user_id: int):
+        data = request.get_json()
+
         try:
             user = user_service.get_user_by_id(user_id)
+            user_service.update_user(user, data)
             return jsonify(user.to_mongo().to_dict()), 200
         except DoesNotExist:
             return jsonify({"error": "User not found"}), 404

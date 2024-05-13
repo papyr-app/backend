@@ -1,4 +1,5 @@
-from mongoengine import Document, ListField, StringField, ReferenceField, DateTimeField
+import uuid
+from mongoengine import Document, ListField, StringField, ReferenceField, DateTimeField, BooleanField
 from datetime import datetime
 
 from models.user import User
@@ -12,6 +13,8 @@ class PDFDocument(Document):
     description = StringField()
     status = StringField(default=DocumentStatus.ACTIVE)
     collaborators = ListField(ReferenceField(User))
+    can_share = BooleanField(default=False)
+    share_token = StringField(default=lambda: str(uuid.uuid4()), unique=True)
     created_at = DateTimeField(default=datetime.utcnow)
     updated_at = DateTimeField(default=datetime.utcnow)
 

@@ -16,7 +16,7 @@ def get_documents_by_owner(user_id: int) -> List[PDFDocument]:
 
 
 def get_documents_by_collaborator(user_id: int) -> List[PDFDocument]:
-    return list(PDFDocument.objects(collaborators=user_id).all())
+    return list(PDFDocument.objects(collaborators=ObjectId(user_id)).all())
 
 
 def create_document(document_data: Dict) -> PDFDocument:
@@ -24,7 +24,7 @@ def create_document(document_data: Dict) -> PDFDocument:
         raise NotUniqueError('Document with this title already exists')
 
     new_document = PDFDocument(
-        owner_id=document_data['owner_id'],
+        owner=document_data['owner'],
         file_path=document_data['file_path'],
         title=document_data['title'],
         description=document_data.get('description', '')
@@ -37,6 +37,7 @@ def update_document(document: PDFDocument, document_data: Dict) -> PDFDocument:
     document.title = document_data.get('title', document.title)
     document.description = document_data.get('description', document.description)
     document.file_path = document_data.get('file_path', document.file_path)
+    document.can_share = document_data.get('can_share', document.can_share)
     document.updated_at = datetime.utcnow()
     document.save()
     return document
