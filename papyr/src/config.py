@@ -15,6 +15,8 @@ class Config:
     AWS_DEFAULT_REGION = getenv('AWS_DEFAULT_REGION')
     S3_BUCKET_NAME = getenv('S3_BUCKET_NAME')
 
+    SECRET_KEY = getenv('SECRET_KEY')
+
 
 class DevelopmentConfig(Config):
     DEBUG = True

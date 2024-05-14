@@ -25,3 +25,7 @@ class PDFDocument(Document):
         ],
         'ordering': ['-created_at']
     }
+
+    def has_access(self, user_id):
+        user_id = str(user_id)
+        return str(self.owner.id) == user_id or user_id in [str(collaborator.id) for collaborator in self.collaborators]

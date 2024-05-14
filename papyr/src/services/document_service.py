@@ -3,31 +3,40 @@ from bson import ObjectId
 from datetime import datetime
 from mongoengine.errors import NotUniqueError
 
+from errors import AuthorizationError
 from models.pdf_document import PDFDocument
 from models.user import User
 
 
-def get_document(document_id: int) -> PDFDocument:
-    return PDFDocument.objects(id=ObjectId(document_id)).get()
+def get_document(document_id: ObjectId) -> PDFDocument:
+    return PDFDocument.objects(id=document_id).get()
 
 
-def get_documents_by_owner(user_id: int) -> List[PDFDocument]:
-    return list(PDFDocument.objects(owner=ObjectId(user_id)).all())
+def get_document_check_access(document_id: int, user_id: ObjectId):
+    document = PDFDocument.objects(id=ObjectId(document_id)).get()
+    if not document.has_access(user_id):
+        raise AuthorizationError('You are not authorized to access this resource')
+    return document
 
 
-def get_documents_by_collaborator(user_id: int) -> List[PDFDocument]:
-    return list(PDFDocument.objects(collaborators=ObjectId(user_id)).all())
+def get_documents_by_owner(user_id: ObjectId) -> List[PDFDocument]:
+    return list(PDFDocument.objects(owner=user_id).all())
 
 
-def create_document(document_data: Dict) -> PDFDocument:
-    if PDFDocument.objects(title=document_data['title']).first():
+def get_documents_by_collaborator(user_id: ObjectId) -> List[PDFDocument]:
+    return list(PDFDocument.objects(collaborators=user_id).all())
+
+
+def create_document(owner_id: int, file_path: str, title: str, description: str) -> PDFDocument:
+    # TODO - check if document already exists in a better way
+    if PDFDocument.objects(title=title).first():
         raise NotUniqueError('Document with this title already exists')
 
     new_document = PDFDocument(
-        owner=document_data['owner'],
-        file_path=document_data['file_path'],
-        title=document_data['title'],
-        description=document_data.get('description', '')
+        owner=owner_id,
+        file_path=file_path,
+        title=title,
+        description=description
     )
     new_document.save()
     return new_document
@@ -43,8 +52,7 @@ def update_document(document: PDFDocument, document_data: Dict) -> PDFDocument:
     return document
 
 
-def delete_document(document_id: int):
-    document = PDFDocument.objects(id=document_id).get()
+def delete_document(document: PDFDocument):
     document.delete()
 
 

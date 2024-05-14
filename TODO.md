@@ -1,17 +1,12 @@
 - [X] Create frontend boilerplate
-- [ ] Create way to share document with token
+- [X] Create way to share document with token
     - [X] Create token in document
-    - [ ] Create endpoint that checks if given token is correct
-    - [ ] Add user as collaborator
-- [ ] Consistent test data
-    - [ ] Create test database
-    - [ ] Create seed script that populates database with data
-    - [ ] Create endpoint that calls the script
-- [ ] JWTs
-    - [ ] Create JWT secret and pass to JWT module
-    - [ ] Create decorator script that decodes token and returns user info
-    - [ ] Create decorator with different roles/permissions
-    - [ ] Put decorators on the right routes
+    - [X] Create endpoint that checks if given token is correct
+    - [X] Add user as collaborator
+- [X] JWTs
+    - [X] Create JWT secret and pass to JWT module
+    - [X] Create decorator script that decodes token and returns user info
+    - [X] Put decorators on the right routes
 - [ ] Create validation schemas
     - [ ] Do it for most endpoints unless really simple
 - [ ] Test and validate endpoints using Postman
@@ -22,10 +17,15 @@
     - [ ] Review space
     - [ ] Profile (maybe)
 - [ ] Connect frontend and backend
+- [ ] Consistent test data
+    - [ ] Create test database
+    - [ ] Create seed script that populates database with data
+    - [ ] Create endpoint that calls the script
 - [ ] Add logic for annotation management in WebSockets
 - [ ] Test and validate WebSockets
 - [ ] Connect WebSocket server and frontend
 - [ ] Create a nice and simple frontend
+- [ ] Create DTOs to not leak sensitive info
 - [ ] Create comprehensive test environment
     - [ ] Create test database
     - [ ] Create test S3 bucket

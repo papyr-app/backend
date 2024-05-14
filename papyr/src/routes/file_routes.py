@@ -1,49 +1,72 @@
+import os
 from flask import request, jsonify, send_file, Blueprint
 from file_manager.s3_client import S3Client
+from werkzeug.utils import secure_filename
+
+from auth.decorators import token_required
+from models.user import User
 
 
 def create_file_blueprint(s3_client: S3Client) -> Blueprint:
     file_bp = Blueprint('file', __name__, url_prefix='/api/files')
 
     @file_bp.route('/upload', methods=['POST'])
-    def upload():
-        # TODO
-        # 0. If the file is not PDF, return error
-        # 1. get the username from the JWT
-        # 2. construct a key that looks like this: username/path/title
-        # 3. check if file path already exists, if it does return error
-        # 4. otherwise upload the file
-        file = request.files['file']
-        filename = file.filename
-        upload_succeeded = s3_client.upload_file(file, filename)
+    @token_required
+    def upload(user: User):
+        file = request.files.get('file')
+        path = request.form.get('path', '')
+
+        if not file:
+            return jsonify({'error': 'Missing required fields'}), 400
+
+        if not file.filename.endswith('.pdf'):
+            return jsonify({'error': 'Only PDF files are allowed'}), 400
+
+        username = user.username
+        secure_name = secure_filename(file.filename)
+        key = f"{username}/{path}/{secure_name}".strip('/')
+
+        if s3_client.file_exists(key):
+            return jsonify({'error': 'File already exists'}), 400
+
+        upload_succeeded = s3_client.upload_file(file, key)
         if upload_succeeded:
             return jsonify({'success': 'Uploaded file'}), 201
         else:
             return jsonify({'error': 'Upload failed'}), 500
 
-    @file_bp.route('/download/<filename>', methods=['GET'])
-    def download(filename):
-        # TODO
-        # 1. get the username from the JWT
-        # 2. construct a file_path that looks like this username/file_path
-        # 3. check if that file path already exists, if it doesnt return error
-        # 4. otherwise download the file
-        # 5. return the downloaded file
-        file = s3_client.download_file(filename)
-        if file:
-            return send_file(file, download_name=filename, as_attachment=True)
-        else:
+    @file_bp.route('/download/<path:path>', methods=['GET'])
+    @token_required
+    def download(user: User, path: str):
+        # TODO - authenticate that the user is allowed to download this file
+        username = user.username
+        key = f"{username}/{path}".strip('/')
+        filename = os.path.basename(path)
+
+        if not s3_client.file_exists(key):
             return jsonify({'error': 'File not found'}), 404
 
-    @file_bp.route('/delete/<filename>', methods=['DELETE'])
-    def delete(filename):
-        # TODO
-        # 1. get the username from the JWT
-        # 2. construct a file_path that looks like this username/file_path
-        # 3. check if that file path already exists, if it doesnt return error
-        # 4. otherwise delete the file
-        if s3_client.delete_file(filename):
-            return jsonify({'message': 'File deleted successfully'}), 200
+        file_stream = s3_client.download_file(key)
+        if not file_stream:
+            return jsonify({'error': 'File not found'}), 404
+
+        return send_file(
+            file_stream,
+            download_name=filename,
+            as_attachment=True
+        )
+
+    @file_bp.route('/delete/<path:path>', methods=['DELETE'])
+    @token_required
+    def delete(user: User, path: str):
+        username = user.username
+        key = f"{username}/{path}".strip('/')
+
+        if not s3_client.file_exists(key):
+            return jsonify({'error': 'File not found'}), 404
+
+        if s3_client.delete_file(key):
+            return jsonify({'data': 'File deleted successfully'}), 200
         else:
             return jsonify({'error': 'Deletion failed'}), 500
 

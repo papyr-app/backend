@@ -1,6 +1,8 @@
 from flask import request, jsonify, Blueprint
-from mongoengine.errors import ValidationError, DoesNotExist, NotUniqueError
+from mongoengine.errors import DoesNotExist, NotUniqueError
 
+from errors import AuthorizationError
+from auth.decorators import token_required
 from services import document_service
 from services import user_service
 from models.user import User
@@ -11,105 +13,153 @@ def create_document_bp():
     document_bp = Blueprint('document', __name__, url_prefix='/api/documents')
 
     @document_bp.route('/<document_id>', methods=['GET'])
-    def get_document(document_id: int):
+    @token_required
+    def get_document(user: User, document_id: int):
         try:
-            document = document_service.get_document(document_id)
-            return jsonify(document.to_mongo().to_dict()), 201
+            document = document_service.get_document_check_access(document_id, user.id)
+            return jsonify({'data': document.to_mongo().to_dict()}), 200
         except DoesNotExist:
             return jsonify({'error': 'Document not found'}), 404
+        except AuthorizationError as e:
+            return jsonify({'error': str(e)}), 403
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
     @document_bp.route('/', methods=['POST'])
-    def create_document():
+    @token_required
+    def create_document(user: User):
         data = request.get_json()
-
-        # TODO - instead of owner id grab user id from JWT
-        owner = data.get('owner')
         file_path = data.get('file_path')
         title = data.get('title')
 
-        if not owner or not file_path or not title:
+        if not file_path or not title:
             return jsonify({'error': 'Missing required fields'}), 400
 
         try:
-            document = document_service.create_document(data)
-            return jsonify(document.to_mongo().to_dict()), 201
-        except ValidationError as e:
-            return jsonify({'error': str(e)}), 400
+            document = document_service.create_document(
+                    str(user.id),
+                    data.get('file_path'),
+                    data.get('title'),
+                    data.get('description')
+            )
+            return jsonify({'data': document.to_mongo().to_dict()}), 201
         except NotUniqueError:
             return jsonify({'error': 'Document already exists'}), 409
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
     @document_bp.route('/<document_id>', methods=['PATCH'])
-    def update_document(document_id: int):
+    @token_required
+    def update_document(user: User, document_id: int):
         data = request.get_json()
-
-        # TODO - check if user has permissions to update this document
-
         try:
-            document = document_service.get_document(document_id)
+            document = document_service.get_document_check_access(document_id, user.id)
+            document = document_service.update_document(document, data)
+            return jsonify({'data': document.to_mongo().to_dict()}), 201
         except DoesNotExist:
             return jsonify({'error': 'Document not found'}), 404
-        except Exception as e:
-            return jsonify({'error': str(e)}), 500
-
-        try:
-            updated_document = document_service.update_document(document, data)
-            return jsonify(updated_document.to_mongo().to_dict()), 201
+        except AuthorizationError as e:
+            return jsonify({'error': str(e)}), 403
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
     @document_bp.route('/<document_id>', methods=['DELETE'])
-    def delete_document(document_id):
-        # TODO - check if user has permissions to delete this document
+    @token_required
+    def delete_document(user: User, document_id: int):
         try:
-            document_service.delete_document(document_id)
-            return jsonify({'message': 'Document deleted successfully'}), 200
+            document = document_service.get_document_check_access(document_id, user.id)
+            document_service.delete_document(document)
+            return jsonify({'data': 'Document deleted successfully'}), 200
         except DoesNotExist:
             return jsonify({'error': 'Document not found'}), 404
+        except AuthorizationError as e:
+            return jsonify({'error': str(e)}), 403
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
     @document_bp.route('/<document_id>/add_collaborator', methods=['POST'])
-    def add_collaborator(document_id: int):
+    @token_required
+    def add_collaborator(user: User, document_id: int):
         data = request.get_json()
         email = data.get('email')
 
-        # TODO - check if user has permissions to add collaborators
-
         if not email:
-            return jsonify({'error': 'Missing required field'}), 404
+            return jsonify({'error': 'Missing required field'}), 400
 
         try:
+            document = document_service.get_document_check_access(document_id, user.id)
             user = user_service.get_user_by_email(email)
-            document = document_service.get_document(document_id)
             document_service.add_collaborator(user, document)
-            return jsonify({'message': 'Collaborator added'}), 200
+            return jsonify({'data': 'Collaborator added'}), 201
         except PDFDocument.DoesNotExist:
             return jsonify({'error': 'Document not found'}), 404
         except User.DoesNotExist:
             return jsonify({'error': 'User not found'}), 404
+        except AuthorizationError as e:
+            return jsonify({'error': str(e)}), 403
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
 
     @document_bp.route('/<document_id>/remove_collaborator', methods=['POST'])
-    def remove_collaborator(document_id: int):
+    @token_required
+    def remove_collaborator(user: User, document_id: int):
         data = request.get_json()
         email = data.get('email')
 
-        # TODO - check if user has permissions to remove collaborators
-
         if not email:
-            return jsonify({'error': 'Missing required field'}), 404
+            return jsonify({'error': 'Missing required field'}), 400
 
         try:
-            document = document_service.get_document(document_id)
+            document = document_service.get_document_check_access(document_id, user.id)
             user = user_service.get_user_by_email(email)
             document_service.remove_collaborator(user, document)
-            return jsonify({'message': 'Collaborator removed'}), 200
+            return jsonify({'data': 'Collaborator removed'}), 201
         except PDFDocument.DoesNotExist:
             return jsonify({'error': 'Document not found'}), 404
         except User.DoesNotExist:
             return jsonify({'error': 'User not found'}), 404
+        except AuthorizationError as e:
+            return jsonify({'error': str(e)}), 403
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
+    @document_bp.route('/<document_id>/share', methods=['GET'])
+    @token_required
+    def get_share_token(user: User, document_id: int):
+        try:
+            document = document_service.get_document_check_access(document_id, user.id)
+            if document.can_share:
+                return jsonify({'data': document.share_token}), 201
+            else:
+                return jsonify({'error': 'Document is not shareable'}), 400
+        except PDFDocument.DoesNotExist:
+            return jsonify({'error': 'Document not found'}), 404
+        except User.DoesNotExist:
+            return jsonify({'error': 'User not found'}), 404
+        except AuthorizationError as e:
+            return jsonify({'error': str(e)}), 403
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
+    @document_bp.route('/<document_id>/share/<share_token>', methods=['POST'])
+    @token_required
+    def add_collaborator_via_token(user: User, document_id: int, share_token: str):
+        try:
+            document = document_service.get_document_check_access(document_id, user.id)
+            user = user_service.get_user_by_id(user.id)
+
+            if document.can_share and share_token == document.share_token:
+                document_service.add_collaborator(user, document)
+                return jsonify({'data': 'User added as collaborator'}), 201
+            else:
+                return jsonify({'error': 'Document is not shareable or token is incorrect'}), 400
+        except PDFDocument.DoesNotExist:
+            return jsonify({'error': 'Document not found'}), 404
+        except User.DoesNotExist:
+            return jsonify({'error': 'User not found'}), 404
+        except AuthorizationError as e:
+            return jsonify({'error': str(e)}), 403
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
 
     return document_bp

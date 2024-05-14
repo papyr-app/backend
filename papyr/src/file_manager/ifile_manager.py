@@ -16,5 +16,5 @@ class IFileManager(ABC):
         pass
 
     @abstractmethod
-    def list_files(self, prefix):
+    def file_exists(self, path: str) -> bool:
         pass

@@ -6,8 +6,8 @@ from mongoengine.errors import NotUniqueError
 from models.user import User
 
 
-def get_user_by_id(user_id: int) -> User:
-    return User.objects(id=ObjectId(user_id)).get()
+def get_user_by_id(user_id: ObjectId) -> User:
+    return User.objects(id=user_id).get()
 
 
 def get_user_by_username(username: str) -> User:

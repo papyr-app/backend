@@ -49,12 +49,12 @@ class S3Client(IFileManager):
             logging.error(f'Error deleting file: {e}')
             return False
 
-    def list_files(self, prefix=''):
+    def file_exists(self, path: str) -> bool:
         try:
-            response = self.s3.list_objects_v2(Bucket=self.bucket_name, Prefix=prefix)
-            return [item['Key'] for item in response.get('Contents', [])]
-        except NoCredentialsError:
-            logging.error('Credentials not available')
+            self.s3.head_object(Bucket=self.bucket_name, Key=path)
+            return True
         except ClientError as e:
-            logging.error(f'Error listing files: {e}')
-            return []
+            if e.response['Error']['Code'] == '404':
+                return False
+            else:
+                raise e

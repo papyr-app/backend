@@ -15,3 +15,7 @@ class Invitation(Document):
         'collection': 'invitations',
         'ordering': ['-expires_at']
     }
+
+    def has_access(self, user_id):
+        user_id = str(user_id)
+        return str(self.invitee.id) == user_id or str(self.invited_by.id) == user_id
