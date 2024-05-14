@@ -18,22 +18,21 @@ def get_user_by_email(email: str):
     return User.objects(email=email).get()
 
 
-def create_user(user_data) -> User:
-    # TODO - pass arguments instead of user_data dict
-    if User.objects(username=user_data['username']).first():
+def create_user(username: str, email: str, first_name: str, last_name: str, role: str, password: str) -> User:
+    if User.objects(username=username).first():
         raise NotUniqueError('Username already exists')
 
-    if User.objects(email=user_data['email']).first():
+    if User.objects(email=email).first():
         raise NotUniqueError('Email already exists')
 
     new_user = User(
-        username=user_data['username'],
-        email=user_data['email'],
-        first_name=user_data.get('first_name', ''),
-        last_name=user_data.get('last_name', ''),
-        role=user_data.get('role', 'User'),
+        username=username,
+        email=email,
+        first_name=first_name,
+        last_name=last_name,
+        role=role,
     )
-    new_user.set_password(user_data['password'])
+    new_user.set_password(password)
     new_user.save()
     return new_user
 

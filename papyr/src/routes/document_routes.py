@@ -1,5 +1,6 @@
 from flask import request, jsonify, Blueprint
 from mongoengine.errors import DoesNotExist, NotUniqueError
+from marshmallow import ValidationError
 
 from errors import AuthorizationError
 from auth.decorators import token_required
@@ -7,6 +8,7 @@ from services import document_service
 from services import user_service
 from models.user import User
 from models.pdf_document import PDFDocument
+from schemas.pdf_document_schema import CreatePDFDocumentSchema, UpdatePDFDocumentSchema
 
 
 def create_document_bp():
@@ -29,22 +31,18 @@ def create_document_bp():
     @token_required
     def create_document(user: User):
         data = request.get_json()
-        file_path = data.get('file_path')
-        title = data.get('title')
-
-        if not file_path or not title:
-            return jsonify({'error': 'Missing required fields'}), 400
-
         try:
+            schema = CreatePDFDocumentSchema()
+            validated_data = schema.load(data)
             document = document_service.create_document(
                     str(user.id),
-                    data.get('file_path'),
-                    data.get('title'),
-                    data.get('description')
+                    **validated_data
             )
             return jsonify({'data': document.to_mongo().to_dict()}), 201
         except NotUniqueError:
             return jsonify({'error': 'Document already exists'}), 409
+        except ValidationError as e:
+            return jsonify({'error': str(e)}), 400
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
@@ -53,13 +51,17 @@ def create_document_bp():
     def update_document(user: User, document_id: int):
         data = request.get_json()
         try:
+            schema = CreatePDFDocumentSchema()
+            validated_data = schema.load(data)
             document = document_service.get_document_check_access(document_id, user.id)
-            document = document_service.update_document(document, data)
+            document = document_service.update_document(document, validated_data)
             return jsonify({'data': document.to_mongo().to_dict()}), 201
         except DoesNotExist:
             return jsonify({'error': 'Document not found'}), 404
         except AuthorizationError as e:
             return jsonify({'error': str(e)}), 403
+        except ValidationError as e:
+            return jsonify({'error': str(e)}), 400
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 

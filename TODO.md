@@ -7,9 +7,8 @@
     - [X] Create JWT secret and pass to JWT module
     - [X] Create decorator script that decodes token and returns user info
     - [X] Put decorators on the right routes
+- [X] Test and validate endpoints using Postman
 - [ ] Create validation schemas
-    - [ ] Do it for most endpoints unless really simple
-- [ ] Test and validate endpoints using Postman
 - [ ] Create frontend design in Figma
 - [ ] Implement MVP frontend design (ugly)
     - [ ] Login / Register

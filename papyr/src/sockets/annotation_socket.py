@@ -4,7 +4,7 @@ from marshmallow import ValidationError
 from mongoengine.errors import DoesNotExist
 
 from schemas.annotation_schema import AnnotationSchema
-from schemas.annotation_schema import AnnotationUpdateSchema
+from schemas.annotation_schema import UpdateAnnotationSchema
 from services import annotation_service
 from services import document_service
 from services import user_service
@@ -66,7 +66,7 @@ def handle_annotations(socketio):
             room = data['room_id']
             payload = data['payload']
 
-            schema = AnnotationUpdateSchema()
+            schema = UpdateAnnotationSchema()
             validated_data = schema.load(payload)
 
             annotation = annotation_service.get_annotation(validated_data['id'])
