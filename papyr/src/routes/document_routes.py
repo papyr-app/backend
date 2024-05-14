@@ -1,3 +1,4 @@
+import logging
 from flask import request, jsonify, Blueprint
 from mongoengine.errors import DoesNotExist, NotUniqueError
 from marshmallow import ValidationError
@@ -25,6 +26,7 @@ def create_document_bp():
         except AuthorizationError as e:
             return jsonify({'error': str(e)}), 403
         except Exception as e:
+            logging.error(e)
             return jsonify({'error': str(e)}), 500
 
     @document_bp.route('/', methods=['POST'])
@@ -44,6 +46,7 @@ def create_document_bp():
         except ValidationError as e:
             return jsonify({'error': str(e)}), 400
         except Exception as e:
+            logging.error(e)
             return jsonify({'error': str(e)}), 500
 
     @document_bp.route('/<document_id>', methods=['PATCH'])
@@ -63,6 +66,7 @@ def create_document_bp():
         except ValidationError as e:
             return jsonify({'error': str(e)}), 400
         except Exception as e:
+            logging.error(e)
             return jsonify({'error': str(e)}), 500
 
     @document_bp.route('/<document_id>', methods=['DELETE'])
@@ -77,6 +81,7 @@ def create_document_bp():
         except AuthorizationError as e:
             return jsonify({'error': str(e)}), 403
         except Exception as e:
+            logging.error(e)
             return jsonify({'error': str(e)}), 500
 
     @document_bp.route('/<document_id>/add_collaborator', methods=['POST'])
@@ -100,6 +105,7 @@ def create_document_bp():
         except AuthorizationError as e:
             return jsonify({'error': str(e)}), 403
         except Exception as e:
+            logging.error(e)
             return jsonify({'error': str(e)}), 500
 
     @document_bp.route('/<document_id>/remove_collaborator', methods=['POST'])
@@ -123,6 +129,7 @@ def create_document_bp():
         except AuthorizationError as e:
             return jsonify({'error': str(e)}), 403
         except Exception as e:
+            logging.error(e)
             return jsonify({'error': str(e)}), 500
 
     @document_bp.route('/<document_id>/share', methods=['GET'])
@@ -141,6 +148,7 @@ def create_document_bp():
         except AuthorizationError as e:
             return jsonify({'error': str(e)}), 403
         except Exception as e:
+            logging.error(e)
             return jsonify({'error': str(e)}), 500
 
     @document_bp.route('/<document_id>/share/<share_token>', methods=['POST'])
@@ -162,6 +170,7 @@ def create_document_bp():
         except AuthorizationError as e:
             return jsonify({'error': str(e)}), 403
         except Exception as e:
+            logging.error(e)
             return jsonify({'error': str(e)}), 500
 
     return document_bp

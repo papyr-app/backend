@@ -18,7 +18,7 @@ def get_user_by_email(email: str):
     return User.objects(email=email).get()
 
 
-def create_user(username: str, email: str, first_name: str, last_name: str, role: str, password: str) -> User:
+def create_user(username: str, email: str, first_name: str, last_name: str, password: str) -> User:
     if User.objects(username=username).first():
         raise NotUniqueError('Username already exists')
 
@@ -29,8 +29,7 @@ def create_user(username: str, email: str, first_name: str, last_name: str, role
         username=username,
         email=email,
         first_name=first_name,
-        last_name=last_name,
-        role=role,
+        last_name=last_name
     )
     new_user.set_password(password)
     new_user.save()

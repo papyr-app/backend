@@ -28,8 +28,7 @@ def get_documents_by_collaborator(user_id: ObjectId) -> List[PDFDocument]:
 
 
 def create_document(owner_id: int, file_path: str, title: str, description: str) -> PDFDocument:
-    # TODO - check if document already exists in a better way
-    if PDFDocument.objects(title=title).first():
+    if PDFDocument.objects(file_path=file_path).first():
         raise NotUniqueError('Document with this title already exists')
 
     new_document = PDFDocument(

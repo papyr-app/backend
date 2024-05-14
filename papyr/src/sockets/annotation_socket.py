@@ -3,7 +3,7 @@ from flask_socketio import emit
 from marshmallow import ValidationError
 from mongoengine.errors import DoesNotExist
 
-from schemas.annotation_schema import AnnotationSchema
+from schemas.annotation_schema import CreateAnnotationSchema
 from schemas.annotation_schema import UpdateAnnotationSchema
 from services import annotation_service
 from services import document_service
@@ -17,7 +17,7 @@ def handle_annotations(socketio):
             room = data['room_id']
             payload = data['payload']
 
-            schema = AnnotationSchema()
+            schema = CreateAnnotationSchema()
             validated_data = schema.load(payload)
 
             document = document_service.get_document(validated_data['document'])

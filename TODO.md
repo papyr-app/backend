@@ -8,8 +8,9 @@
     - [X] Create decorator script that decodes token and returns user info
     - [X] Put decorators on the right routes
 - [X] Test and validate endpoints using Postman
-- [ ] Create validation schemas
+- [X] Create validation schemas
 - [ ] Create frontend design in Figma
+- [ ] Better logging
 - [ ] Implement MVP frontend design (ugly)
     - [ ] Login / Register
     - [ ] Dashboard

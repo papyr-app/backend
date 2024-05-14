@@ -1,3 +1,4 @@
+import logging
 from flask import request, jsonify, Blueprint
 from mongoengine.errors import DoesNotExist
 from marshmallow import ValidationError
@@ -15,14 +16,12 @@ def create_user_bp():
     @token_required
     def get_user(_, user_id: int):
         try:
-            # TODO
-            # Something is causing last_updated to be set
-            # each time this method is called
             user = user_service.get_user_by_id(user_id)
             return jsonify({'data': user.to_mongo().to_dict()}), 200
         except DoesNotExist:
             return jsonify({"error": "User not found"}), 404
         except Exception as e:
+            logging.error(e)
             return jsonify({'error': str(e)}), 500
 
     @user_bp.route('/<user_id>', methods=['PATCH'])
@@ -40,6 +39,7 @@ def create_user_bp():
         except ValidationError as e:
             return jsonify({'error': str(e)}), 400
         except Exception as e:
+            logging.error(e)
             return jsonify({'error': str(e)}), 500
 
     @user_bp.route('/<user_id>/documents', methods=['GET'])
@@ -49,6 +49,7 @@ def create_user_bp():
             documents = document_service.get_documents_by_owner(user_id)
             return jsonify({'data': [doc.to_mongo().to_dict() for doc in documents]}), 200
         except Exception as e:
+            logging.error(e)
             return jsonify({'error': str(e)}), 500
 
     @user_bp.route('/<user_id>/review_documents', methods=['GET'])
@@ -58,6 +59,7 @@ def create_user_bp():
             documents = document_service.get_documents_by_collaborator(user_id)
             return jsonify({'data': [doc.to_mongo().to_dict() for doc in documents]}), 200
         except Exception as e:
+            logging.error(e)
             return jsonify({'error': str(e)}), 500
 
     return user_bp

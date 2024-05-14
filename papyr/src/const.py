@@ -14,3 +14,8 @@ class AnnotationStatus(StrEnum):
 class AnnotationType(StrEnum):
     HIGHLIGHT = 'highlight'
     DRAWING = 'drawing'
+
+
+class RoleType(StrEnum):
+    ADMIN = 'admin'
+    USER = 'user'

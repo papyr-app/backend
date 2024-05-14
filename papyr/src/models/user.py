@@ -2,6 +2,8 @@ from mongoengine import Document, StringField, DateTimeField
 from flask_bcrypt import Bcrypt
 from datetime import datetime
 
+from const import RoleType
+
 bcrypt = Bcrypt()
 
 
@@ -10,8 +12,8 @@ class User(Document):
     email = StringField(required=True)
     first_name = StringField(required=True)
     last_name = StringField(required=True)
-    role = StringField(required=True)
     password_hash = StringField()
+    role = StringField(default=RoleType.USER)
     created_at = DateTimeField(default=datetime.utcnow)
     last_updated = DateTimeField(default=datetime.utcnow)
     last_login = DateTimeField(default=datetime.utcnow)
