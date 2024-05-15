@@ -2,9 +2,9 @@ import os
 import logging
 from flask import request, jsonify, send_file, Blueprint
 from mongoengine.errors import DoesNotExist, NotUniqueError
-from werkzeug.utils import secure_filename
 from marshmallow import ValidationError
 
+from utils import helper
 from file_manager.ifile_manager import IFileManager
 from errors import AuthorizationError
 from auth.decorators import token_required
@@ -32,7 +32,7 @@ def create_document_bp(file_manager: IFileManager):
             logging.error(e)
             return jsonify({'error': str(e)}), 500
 
-    @document_bp.route('/<document_id>', methods=['GET'])
+    @document_bp.route('/<document_id>/download', methods=['GET'])
     @token_required
     def download_document(user: User, document_id: int):
         try:
@@ -68,19 +68,16 @@ def create_document_bp(file_manager: IFileManager):
         data = request.form
 
         if not file:
-            return jsonify({'error': 'Missing required fields'}), 400
+            return jsonify({'error': 'Missing file'}), 400
 
         if not file.filename.endswith('.pdf'):
             return jsonify({'error': 'Only PDF files are allowed'}), 400
 
         try:
-            # Validate the document
             schema = CreatePDFDocumentSchema()
             validated_data = schema.load(data)
 
-            # Validate that the filename is OK
-            file_path = secure_filename(validated_data['file_path'])
-            validated_data['file_path'] = file_path
+            file_path = helper.create_file_path(user.username, validated_data['file_path'], file.filename)
 
             if file_manager.file_exists(file_path):
                 return jsonify({'error': 'File already exists'}), 400
@@ -92,8 +89,7 @@ def create_document_bp(file_manager: IFileManager):
                         **validated_data
                 )
                 return jsonify({'data': document.to_mongo().to_dict()}), 201
-            else:
-                return jsonify({'error': 'Upload failed'}), 500
+            return jsonify({'error': 'Upload failed'}), 500
         except NotUniqueError:
             return jsonify({'error': 'Document already exists'}), 409
         except ValidationError as e:
@@ -137,9 +133,11 @@ def create_document_bp(file_manager: IFileManager):
             if not file_manager.file_exists(file_path):
                 return jsonify({'error': 'File not found'}), 404
 
-            file_manager.delete_file(file_path)
-            document_service.delete_document(document)
-            return jsonify({'data': 'Document deleted successfully'}), 200
+            delete_succeeded = file_manager.delete_file(file_path)
+            if delete_succeeded:
+                document_service.delete_document(document)
+                return jsonify({'data': 'Document deleted successfully'}), 200
+            return jsonify({'error': 'Deletion failed'}), 404
         except DoesNotExist:
             return jsonify({'error': 'Document not found'}), 404
         except AuthorizationError as e:

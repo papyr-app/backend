@@ -4,6 +4,7 @@ from datetime import datetime
 from mongoengine import Q
 from mongoengine.errors import NotUniqueError
 
+from utils import helper
 from errors import AuthorizationError
 from models.pdf_document import PDFDocument
 from models.user import User
@@ -38,6 +39,7 @@ def create_document(owner_id: int, file_path: str, description: str) -> PDFDocum
 
 
 def update_document(document: PDFDocument, document_data: Dict) -> PDFDocument:
+    # TODO - make sure path is OK
     document.description = document_data.get('description', document.description)
     document.file_path = document_data.get('file_path', document.file_path)
     document.can_share = document_data.get('can_share', document.can_share)
@@ -53,6 +55,7 @@ def delete_document(document: PDFDocument):
 def add_collaborator(user: User, document: PDFDocument) -> PDFDocument:
     if user not in document.collaborators and user != document.owner:
         document.collaborators.append(user)
+        document.updated_at = datetime.utcnow()
         document.save()
     return document
 
@@ -60,5 +63,6 @@ def add_collaborator(user: User, document: PDFDocument) -> PDFDocument:
 def remove_collaborator(user: User, document: PDFDocument) -> PDFDocument:
     if user in document.collaborators and user != document.owner:
         document.collaborators.remove(user)
+        document.updated_at = datetime.utcnow()
         document.save()
     return document

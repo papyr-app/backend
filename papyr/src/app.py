@@ -11,8 +11,8 @@ from routes.health_routes import create_health_bp
 from routes.user_routes import create_user_bp
 from routes.authentication_routes import create_auth_bp
 from routes.document_routes import create_document_bp
-from routes.file_routes import create_file_blueprint
 from routes.invitation_routes import create_invitation_bp
+from routes.virtual_path_routes import create_virtual_path_bp
 from sockets.connection_socket import handle_connections
 from sockets.chat_socket import handle_chat
 from sockets.comment_socket import handle_comments
@@ -52,10 +52,12 @@ def init_app(config_path: str):
         auth_bp = create_auth_bp(bcrypt)
         document_bp = create_document_bp(s3_client)
         invitation_bp = create_invitation_bp()
+        virtual_path_bp = create_virtual_path_bp()
         app.register_blueprint(health_bp)
         app.register_blueprint(user_bp)
         app.register_blueprint(auth_bp)
         app.register_blueprint(document_bp)
         app.register_blueprint(invitation_bp)
+        app.register_blueprint(virtual_path_bp)
 
         return app
