@@ -50,14 +50,12 @@ def init_app(config_path: str):
         health_bp = create_health_bp()
         user_bp = create_user_bp()
         auth_bp = create_auth_bp(bcrypt)
-        document_bp = create_document_bp()
-        file_bp = create_file_blueprint(s3_client)
+        document_bp = create_document_bp(s3_client)
         invitation_bp = create_invitation_bp()
         app.register_blueprint(health_bp)
         app.register_blueprint(user_bp)
         app.register_blueprint(auth_bp)
         app.register_blueprint(document_bp)
-        app.register_blueprint(file_bp)
         app.register_blueprint(invitation_bp)
 
         return app

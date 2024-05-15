@@ -1,8 +1,11 @@
+import os
 import logging
-from flask import request, jsonify, Blueprint
+from flask import request, jsonify, send_file, Blueprint
 from mongoengine.errors import DoesNotExist, NotUniqueError
+from werkzeug.utils import secure_filename
 from marshmallow import ValidationError
 
+from file_manager.ifile_manager import IFileManager
 from errors import AuthorizationError
 from auth.decorators import token_required
 from services import document_service
@@ -12,7 +15,7 @@ from models.pdf_document import PDFDocument
 from schemas.pdf_document_schema import CreatePDFDocumentSchema, UpdatePDFDocumentSchema
 
 
-def create_document_bp():
+def create_document_bp(file_manager: IFileManager):
     document_bp = Blueprint('document', __name__, url_prefix='/api/documents')
 
     @document_bp.route('/<document_id>', methods=['GET'])
@@ -29,18 +32,68 @@ def create_document_bp():
             logging.error(e)
             return jsonify({'error': str(e)}), 500
 
+    @document_bp.route('/<document_id>', methods=['GET'])
+    @token_required
+    def download_document(user: User, document_id: int):
+        try:
+            document = document_service.get_document_check_access(document_id, user.id)
+            file_path = document.file_path
+
+            if not file_manager.file_exists(file_path):
+                return jsonify({'error': 'File not found'}), 404
+
+            file_stream = file_manager.download_file(file_path)
+            if not file_stream:
+                return jsonify({'error': 'File not found'}), 404
+
+            filename = os.path.basename(file_path)
+            return send_file(
+                file_stream,
+                download_name=filename,
+                as_attachment=True
+            )
+            return jsonify({'data': document.to_mongo().to_dict()}), 200
+        except DoesNotExist:
+            return jsonify({'error': 'Document not found'}), 404
+        except AuthorizationError as e:
+            return jsonify({'error': str(e)}), 403
+        except Exception as e:
+            logging.error(e)
+            return jsonify({'error': str(e)}), 500
+
     @document_bp.route('/', methods=['POST'])
     @token_required
     def create_document(user: User):
-        data = request.get_json()
+        file = request.files.get('file')
+        data = request.form
+
+        if not file:
+            return jsonify({'error': 'Missing required fields'}), 400
+
+        if not file.filename.endswith('.pdf'):
+            return jsonify({'error': 'Only PDF files are allowed'}), 400
+
         try:
+            # Validate the document
             schema = CreatePDFDocumentSchema()
             validated_data = schema.load(data)
-            document = document_service.create_document(
-                    str(user.id),
-                    **validated_data
-            )
-            return jsonify({'data': document.to_mongo().to_dict()}), 201
+
+            # Validate that the filename is OK
+            file_path = secure_filename(validated_data['file_path'])
+            validated_data['file_path'] = file_path
+
+            if file_manager.file_exists(file_path):
+                return jsonify({'error': 'File already exists'}), 400
+
+            upload_succeeded = file_manager.upload_file(file, file_path)
+            if upload_succeeded:
+                document = document_service.create_document(
+                        str(user.id),
+                        **validated_data
+                )
+                return jsonify({'data': document.to_mongo().to_dict()}), 201
+            else:
+                return jsonify({'error': 'Upload failed'}), 500
         except NotUniqueError:
             return jsonify({'error': 'Document already exists'}), 409
         except ValidationError as e:
@@ -54,7 +107,8 @@ def create_document_bp():
     def update_document(user: User, document_id: int):
         data = request.get_json()
         try:
-            schema = CreatePDFDocumentSchema()
+            # TODO - update s3 key
+            schema = UpdatePDFDocumentSchema()
             validated_data = schema.load(data)
             document = document_service.get_document_check_access(document_id, user.id)
 
@@ -78,6 +132,12 @@ def create_document_bp():
     def delete_document(user: User, document_id: int):
         try:
             document = document_service.get_document_check_access(document_id, user.id)
+            file_path = document.file_path
+
+            if not file_manager.file_exists(file_path):
+                return jsonify({'error': 'File not found'}), 404
+
+            file_manager.delete_file(file_path)
             document_service.delete_document(document)
             return jsonify({'data': 'Document deleted successfully'}), 200
         except DoesNotExist:
