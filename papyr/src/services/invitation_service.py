@@ -14,7 +14,7 @@ def get_invitation(invitation_id: ObjectId) -> Invitation:
 def get_invitation_check_access(invitation_id: int, user_id: ObjectId) -> Invitation:
     invitation = Invitation.objects(id=ObjectId(invitation_id)).get()
     if not invitation.has_access(user_id):
-        raise AuthorizationError('You are not authorized to access this resource')
+        raise AuthorizationError()
     return invitation
 
 

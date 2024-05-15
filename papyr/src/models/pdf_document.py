@@ -9,7 +9,6 @@ from const import DocumentStatus
 class PDFDocument(Document):
     owner = ReferenceField(User, required=True)
     file_path = StringField(required=True)
-    title = StringField(required=True)
     description = StringField()
     status = StringField(default=DocumentStatus.ACTIVE)
     collaborators = ListField(ReferenceField(User))
@@ -20,9 +19,6 @@ class PDFDocument(Document):
 
     meta = {
         'collection': 'pdf_documents',
-        'indexes': [
-            'title',
-        ],
         'ordering': ['-created_at']
     }
 

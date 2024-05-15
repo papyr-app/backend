@@ -9,6 +9,13 @@
     - [X] Put decorators on the right routes
 - [X] Test and validate endpoints using Postman
 - [X] Create validation schemas
+- [ ] Create virtual paths collection
+    - [ ] Create model VirtualPath
+        - user
+        - document
+        - virtual path
+    - [ ] Create/update/delete VirtualPath when user organizes files
+    - [ ] Only do this for collaborator documents, use original path for owner
 - [ ] Create frontend design in Figma
 - [ ] Better logging
 - [ ] Implement MVP frontend design (ugly)

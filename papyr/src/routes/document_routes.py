@@ -57,6 +57,10 @@ def create_document_bp():
             schema = CreatePDFDocumentSchema()
             validated_data = schema.load(data)
             document = document_service.get_document_check_access(document_id, user.id)
+
+            if user != document.owner:
+                return jsonify({'error': 'Only the document owner can edit the document'}), 403
+
             document = document_service.update_document(document, validated_data)
             return jsonify({'data': document.to_mongo().to_dict()}), 201
         except DoesNotExist:
@@ -96,6 +100,13 @@ def create_document_bp():
         try:
             document = document_service.get_document_check_access(document_id, user.id)
             user = user_service.get_user_by_email(email)
+
+            if user in document.collaborators:
+                return jsonify({'error': 'User is already a collaborator'}), 400
+
+            if user == document.owner:
+                return jsonify({'error': 'User owns the document'}), 400
+
             document_service.add_collaborator(user, document)
             return jsonify({'data': 'Collaborator added'}), 201
         except PDFDocument.DoesNotExist:
@@ -120,6 +131,13 @@ def create_document_bp():
         try:
             document = document_service.get_document_check_access(document_id, user.id)
             user = user_service.get_user_by_email(email)
+
+            if user not in document.collaborators:
+                return jsonify({'error': 'User is not a collaborator'}), 400
+
+            if user == document.owner:
+                return jsonify({'error': 'User owns the document'}), 400
+
             document_service.remove_collaborator(user, document)
             return jsonify({'data': 'Collaborator removed'}), 201
         except PDFDocument.DoesNotExist:
@@ -153,16 +171,22 @@ def create_document_bp():
 
     @document_bp.route('/<document_id>/share/<share_token>', methods=['POST'])
     @token_required
-    def add_collaborator_via_token(user: User, document_id: int, share_token: str):
+    def use_share_token(user: User, document_id: int, share_token: str):
         try:
             document = document_service.get_document_check_access(document_id, user.id)
             user = user_service.get_user_by_id(user.id)
 
-            if document.can_share and share_token == document.share_token:
-                document_service.add_collaborator(user, document)
-                return jsonify({'data': 'User added as collaborator'}), 201
-            else:
+            if user not in document.collaborators:
+                return jsonify({'error': 'User is already a collaborator'}), 400
+
+            if user == document.owner:
+                return jsonify({'error': 'User owns the document'}), 400
+
+            if not document.can_share or share_token != document.share_token:
                 return jsonify({'error': 'Document is not shareable or token is incorrect'}), 400
+
+            document_service.add_collaborator(user, document)
+            return jsonify({'data': 'User added as collaborator'}), 201
         except PDFDocument.DoesNotExist:
             return jsonify({'error': 'Document not found'}), 404
         except User.DoesNotExist:
