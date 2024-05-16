@@ -2,7 +2,6 @@ from typing import List, Dict
 from bson import ObjectId
 from datetime import datetime
 from mongoengine import Q
-from mongoengine.errors import NotUniqueError
 
 from utils import helper
 from errors import AuthorizationError
@@ -25,13 +24,10 @@ def get_user_documents(user_id: ObjectId) -> List[PDFDocument]:
     return list(PDFDocument.objects(Q(owner=user_id) | Q(collaborators=user_id)).all())
 
 
-def create_document(owner_id: int, file_path: str, description: str) -> PDFDocument:
-    if PDFDocument.objects(file_path=file_path).first():
-        raise NotUniqueError('This document already exists')
-
+def create_document(owner_id: int, title: str, description: str) -> PDFDocument:
     new_document = PDFDocument(
         owner=owner_id,
-        file_path=file_path,
+        title=title,
         description=description
     )
     new_document.save()
@@ -39,9 +35,8 @@ def create_document(owner_id: int, file_path: str, description: str) -> PDFDocum
 
 
 def update_document(document: PDFDocument, document_data: Dict) -> PDFDocument:
-    # TODO - make sure path is OK
+    document.title = document_data.get('title', document.title)
     document.description = document_data.get('description', document.description)
-    document.file_path = document_data.get('file_path', document.file_path)
     document.can_share = document_data.get('can_share', document.can_share)
     document.updated_at = datetime.utcnow()
     document.save()

@@ -10,11 +10,29 @@ from models.user import User
 def create_virtual_path_bp():
     virtual_path_bp = Blueprint('virtual_path', __name__, url_prefix='/api/virtual_path')
 
+    @virtual_path_bp.route('', methods=['POST'])
+    @token_required
+    def create_virtual_path(user: User):
+        data = request.json
+        try:
+            # TODO - use create schema
+            # TODO - validate and clean path
+            virtual_path = virtual_path_service.create_virtual_path()
+            virtual_path = virtual_path_service.update_virtual_path(virtual_path, data)
+            return jsonify({'data': virtual_path.to_mongo().to_dict()}), 200
+        except DoesNotExist:
+            return jsonify({"error": "Virtual path does not exist"}), 404
+        except Exception as e:
+            logging.error(e)
+            return jsonify({'error': str(e)}), 500
+
     @virtual_path_bp.route('/<virtual_path_id>', methods=['PATCH'])
     @token_required
     def update_virtual_path(user: User, virtual_path_id: str):
         data = request.json
         try:
+            # TODO - use update schema
+            # TODO - validate and clean path
             virtual_path = virtual_path_service.get_user_virtual_path(virtual_path_id)
             virtual_path = virtual_path_service.update_virtual_path(virtual_path, data)
             return jsonify({'data': virtual_path.to_mongo().to_dict()}), 200

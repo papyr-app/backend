@@ -49,15 +49,15 @@ def create_user_bp():
     def get_documents(user: User):
         try:
             documents = document_service.get_user_documents(user.id)
+            documents_list = []
 
-            # If the user is a collaborator, replace the path with their own
             for document in documents:
-                if document.owner != user:
-                    # If they don't have their own path, just use username
-                    virtual_path = virtual_path_service.get_user_virtual_path(user.id, document.id)
-                    document.file_path = virtual_path or user.username
+                virtual_path = virtual_path_service.get_user_virtual_path(user.id, document.id)
+                doc_dict = document.to_mongo().to_dict()
+                doc_dict['file_path'] = virtual_path or document.title
+                documents_list.append(doc_dict)
 
-            return jsonify({'data': [doc.to_mongo().to_dict() for doc in documents]}), 200
+            return jsonify({'data': documents_list}), 200
         except Exception as e:
             logging.error(e)
             return jsonify({'error': str(e)}), 500

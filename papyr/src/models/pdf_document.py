@@ -8,7 +8,7 @@ from const import DocumentStatus
 
 class PDFDocument(Document):
     owner = ReferenceField(User, required=True)
-    file_path = StringField(required=True)
+    title = StringField(required=True)
     description = StringField()
     status = StringField(default=DocumentStatus.ACTIVE)
     collaborators = ListField(ReferenceField(User))

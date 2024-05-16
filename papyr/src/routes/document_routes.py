@@ -34,22 +34,21 @@ def create_document_bp(file_manager: IFileManager):
 
     @document_bp.route('/<document_id>/download', methods=['GET'])
     @token_required
-    def download_document(user: User, document_id: int):
+    def download_document(user: User, document_id: str):
         try:
             document = document_service.get_document_check_access(document_id, user.id)
-            file_path = document.file_path
+            document_key = f'{str(document.id)}.pdf'
 
-            if not file_manager.file_exists(file_path):
+            if not file_manager.file_exists(document_key):
                 return jsonify({'error': 'File not found'}), 404
 
-            file_stream = file_manager.download_file(file_path)
+            file_stream = file_manager.download_file(document_key)
             if not file_stream:
                 return jsonify({'error': 'File not found'}), 404
 
-            filename = os.path.basename(file_path)
             return send_file(
                 file_stream,
-                download_name=filename,
+                download_name=document_key,
                 as_attachment=True
             )
             return jsonify({'data': document.to_mongo().to_dict()}), 200
@@ -76,19 +75,15 @@ def create_document_bp(file_manager: IFileManager):
         try:
             schema = CreatePDFDocumentSchema()
             validated_data = schema.load(data)
+            document = document_service.create_document(
+                    str(user.id),
+                    **validated_data
+            )
 
-            file_path = helper.create_file_path(user.username, validated_data['file_path'], file.filename)
-
-            if file_manager.file_exists(file_path):
-                return jsonify({'error': 'File already exists'}), 400
-
-            upload_succeeded = file_manager.upload_file(file, file_path)
-            if upload_succeeded:
-                document = document_service.create_document(
-                        str(user.id),
-                        **validated_data
-                )
-                return jsonify({'data': document.to_mongo().to_dict()}), 201
+            # TODO - use upload_succeeded to confirm
+            document_key = f'{str(document.id)}.pdf'
+            upload_succeeded = file_manager.upload_file(file, document_key)
+            return jsonify({'data': document.to_mongo().to_dict()}), 201
             return jsonify({'error': 'Upload failed'}), 500
         except NotUniqueError:
             return jsonify({'error': 'Document already exists'}), 409
@@ -103,13 +98,12 @@ def create_document_bp(file_manager: IFileManager):
     def update_document(user: User, document_id: int):
         data = request.get_json()
         try:
-            # TODO - update s3 key
             schema = UpdatePDFDocumentSchema()
             validated_data = schema.load(data)
             document = document_service.get_document_check_access(document_id, user.id)
 
             if user != document.owner:
-                return jsonify({'error': 'Only the document owner can edit the document'}), 403
+                return jsonify({'error': 'Only the owner can edit the document'}), 403
 
             document = document_service.update_document(document, validated_data)
             return jsonify({'data': document.to_mongo().to_dict()}), 201
@@ -133,11 +127,13 @@ def create_document_bp(file_manager: IFileManager):
             if not file_manager.file_exists(file_path):
                 return jsonify({'error': 'File not found'}), 404
 
+            if user != document.owner:
+                return jsonify({'error': 'Only the owner can delete the document'}), 403
+
+            # TODO - use delete_succeeded to confirm
             delete_succeeded = file_manager.delete_file(file_path)
-            if delete_succeeded:
-                document_service.delete_document(document)
-                return jsonify({'data': 'Document deleted successfully'}), 200
-            return jsonify({'error': 'Deletion failed'}), 404
+            document_service.delete_document(document)
+            return jsonify({'data': 'Document deleted successfully'}), 200
         except DoesNotExist:
             return jsonify({'error': 'Document not found'}), 404
         except AuthorizationError as e:
