@@ -230,7 +230,7 @@ def create_document_bp(file_manager: IFileManager):
             document = document_service.get_document_check_access(document_id, user.id)
             user = user_service.get_user_by_id(user.id)
 
-            if user not in document.collaborators:
+            if user in document.collaborators:
                 return jsonify({'error': 'User is already a collaborator'}), 400
 
             if user == document.owner:
