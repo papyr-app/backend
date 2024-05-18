@@ -1,5 +1,12 @@
 {
   "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "@components/*": ["components/*"],
+      "@routes/*": ["routes/*"],
+      "@api/*": ["api/*"],
+      "@customTypes/*": ["types/*"]
+    },
     "target": "es5",
     "lib": [
       "dom",
