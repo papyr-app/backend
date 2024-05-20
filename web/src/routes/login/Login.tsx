@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { LoginUser } from '@customTypes/user';
 import api from '@api/index';
 
 export default function Login() {
-    const [formData, setFormData] = useState({ username: '', password: '' });
+    const [formData, setFormData] = useState<LoginUser>({} as LoginUser);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -23,7 +24,7 @@ export default function Login() {
 
         try {
             const response = await api.auth.login(formData);
-            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('token', response.data);
             navigate('/');
         } catch (err) {
             setError('Invalid username or password');
@@ -63,6 +64,11 @@ export default function Login() {
                     </button>
                 </div>
             </form>
+
+            <div>
+                <p>Don't have an account?</p>
+                <a href="/register">Register</a>
+            </div>
         </div>
     )
 }

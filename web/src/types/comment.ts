@@ -2,7 +2,7 @@ import { PDFDocument } from "./pdf_document";
 import { User } from "./user";
 
 export interface Comment {
-    id: string,
+    _id: string,
     document: PDFDocument;
     user: User;
     text: string;

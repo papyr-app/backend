@@ -1,5 +1,5 @@
 export interface User {
-    id: string,
+    _id: string,
     username: string;
     email: string;
     first_name: string;
@@ -9,6 +9,19 @@ export interface User {
     created_at: Date;
     last_updated: Date;
     last_login: Date;
+}
+
+export interface RegisterUser {
+    username: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    password: string;
+}
+
+export interface LoginUser {
+    username: string;
+    password: string;
 }
 
 export interface UpdateUser {

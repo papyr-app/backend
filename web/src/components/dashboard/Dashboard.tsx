@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import api from '@api/index';
+import { useNavigate } from 'react-router-dom';
 import { PDFDocument } from '@customTypes/pdf_document';
+import api from '@api/index';
 
 export default function Dashboard() {
     const [documents, setDocuments] = useState<PDFDocument[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
        async function fetchDocuments() { 
@@ -13,7 +15,8 @@ export default function Dashboard() {
                 const token = localStorage.getItem('token');
                 if (token) {
                     const data = await api.user.getUserDocuments(token);
-                    setDocuments(data);
+                    console.log(data)
+                    setDocuments(data.data);
                 } else {
                     setError('User is not authenticated');
                 }
@@ -27,28 +30,23 @@ export default function Dashboard() {
         fetchDocuments();
     }, []);
 
+    function goToDocument(id: string) {
+        navigate(`/document/${id}`);
+    };
+
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
-
-    const half = Math.ceil(documents.length / 2);
-    const firstColumn = documents.slice(0, half);
-    const secondColumn = documents.slice(half);
 
     return (
         <div>
             <div>
-                <h2>Column 1</h2>
+                <h2>My documents</h2>
                 <ul>
-                    {firstColumn.map((doc) => (
-                        <li key={doc.id}>{doc.title}</li>
-                    ))}
-                </ul>
-            </div>
-            <div>
-                <h2>Column 2</h2>
-                <ul>
-                    {secondColumn.map((doc) => (
-                        <li key={doc.id}>{doc.title}</li>
+                    {documents.map((doc) => (
+                        <li key={doc._id}>
+                            <p>{doc.title}</p>
+                            <button onClick={() => goToDocument(doc._id)}>Edit/View</button>
+                        </li>
                     ))}
                 </ul>
             </div>

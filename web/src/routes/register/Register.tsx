@@ -1,22 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { RegisterUser } from '@customTypes/user';
 import api from '@api/index';
 
 export default function Register() {
-    const [formData, setFormData] = useState({
-        username: '',
-        email: '',
-        first_name: '',
-        last_name: '',
-        password: ''
-    });
+    const [formData, setFormData] = useState<RegisterUser>({} as RegisterUser);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData((prevFormData) => ({
+        setFormData((prevFormData: RegisterUser) => ({
             ...prevFormData,
             [name]: value,
         }));
@@ -98,6 +93,11 @@ export default function Register() {
                     </button>
                 </div>
             </form>
+
+            <div>
+                <p>Already have an account?</p>
+                <a href="/login">Login</a>
+            </div>
         </div>
     );
 };

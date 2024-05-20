@@ -1,7 +1,7 @@
 import { User } from "./user";
 
 export interface PDFDocument {
-    id: string,
+    _id: string,
     owner: User;
     title: string;
     description?: string;
@@ -13,6 +13,10 @@ export interface PDFDocument {
     updated_at: Date;
 }
 
+export interface CreatePDFDocument {
+    title: string;
+    description?: string;
+}
 
 export interface UpdatePDFDocument {
     title: string;
@@ -20,7 +24,6 @@ export interface UpdatePDFDocument {
     status: DocumentStatus;
     can_share: boolean;
 }
-
 
 enum DocumentStatus {
   Active = "ACTIVE",

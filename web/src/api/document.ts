@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { UpdatePDFDocument } from '@customTypes/pdf_document';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 export const getDocument = async (token: string, documentId: string) => {
   const response = await axios.get(`${API_URL}/documents/${documentId}`, {
@@ -12,6 +13,7 @@ export const getDocument = async (token: string, documentId: string) => {
 export const downloadDocument = async (token: string, documentId: string) => {
   const response = await axios.get(`${API_URL}/documents/${documentId}/download`, {
     headers: { Authorization: token },
+    responseType: 'arraybuffer',
   });
   return response.data;
 };
@@ -23,7 +25,7 @@ export const createDocument = async (token: string, formData: FormData) => {
   return response.data;
 };
 
-export const updateDocument = async (token: string, documentId: string, updateData: { can_share: boolean }) => {
+export const updateDocument = async (token: string, documentId: string, updateData: UpdatePDFDocument) => {
   const response = await axios.patch(`${API_URL}/documents/${documentId}`, updateData, {
     headers: { Authorization: token },
   });
