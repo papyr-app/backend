@@ -1,26 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import './Header.css';
 
 export default function Header() {
-    function LoginLogout() {
-        const token = localStorage.getItem('token');
-        if (token) {
-            return <a href="/logout">Logout</a>
-        } else {
-            return <a href="/login">Login</a>
-        }
-    }
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+    // TODO - isLoggedIn should be set without having to reload page
+    useEffect(() => {
+        setIsLoggedIn(localStorage.getItem('token') !== null && localStorage.getItem('token') !== "");
+    }, []);
 
     return (
         <header>
             <div className="logo">
                 <a href="/">Logo</a>
             </div>
-            <div className="content">
-                <p>Some content here</p>
-            </div>
             <div className="login">
-                {LoginLogout()}
+                <a href={isLoggedIn ? "/logout" : "/login"}>
+                    {isLoggedIn ? "Logout" : "Login"}
+                </a>
             </div>
         </header>
-    )
+    );
 }
+

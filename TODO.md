@@ -19,9 +19,9 @@
 - [X] Create frontend design in Figma
 - [ ] Better logging
 - [ ] Implement MVP frontend design (ugly)
-    - [ ] Login / Register
-    - [ ] Dashboard
-    - [ ] Review space
+    - [X] Login / Register
+    - [X] Dashboard
+    - [X] Review space
     - [ ] Profile (maybe)
 - [ ] Connect frontend and backend
 - [ ] Consistent test data
