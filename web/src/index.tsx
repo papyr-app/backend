@@ -9,6 +9,7 @@ import Logout from '@routes/logout/Logout';
 import Register from '@routes/register/Register';
 import PageNotFound from '@routes/page_not_found/PageNotFound';
 import Workspace from '@routes/workspace/Workspace';
+import UploadDocument from '@routes/upload_document/UploadDocument';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(
@@ -20,6 +21,7 @@ root.render(
             <Routes>
                 <Route path="/" element={<><Header /><Outlet /></>}>
                     <Route path="/" element={<Home />} />
+                    <Route path="/document/new" element={<UploadDocument />} />
                     <Route path="/document/:documentId" element={<Workspace />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/login" element={<Login />} />

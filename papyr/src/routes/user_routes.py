@@ -53,7 +53,7 @@ def create_user_bp():
 
             for document in documents:
                 virtual_path = virtual_path_service.get_user_virtual_path(user.id, document.id)
-                doc_dict = document.to_mongo().to_dict()
+                doc_dict = document.to_dict()
                 doc_dict['file_path'] = virtual_path or document.title
                 documents_list.append(doc_dict)
 

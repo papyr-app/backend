@@ -3,7 +3,6 @@ from bson import ObjectId
 from datetime import datetime
 from mongoengine import Q
 
-from utils import helper
 from errors import AuthorizationError
 from models.pdf_document import PDFDocument
 from models.user import User

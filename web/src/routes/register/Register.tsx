@@ -9,9 +9,9 @@ export default function Register() {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         const { name, value } = e.target;
-        setFormData((prevFormData: RegisterUser) => ({
+        setFormData((prevFormData) => ({
             ...prevFormData,
             [name]: value,
         }));

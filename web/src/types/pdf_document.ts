@@ -16,6 +16,7 @@ export interface PDFDocument {
 export interface CreatePDFDocument {
     title: string;
     description?: string;
+    file: File | null;
 }
 
 export interface UpdatePDFDocument {

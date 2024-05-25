@@ -1,10 +1,8 @@
-import os
 import logging
 from flask import request, jsonify, send_file, Blueprint
 from mongoengine.errors import DoesNotExist, NotUniqueError
 from marshmallow import ValidationError
 
-from utils import helper
 from file_manager.ifile_manager import IFileManager
 from errors import AuthorizationError
 from auth.decorators import token_required
@@ -60,9 +58,12 @@ def create_document_bp(file_manager: IFileManager):
             logging.error(e)
             return jsonify({'error': str(e)}), 500
 
-    @document_bp.route('/', methods=['POST'])
+    @document_bp.route('', methods=['POST'])
     @token_required
     def create_document(user: User):
+        print()
+        print("got it")
+        print()
         file = request.files.get('file')
         data = request.form
 

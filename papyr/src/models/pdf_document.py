@@ -25,3 +25,15 @@ class PDFDocument(Document):
     def has_access(self, user_id):
         user_id = str(user_id)
         return str(self.owner.id) == user_id or user_id in [str(collaborator.id) for collaborator in self.collaborators]
+
+    def to_dict(self):
+        data = self.to_mongo().to_dict()
+
+        if isinstance(self.owner, User):
+            data['owner'] = self.owner.to_dict()
+
+        if isinstance(self.collaborators, list):
+            data['collaborators'] = [collaborator.to_dict(
+            ) for collaborator in self.collaborators if isinstance(collaborator, User)]
+
+        return data

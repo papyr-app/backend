@@ -36,3 +36,7 @@ class User(Document):
     def record_login(self):
         self.last_login = datetime.utcnow()
         self.save()
+
+    def to_dict(self):
+        data = self.to_mongo().to_dict()
+        return data

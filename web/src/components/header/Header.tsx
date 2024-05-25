@@ -12,7 +12,9 @@ export default function Header() {
     return (
         <header>
             <div className="logo">
-                <a href="/">Logo</a>
+                <a href="/">
+                    <img src="feather.png" />
+                </a>
             </div>
             <div className="login">
                 <a href={isLoggedIn ? "/logout" : "/login"}>
