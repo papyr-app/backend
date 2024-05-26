@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 import Header from '@components/header/Header';
 import Home from '@routes/home/Home';
@@ -11,6 +10,7 @@ import PageNotFound from '@routes/page_not_found/PageNotFound';
 import Workspace from '@routes/workspace/Workspace';
 import UploadDocument from '@routes/upload_document/UploadDocument';
 import reportWebVitals from './reportWebVitals';
+import './global.scss';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement

@@ -2,6 +2,7 @@ import React, { useState, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
 import { CreatePDFDocument } from '@customTypes/pdf_document';
 import api from '@api/index';
+import './UploadDocument.scss';
 
 export default function UploadDocument() {
     const [formData, setFormData] = useState<CreatePDFDocument>({
@@ -54,10 +55,10 @@ export default function UploadDocument() {
     };
 
     return (
-        <div className="upload-document">
+        <div className="upload-container">
             <h1>Upload PDF Document</h1>
-            <form onSubmit={handleSubmit}>
-                <div>
+            <form className="form" onSubmit={handleSubmit}>
+                <div className="form-group">
                     <label htmlFor="title">Title:</label>
                     <input
                         type="text"
@@ -67,7 +68,7 @@ export default function UploadDocument() {
                         required
                     />
                 </div>
-                <div>
+                <div className="form-group">
                     <label htmlFor="description">Description:</label>
                     <input
                         id="description"
@@ -75,7 +76,7 @@ export default function UploadDocument() {
                         onChange={handleChange}
                     />
                 </div>
-                <div>
+                <div className="form-group">
                     <label htmlFor="file">Upload PDF:</label>
                     <input
                         type="file"
@@ -85,7 +86,9 @@ export default function UploadDocument() {
                         required
                     />
                 </div>
-                <button type="submit">Upload Document</button>
+                <div className="form-group">
+                    <button className="button-primary" type="submit">Upload Document</button>
+                </div>
             </form>
         </div>
     );

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LoginUser } from '@customTypes/user';
 import api from '@api/index';
+import './Login.scss';
 
 export default function Login() {
     const [formData, setFormData] = useState<LoginUser>({} as LoginUser);
@@ -34,10 +35,10 @@ export default function Login() {
     };
 
     return (
-        <div>
+        <div className="login-container">
             <h2>Login</h2>
-            <form onSubmit={handleLogin}>
-                <div>
+            <form className="form" onSubmit={handleLogin}>
+                <div className="form-group">
                     <label htmlFor="username">Username:</label>
                     <input
                         type="text"
@@ -47,7 +48,7 @@ export default function Login() {
                         onChange={handleChange}
                     />
                 </div>
-                <div>
+                <div className="form-group">
                     <label htmlFor="password">Password:</label>
                     <input
                         type="password"
@@ -57,18 +58,16 @@ export default function Login() {
                         onChange={handleChange}
                     />
                 </div>
-                {error && <div style={{ color: 'red' }}>{error}</div>}
-                <div>
-                    <button type="submit" disabled={loading}>
+                {error && <div className="error-message">{error}</div>}
+                <div className="form-group">
+                    <button className="button-primary" type="submit" disabled={loading}>
                         {loading ? 'Logging in...' : 'Login'}
                     </button>
                 </div>
             </form>
-
             <div>
-                <p>Don't have an account?</p>
-                <a href="/register">Register</a>
+                <p>Don't have an account? <a href="/register">Register</a></p>
             </div>
         </div>
-    )
+    );
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PDFDocument } from '@customTypes/pdf_document';
 import api from '@api/index';
+import './Dashboard.scss';
 
 export default function Dashboard() {
     const [documents, setDocuments] = useState<PDFDocument[]>([]);
@@ -10,13 +11,13 @@ export default function Dashboard() {
     const navigate = useNavigate();
 
     useEffect(() => {
-       async function fetchDocuments() {
+        async function fetchDocuments() {
             try {
                 const token = localStorage.getItem('token');
                 if (token) {
                     const data = await api.user.getUserDocuments(token);
                     console.log(data)
-                   setDocuments(data.data);
+                    setDocuments(data.data);
                 } else {
                     setError('User is not authenticated');
                 }
@@ -30,8 +31,8 @@ export default function Dashboard() {
         fetchDocuments();
     }, []);
 
-    function goToDocument(id: string) {
-        navigate(`/document/${id}`);
+    function editDocument(id: string) {
+        // TODO
     }
 
     function shareDocument(shareToken: string) {
@@ -47,28 +48,28 @@ export default function Dashboard() {
     if (error) return <div>Error: {error}</div>;
 
     return (
-        <div>
-            <div>
+        <div className="dashboard-container">
+            <div className="dashboard-header">
                 <h2>My Documents</h2>
-                <button onClick={uploadDocument}>Upload Document</button>
-                <ul>
-                    {documents.map((doc) => (
-                        <li key={doc._id} style={{ border: '1px solid #ccc', padding: '10px', margin: '10px 0' }}>
-                            <h3>{doc.title}</h3>
-                            <p>{doc.description}</p>
-                            <p>Status: {doc.status}</p>
-                            <p>Owner: {doc.owner.first_name} {doc.owner.last_name} ({doc.owner.username})</p>
-                            <p>Created at: {new Date(doc.created_at).toLocaleDateString()}</p>
-                            <p>Updated at: {new Date(doc.updated_at).toLocaleDateString()}</p>
-                            {doc.collaborators && doc.collaborators.length > 0 && (
-                                <p>Collaborators: {doc.collaborators.map(col => `${col.first_name} ${col.last_name}`).join(', ')}</p>
-                            )}
-                            <button onClick={() => goToDocument(doc._id)}>Edit/View</button>
-                            <button onClick={() => shareDocument(doc.share_token)}>Share</button>
-                        </li>
-                    ))}
-                </ul>
+                <button className='button-primary' onClick={uploadDocument}>Upload Document</button>
             </div>
+            <ul className="document-list">
+                {documents.map((doc) => (
+                    <li key={doc._id}>
+                        <a href={`document/${doc._id}`}>{doc.title}</a>
+                        <p>{doc.description}</p>
+                        <p>Status: {doc.status}</p>
+                        <p>Owner: {doc.owner.first_name} {doc.owner.last_name} ({doc.owner.username})</p>
+                        <p>Created at: {new Date(doc.created_at).toLocaleDateString()}</p>
+                        <p>Updated at: {new Date(doc.updated_at).toLocaleDateString()}</p>
+                        {doc.collaborators && doc.collaborators.length > 0 && (
+                            <p>Collaborators: {doc.collaborators.map(col => `${col.first_name} ${col.last_name}`).join(', ')}</p>
+                        )}
+                        <button className='button-secondary' onClick={() => editDocument(doc._id)}>Edit</button>
+                        <button className='button-secondary' onClick={() => shareDocument(doc.share_token)}>Share</button>
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 }

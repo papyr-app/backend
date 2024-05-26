@@ -1,0 +1,17 @@
+@import '../../global.scss';
+
+.register-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.error-message {
+  color: $error-color;
+  margin-bottom: 15px;
+}

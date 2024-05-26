@@ -46,6 +46,7 @@
         ]
     },
     "devDependencies": {
-        "craco-alias": "^3.0.1"
+        "craco-alias": "^3.0.1",
+        "node-sass": "^7.0.3"
     }
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './Header.css';
+import './Header.scss';
 
 export default function Header() {
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -17,7 +17,7 @@ export default function Header() {
                 </a>
             </div>
             <div className="login">
-                <a href={isLoggedIn ? "/logout" : "/login"}>
+                <a className="link" href={isLoggedIn ? "/logout" : "/login"}>
                     {isLoggedIn ? "Logout" : "Login"}
                 </a>
             </div>

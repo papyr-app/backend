@@ -1,0 +1,160 @@
+@import url('https://fonts.googleapis.com/css2?family=Chivo+Mono:ital,wght@0,100..900;1,100..900&display=swap');
+
+//  --- Global stuff ---
+$background-color: #ffffff;
+$primary-color: #c9f4c2;
+$secondary-color: #edc2f4;
+$primary-hover-color: darken($primary-color, 10%);
+$secondary-hover-color: darken($primary-color, 10%);
+$primary-active-color: lighten($primary-color, 10%);
+$secondary-active-color: lighten($primary-color, 10%);
+$error-color: red;
+$font-family: "Chivo Mono", monospace;
+
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+body {
+  font-family: $font-family;
+  background-color: $background-color;
+  color: #000;
+  margin: 0;
+  padding: 0;
+}
+
+//  --- Button specifics ---
+$button-text-color: #fff;
+$button-padding: 10px 20px;
+$button-font-size: 16px;
+$button-border-radius: 0.75em;
+$transition-duration: 0.1s;
+
+@mixin button-styles($background-color, $hover-background-color) {
+  font-family: $font-family;
+  text-transform: lowercase;
+  background-color: $background-color;
+  color: $button-text-color;
+  padding: $button-padding;
+  font-size: $button-font-size;
+  border: none;
+  border-radius: $button-border-radius;
+  cursor: pointer;
+  transition: transform $transition-duration ease-in-out, box-shadow $transition-duration ease-in-out;
+
+  &:hover {
+    background-color: $hover-background-color;
+    transform: translate(-2px, -2px);
+  }
+
+  &:active {
+    transform: scale(1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.button-primary {
+  @include button-styles(#000, #000);
+}
+
+.button-secondary {
+  @include button-styles(#aaa, #aaa);
+}
+
+//  --- Anchor tag specifics ---
+.link {
+  color: $primary-color;
+  text-decoration: none;
+
+  &:hover {
+    color: $primary-hover-color;
+    border-bottom: 2px solid $primary-hover-color;
+  }
+
+  &:active {
+    color: $primary-active-color;
+    border-bottom: 2px solid $primary-active-color;
+  }
+
+  &:focus {
+    outline: none;
+    border-bottom: 2px solid $primary-hover-color;
+  }
+}
+
+//  --- Text area and input ---
+$input-border-color: #ccc;
+$input-focus-border-color: #3498db;
+$input-hover-border-color: darken($input-border-color, 10%);
+$input-background-color: #fff;
+$input-text-color: #333;
+$input-padding: 10px;
+$input-font-size: 16px;
+$input-border-radius: 4px;
+$transition-duration: 0.1s;
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+textarea {
+  display: block;
+  width: 100%;
+  padding: $input-padding;
+  font-size: $input-font-size;
+  color: $input-text-color;
+  background-color: $input-background-color;
+  border: 1px solid $input-border-color;
+  border-radius: $input-border-radius;
+  transition: border-color $transition-duration ease-in-out, box-shadow $transition-duration ease-in-out;
+
+  &:focus {
+    border-color: $input-focus-border-color;
+    box-shadow: 0 0 5px rgba($input-focus-border-color, 0.5);
+    outline: none;
+  }
+
+  &:hover {
+    border-color: $input-hover-border-color;
+  }
+
+  &::placeholder {
+    color: lighten($input-text-color, 20%);
+  }
+}
+
+// --- Forms ---
+
+.form {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 15px;
+  text-align: left;
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  input {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+}
+

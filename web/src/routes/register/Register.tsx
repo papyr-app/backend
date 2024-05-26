@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RegisterUser } from '@customTypes/user';
 import api from '@api/index';
+import './Register.scss';
 
 export default function Register() {
     const [formData, setFormData] = useState<RegisterUser>({} as RegisterUser);
@@ -33,10 +34,10 @@ export default function Register() {
     };
 
     return (
-        <div>
+        <div className='register-container'>
             <h2>Register</h2>
-            <form onSubmit={handleRegister}>
-                <div>
+            <form className='form' onSubmit={handleRegister}>
+                <div className="form-group">
                     <label htmlFor="username">Username:</label>
                     <input
                         type="text"
@@ -46,7 +47,7 @@ export default function Register() {
                         onChange={handleChange}
                     />
                 </div>
-                <div>
+                <div className="form-group">
                     <label htmlFor="email">Email:</label>
                     <input
                         type="email"
@@ -56,7 +57,7 @@ export default function Register() {
                         onChange={handleChange}
                     />
                 </div>
-                <div>
+                <div className="form-group">
                     <label htmlFor="firstName">First Name:</label>
                     <input
                         type="text"
@@ -66,7 +67,7 @@ export default function Register() {
                         onChange={handleChange}
                     />
                 </div>
-                <div>
+                <div className="form-group">
                     <label htmlFor="lastName">Last Name:</label>
                     <input
                         type="text"
@@ -76,7 +77,7 @@ export default function Register() {
                         onChange={handleChange}
                     />
                 </div>
-                <div>
+                <div className="form-group">
                     <label htmlFor="password">Password:</label>
                     <input
                         type="password"
@@ -86,17 +87,16 @@ export default function Register() {
                         onChange={handleChange}
                     />
                 </div>
-                {error && <div style={{ color: 'red' }}>{error}</div>}
-                <div>
-                    <button type="submit" disabled={loading}>
+                {error && <div className='error-message'>{error}</div>}
+                <div className="form-group">
+                    <button className='button-primary' type="submit" disabled={loading}>
                         {loading ? 'Registering...' : 'Register'}
                     </button>
                 </div>
             </form>
 
             <div>
-                <p>Already have an account?</p>
-                <a href="/login">Login</a>
+                <p>Already have an account? <a href="/login">Login</a></p>
             </div>
         </div>
     );
