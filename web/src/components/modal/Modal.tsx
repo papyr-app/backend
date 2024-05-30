@@ -1,4 +1,4 @@
-import React  from 'react';
+import React, { useEffect } from 'react';
 import './Modal.scss';
 
 interface ModalProps {
@@ -8,6 +8,24 @@ interface ModalProps {
 }
 
 export default function Modal(props: ModalProps) {
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape' && props.onClose) {
+                props.onClose();
+            }
+        };
+
+        if (props.show) {
+            document.addEventListener('keydown', handleKeyDown);
+        } else {
+            document.removeEventListener('keydown', handleKeyDown);
+        }
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [props.show, props.onClose]);
+
     if (!props.show) {
         return null;
     }
@@ -15,8 +33,8 @@ export default function Modal(props: ModalProps) {
     return (
         <div className="modal-overlay">
             <div className="modal">
-                <button className='button-primary' onClick={props.onClose}>Close</button>
                 {props.children}
+                <button className='button-primary' onClick={props.onClose}>Close</button>
             </div>
         </div>
     );

@@ -1,0 +1,22 @@
+@import '../../global.scss';
+
+.share-component {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 400px;
+  margin: 0 auto;
+
+  .share-link, .share-email {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .share-input, .email-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+}

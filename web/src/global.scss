@@ -73,7 +73,7 @@ $transition-duration: 0.1s;
   @include button-styles($secondary-color, $secondary-hover-color);
 }
 
-//  --- Anchor tag specifics ---
+//  --- Anchor tag / link specifics ---
 .link {
   color: $primary-color;
   text-decoration: none;

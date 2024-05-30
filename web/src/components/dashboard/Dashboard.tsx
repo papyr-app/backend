@@ -1,14 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PDFDocument } from '@customTypes/pdf_document';
-import { SlShare, SlPencil, SlCloudUpload } from "react-icons/sl";
+import { SlShare, SlPencil, SlCloudUpload, SlDocs } from "react-icons/sl";
+import ShareDocument from '@components/share_document/ShareDocument';
+import EditDocument from '@components/edit_document/EditDocument';
+import Modal from '@components/modal/Modal';
 import api from '@api/index';
 import './Dashboard.scss';
 
 export default function Dashboard() {
     const [documents, setDocuments] = useState<PDFDocument[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedDocument, setSelectedDocument] = useState<PDFDocument | null>(null);
+    const [showShareModal, setShowShareModal] = useState<boolean>(false);
+    const [showEditModal, setShowEditModal] = useState<boolean>(false);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -31,16 +38,28 @@ export default function Dashboard() {
         fetchDocuments();
     }, []);
 
-    function editDocument(id: string) {
-        // TODO
-    }
-
-    function shareDocument(shareToken: string) {
-        // TODO
-    }
-
     function uploadDocument() {
         navigate(`/document/new`);
+    }
+
+    function handleShowShareModal(document: PDFDocument) {
+        setSelectedDocument(document);
+        setShowShareModal(true);
+    }
+
+    function handleCloseShareModal() {
+        setSelectedDocument(null);
+        setShowShareModal(false);
+    }
+
+    function handleShowEditModal(document: PDFDocument) {
+        setSelectedDocument(document);
+        setShowEditModal(true);
+    }
+
+    function handleCloseEditModal() {
+        setSelectedDocument(null);
+        setShowEditModal(false);
     }
 
     if (loading) return <div>Loading...</div>;
@@ -66,15 +85,25 @@ export default function Dashboard() {
                         {doc.collaborators && doc.collaborators.length > 0 && (
                             <p>Collaborators: {doc.collaborators.map(col => `${col.first_name} ${col.last_name}`).join(', ')}</p>
                         )}
-                        <button className='button-secondary' onClick={() => editDocument(doc._id)}>
+                        <button className='button-secondary' onClick={() => handleShowEditModal(doc)}>
                             <SlPencil className='icon' /> Edit
                         </button>
-                        <button className='button-secondary' onClick={() => shareDocument(doc.share_token)}>
+                        <button className='button-secondary' onClick={() => handleShowShareModal(doc)}>
                             <SlShare className='icon' /> Share
                         </button>
                     </li>
                 ))}
             </ul>
+
+            <Modal show={showShareModal} onClose={handleCloseShareModal}>
+                <h2>Share</h2>
+                {selectedDocument && <ShareDocument document={selectedDocument} />}
+            </Modal>
+
+            <Modal show={showEditModal} onClose={handleCloseEditModal}>
+                <h2>Edit</h2>
+                {selectedDocument && <EditDocument document={selectedDocument} />}
+            </Modal>
         </div>
     );
 }
