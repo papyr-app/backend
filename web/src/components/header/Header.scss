@@ -1,35 +1,37 @@
+@import '../../global.scss';
+
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: $quaternary-color;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
-.logo {
+  .logo {
     display: flex;
     align-items: center;
-}
+  }
 
-.logo img {
+  .logo img {
     height: 50px;
     margin-left: 10px;
-}
+  }
 
-.logo a {
+  .logo a {
     font-size: 24px;
     font-weight: bold;
     color: #333;
     text-decoration: none;
-}
+  }
 
-.login a {
+  .login a {
     font-size: 16px;
     color: #007BFF;
     text-decoration: none;
-}
+  }
 
-.login a:hover {
+  .login a:hover {
     text-decoration: underline;
+  }
 }

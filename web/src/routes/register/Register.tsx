@@ -5,7 +5,13 @@ import api from '@api/index';
 import './Register.scss';
 
 export default function Register() {
-    const [formData, setFormData] = useState<RegisterUser>({} as RegisterUser);
+    const [formData, setFormData] = useState<RegisterUser>({
+        username: '',
+        email: '',
+        first_name: '',
+        last_name: '',
+        password: ''
+    });
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -18,7 +24,7 @@ export default function Register() {
         }));
     };
 
-    async function handleRegister(e: React.FormEvent){
+    async function handleRegister(e: React.FormEvent) {
         e.preventDefault();
         setLoading(true);
         setError(null);
@@ -58,21 +64,21 @@ export default function Register() {
                     />
                 </div>
                 <div className="form-group">
-                    <label htmlFor="firstName">First Name:</label>
+                    <label htmlFor="first_name">First Name:</label>
                     <input
                         type="text"
-                        id="firstName"
-                        name="firstName"
+                        id="first_name"
+                        name="first_name"
                         value={formData.first_name}
                         onChange={handleChange}
                     />
                 </div>
                 <div className="form-group">
-                    <label htmlFor="lastName">Last Name:</label>
+                    <label htmlFor="last_name">Last Name:</label>
                     <input
                         type="text"
-                        id="lastName"
-                        name="lastName"
+                        id="last_name"
+                        name="last_name"
                         value={formData.last_name}
                         onChange={handleChange}
                     />

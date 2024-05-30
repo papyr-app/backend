@@ -2,20 +2,16 @@
 
 //  --- Global stuff ---
 $background-color: #ffffff;
-$primary-color: #c9f4c2;
-$secondary-color: #edc2f4;
+$primary-color: #0b2447;
+$secondary-color: #19376d;
+$tertiary-color: #576cbc;
+$quaternary-color: #ffffff;
 $primary-hover-color: darken($primary-color, 10%);
-$secondary-hover-color: darken($primary-color, 10%);
+$secondary-hover-color: darken($secondary-color, 10%);
 $primary-active-color: lighten($primary-color, 10%);
-$secondary-active-color: lighten($primary-color, 10%);
+$secondary-active-color: lighten($secondary-color, 10%);
 $error-color: red;
 $font-family: "Chivo Mono", monospace;
-
-@mixin flex-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
 body {
   font-family: $font-family;
@@ -33,20 +29,30 @@ $button-border-radius: 0.75em;
 $transition-duration: 0.1s;
 
 @mixin button-styles($background-color, $hover-background-color) {
-  font-family: $font-family;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-transform: lowercase;
+  font-family: $font-family;
   background-color: $background-color;
   color: $button-text-color;
   padding: $button-padding;
   font-size: $button-font-size;
+  margin: 0.25em;
   border: none;
   border-radius: $button-border-radius;
   cursor: pointer;
   transition: transform $transition-duration ease-in-out, box-shadow $transition-duration ease-in-out;
 
+  .icon {
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+  }
+
   &:hover {
     background-color: $hover-background-color;
-    transform: translate(-2px, -2px);
+    transform: translate(-1px, -2px);
   }
 
   &:active {
@@ -60,11 +66,11 @@ $transition-duration: 0.1s;
 }
 
 .button-primary {
-  @include button-styles(#000, #000);
+  @include button-styles($primary-color, $primary-hover-color);
 }
 
 .button-secondary {
-  @include button-styles(#aaa, #aaa);
+  @include button-styles($secondary-color, $secondary-hover-color);
 }
 
 //  --- Anchor tag specifics ---
@@ -157,4 +163,3 @@ textarea {
     box-sizing: border-box;
   }
 }
-

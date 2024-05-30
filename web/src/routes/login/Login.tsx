@@ -5,7 +5,10 @@ import api from '@api/index';
 import './Login.scss';
 
 export default function Login() {
-    const [formData, setFormData] = useState<LoginUser>({} as LoginUser);
+    const [formData, setFormData] = useState<LoginUser>({
+        username: '',
+        password: ''
+    });
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();

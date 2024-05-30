@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PDFDocument } from '@customTypes/pdf_document';
+import { SlShare, SlPencil, SlCloudUpload } from "react-icons/sl";
 import api from '@api/index';
 import './Dashboard.scss';
 
@@ -16,7 +17,6 @@ export default function Dashboard() {
                 const token = localStorage.getItem('token');
                 if (token) {
                     const data = await api.user.getUserDocuments(token);
-                    console.log(data)
                     setDocuments(data.data);
                 } else {
                     setError('User is not authenticated');
@@ -37,7 +37,6 @@ export default function Dashboard() {
 
     function shareDocument(shareToken: string) {
         // TODO
-        console.log(`Share document with token: ${shareToken}`);
     }
 
     function uploadDocument() {
@@ -51,7 +50,9 @@ export default function Dashboard() {
         <div className="dashboard-container">
             <div className="dashboard-header">
                 <h2>My Documents</h2>
-                <button className='button-primary' onClick={uploadDocument}>Upload Document</button>
+                <button className='button-primary' onClick={uploadDocument}>
+                    <SlCloudUpload className='icon' /> Upload Document
+                </button>
             </div>
             <ul className="document-list">
                 {documents.map((doc) => (
@@ -65,8 +66,12 @@ export default function Dashboard() {
                         {doc.collaborators && doc.collaborators.length > 0 && (
                             <p>Collaborators: {doc.collaborators.map(col => `${col.first_name} ${col.last_name}`).join(', ')}</p>
                         )}
-                        <button className='button-secondary' onClick={() => editDocument(doc._id)}>Edit</button>
-                        <button className='button-secondary' onClick={() => shareDocument(doc.share_token)}>Share</button>
+                        <button className='button-secondary' onClick={() => editDocument(doc._id)}>
+                            <SlPencil className='icon' /> Edit
+                        </button>
+                        <button className='button-secondary' onClick={() => shareDocument(doc.share_token)}>
+                            <SlShare className='icon' /> Share
+                        </button>
                     </li>
                 ))}
             </ul>
