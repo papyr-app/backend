@@ -224,12 +224,12 @@ def create_document_bp(file_manager: IFileManager):
             logging.error(e)
             return jsonify({'error': str(e)}), 500
 
-    @document_bp.route('/<document_id>/share/<share_token>', methods=['POST'])
+    @document_bp.route('/share/<share_token>', methods=['POST'])
     @token_required
-    def use_share_token(user: User, document_id: int, share_token: str):
+    def use_share_token(user: User, share_token: str):
         try:
-            document = document_service.get_document_check_access(document_id, user.id)
             user = user_service.get_user_by_id(user.id)
+            document = document_service.get_document_by_share_token(share_token)
 
             if user in document.collaborators:
                 return jsonify({'error': 'User is already a collaborator'}), 400

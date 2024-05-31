@@ -21,13 +21,8 @@ export default function Dashboard() {
     useEffect(() => {
         async function fetchDocuments() {
             try {
-                const token = localStorage.getItem('token');
-                if (token) {
-                    const data = await api.user.getUserDocuments(token);
-                    setDocuments(data.data);
-                } else {
-                    setError('User is not authenticated');
-                }
+                const data = await api.user.getUserDocuments();
+                setDocuments(data.data);
             } catch (err) {
                 setError('Failed to fetch documents');
             } finally {

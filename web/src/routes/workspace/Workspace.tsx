@@ -12,12 +12,11 @@ export default function Workspace() {
     useEffect(() => {
         async function fetchFile() {
             try {
-                const token = localStorage.getItem('token');
-                if (token && documentId) {
-                    const bytes = await api.document.downloadDocument(token, documentId);
+                if (documentId) {
+                    const bytes = await api.document.downloadDocument(documentId);
                     setFileBytes(bytes);
                 } else {
-                    setError('User is not authenticated');
+                    setError('No document ID');
                 }
             } catch (err) {
                 setError('Failed to fetch file');

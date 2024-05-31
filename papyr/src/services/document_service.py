@@ -12,6 +12,10 @@ def get_document(document_id: ObjectId) -> PDFDocument:
     return PDFDocument.objects(id=document_id).get()
 
 
+def get_document_by_share_token(share_token: str) -> PDFDocument:
+    return PDFDocument.objects(share_token=share_token).get()
+
+
 def get_document_check_access(document_id: int, user_id: ObjectId) -> PDFDocument:
     document = PDFDocument.objects(id=ObjectId(document_id)).get()
     if not document.has_access(user_id):

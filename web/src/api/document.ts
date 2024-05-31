@@ -1,68 +1,49 @@
-import axios from 'axios';
+import axiosInstance from '@api/instance';
 import { UpdatePDFDocument } from '@customTypes/pdf_document';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-
-export const getDocument = async (token: string, documentId: string) => {
-  const response = await axios.get(`${API_URL}/documents/${documentId}`, {
-    headers: { Authorization: token },
-  });
+export const getDocument = async (documentId: string) => {
+  const response = await axiosInstance.get(`/documents/${documentId}`);
   return response.data;
 };
 
-export const downloadDocument = async (token: string, documentId: string) => {
-  const response = await axios.get(`${API_URL}/documents/${documentId}/download`, {
-    headers: { Authorization: token },
+export const downloadDocument = async (documentId: string) => {
+  const response = await axiosInstance.get(`/documents/${documentId}/download`, {
     responseType: 'arraybuffer',
   });
   return response.data;
 };
 
-export const createDocument = async (token: string, formData: FormData) => {
-  const response = await axios.post(`${API_URL}/documents`, formData, {
-    headers: { Authorization: token },
-  });
+export const createDocument = async (formData: FormData) => {
+  const response = await axiosInstance.post('/documents', formData);
   return response.data;
 };
 
-export const updateDocument = async (token: string, documentId: string, updateData: UpdatePDFDocument) => {
-  const response = await axios.patch(`${API_URL}/documents/${documentId}`, updateData, {
-    headers: { Authorization: token },
-  });
+export const updateDocument = async (documentId: string, updateData: UpdatePDFDocument) => {
+  const response = await axiosInstance.patch(`/documents/${documentId}`, updateData);
   return response.data;
 };
 
-export const deleteDocument = async (token: string, documentId: string) => {
-  const response = await axios.delete(`${API_URL}/documents/${documentId}`, {
-    headers: { Authorization: token },
-  });
+export const deleteDocument = async (documentId: string) => {
+  const response = await axiosInstance.delete(`/documents/${documentId}`);
   return response.data;
 };
 
-export const addCollaborator = async (token: string, documentId: string, email: string) => {
-  const response = await axios.post(`${API_URL}/documents/${documentId}/add_collaborator`, { email }, {
-    headers: { Authorization: token },
-  });
+export const addCollaborator = async (documentId: string, email: string) => {
+  const response = await axiosInstance.post(`/documents/${documentId}/add_collaborator`, { email });
   return response.data;
 };
 
-export const removeCollaborator = async (token: string, documentId: string, email: string) => {
-  const response = await axios.post(`${API_URL}/documents/${documentId}/remove_collaborator`, { email }, {
-    headers: { Authorization: token },
-  });
+export const removeCollaborator = async (documentId: string, email: string) => {
+  const response = await axiosInstance.post(`/documents/${documentId}/remove_collaborator`, { email });
   return response.data;
 };
 
-export const getShareToken = async (token: string, documentId: string) => {
-  const response = await axios.get(`${API_URL}/documents/${documentId}/share`, {
-    headers: { Authorization: token },
-  });
+export const getShareToken = async (documentId: string) => {
+  const response = await axiosInstance.get(`/documents/${documentId}/share`);
   return response.data;
 };
 
-export const useShareToken = async (token: string, documentId: string, shareToken: string) => {
-  const response = await axios.post(`${API_URL}/documents/${documentId}/share/${shareToken}`, {}, {
-    headers: { Authorization: token },
-  });
+export const useShareToken = async (shareToken: string) => {
+  const response = await axiosInstance.post(`/documents/share/${shareToken}`);
   return response.data;
 };

@@ -40,18 +40,11 @@ export default function UploadDocument() {
         }
 
         try {
-            const token = localStorage.getItem('token');
-            if (token) {
-                console.log('uploading...');
-                const response = await api.document.createDocument(token, data);
-                console.log('Document uploaded successfully:', response.data);
-            } else {
-                console.log('No token');
-            }
+            // TODO - notify success
+            await api.document.createDocument(data);
         } catch (error) {
             console.error('Error uploading document:', error);
         }
-
     };
 
     return (

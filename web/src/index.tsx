@@ -9,6 +9,7 @@ import Register from '@routes/register/Register';
 import PageNotFound from '@routes/page_not_found/PageNotFound';
 import Workspace from '@routes/workspace/Workspace';
 import UploadDocument from '@routes/upload_document/UploadDocument';
+import GrantAccess from '@routes/grant_access/GrantAccess';
 import reportWebVitals from './reportWebVitals';
 import './global.scss';
 
@@ -23,6 +24,7 @@ root.render(
                     <Route path="/" element={<Home />} />
                     <Route path="/document/new" element={<UploadDocument />} />
                     <Route path="/document/:documentId" element={<Workspace />} />
+                    <Route path="/share" element={<GrantAccess />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/logout" element={<Logout />} />

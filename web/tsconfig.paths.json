@@ -5,7 +5,8 @@
       "@components/*": ["components/*"],
       "@routes/*": ["routes/*"],
       "@api/*": ["api/*"],
-      "@customTypes/*": ["types/*"]
+      "@customTypes/*": ["types/*"],
+      "@utils": ["utils/utils.ts"]
     }
   }
 }
