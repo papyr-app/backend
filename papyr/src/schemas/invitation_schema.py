@@ -1,16 +1,29 @@
-from marshmallow import Schema, fields
-from datetime import datetime, timedelta
+from marshmallow import Schema, fields, validate, validates, ValidationError
+
+from models.invitation import Invitation
+from models.user import User
+from models.pdf_document import PDFDocument
 
 
 class CreateInvitationSchema(Schema):
     document = fields.String(required=True)
-    invited_by = fields.String(required=True)
-    invitee = fields.String(required=True)
-    expires_at = fields.DateTime(missing=lambda: datetime.utcnow() + timedelta(days=7))
+    invitee = fields.String(required=True, validate=validate.Email())
+
+    @validates('document')
+    def validate_document(self, value):
+        if not PDFDocument.objects(id=value).first():
+            raise ValidationError('Document not found.')
+
+    @validates('invitee')
+    def validate_invitee(self, value):
+        if not User.objects(email=value).first():
+            raise ValidationError('User with this email does not exist.')
 
 
-class UpdateInvitationSchema(Schema):
-    document = fields.String()
-    invited_by = fields.String()
-    invitee = fields.String()
-    expires_at = fields.DateTime()
+class AcceptInvitationSchema(Schema):
+    invitation_id = fields.String(required=True)
+
+    @validates('invitation_id')
+    def validate_document(self, value):
+        if not Invitation.objects(id=value).first():
+            raise ValidationError('Invitation not found.')

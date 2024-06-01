@@ -1,7 +1,6 @@
 from typing import Dict
 from datetime import datetime
 from bson import ObjectId
-from mongoengine.errors import NotUniqueError
 
 from models.user import User
 
@@ -19,12 +18,6 @@ def get_user_by_email(email: str):
 
 
 def create_user(username: str, email: str, first_name: str, last_name: str, password: str) -> User:
-    if User.objects(username=username).first():
-        raise NotUniqueError('Username already exists')
-
-    if User.objects(email=email).first():
-        raise NotUniqueError('Email already exists')
-
     new_user = User(
         username=username,
         email=email,

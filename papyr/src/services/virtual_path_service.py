@@ -26,6 +26,5 @@ def create_virtual_path(user: User, document: PDFDocument, file_path: str) -> Vi
 
 
 def update_virtual_path(virtual_path: VirtualPath, update_data: Dict):
-    # TODO - make sure path is ok
-    virtual_path.file_path = update_data.get('update_data', virtual_path.file_path)
+    virtual_path.file_path = update_data.get('file_path', virtual_path.file_path)
     virtual_path.save()

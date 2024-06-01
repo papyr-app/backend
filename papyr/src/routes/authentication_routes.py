@@ -16,8 +16,9 @@ def create_auth_bp(bcrypt: Bcrypt):
     @auth_bp.route('/register', methods=['POST'])
     def register():
         data = request.json
+        schema = CreateUserSchema()
+
         try:
-            schema = CreateUserSchema()
             validated_data = schema.load(data)
             user = user_service.create_user(**validated_data)
             return jsonify({'data': user.to_mongo().to_dict()}), 201
@@ -32,8 +33,9 @@ def create_auth_bp(bcrypt: Bcrypt):
     @auth_bp.route('/login', methods=['POST'])
     def login():
         data = request.json
+        schema = LoginSchema()
+
         try:
-            schema = LoginSchema()
             validated_data = schema.load(data)
             user = user_service.get_user_by_username(validated_data['username'])
             if user.check_password(validated_data['password']):

@@ -1,6 +1,6 @@
 import logging
 from flask import request, jsonify, send_file, Blueprint
-from mongoengine.errors import DoesNotExist, NotUniqueError
+from mongoengine.errors import DoesNotExist
 from marshmallow import ValidationError
 
 from file_manager.ifile_manager import IFileManager
@@ -22,10 +22,10 @@ def create_document_bp(file_manager: IFileManager):
         try:
             document = document_service.get_document_check_access(document_id, user.id)
             return jsonify({'data': document.to_mongo().to_dict()}), 200
-        except DoesNotExist:
-            return jsonify({'error': 'Document not found'}), 404
         except AuthorizationError as e:
             return jsonify({'error': str(e)}), 403
+        except DoesNotExist:
+            return jsonify({'error': 'Document not found'}), 404
         except Exception as e:
             logging.error(e)
             return jsonify({'error': str(e)}), 500
@@ -50,10 +50,10 @@ def create_document_bp(file_manager: IFileManager):
                 as_attachment=True
             )
             return jsonify({'data': document.to_mongo().to_dict()}), 200
-        except DoesNotExist:
-            return jsonify({'error': 'Document not found'}), 404
         except AuthorizationError as e:
             return jsonify({'error': str(e)}), 403
+        except DoesNotExist:
+            return jsonify({'error': 'Document not found'}), 404
         except Exception as e:
             logging.error(e)
             return jsonify({'error': str(e)}), 500
@@ -61,33 +61,21 @@ def create_document_bp(file_manager: IFileManager):
     @document_bp.route('', methods=['POST'])
     @token_required
     def create_document(user: User):
-        print()
-        print("got it")
-        print()
         file = request.files.get('file')
         data = request.form
 
-        if not file:
-            return jsonify({'error': 'Missing file'}), 400
-
-        if not file.filename.endswith('.pdf'):
-            return jsonify({'error': 'Only PDF files are allowed'}), 400
-
+        schema = CreatePDFDocumentSchema()
         try:
-            schema = CreatePDFDocumentSchema()
             validated_data = schema.load(data)
-            document = document_service.create_document(
-                    str(user.id),
-                    **validated_data
-            )
 
-            # TODO - use upload_succeeded to confirm
-            document_key = f'{str(document.id)}.pdf'
+            document_key = f'{validated_data["id"]}.pdf'
             upload_succeeded = file_manager.upload_file(file, document_key)
-            return jsonify({'data': document.to_mongo().to_dict()}), 201
-            return jsonify({'error': 'Upload failed'}), 500
-        except NotUniqueError:
-            return jsonify({'error': 'Document already exists'}), 409
+
+            if not upload_succeeded:
+                return jsonify({'error': 'Upload failed'}), 500
+
+            pdf_document = document_service.create_document(**validated_data)
+            return jsonify({'data': pdf_document.to_mongo().to_dict()}), 201
         except ValidationError as e:
             return jsonify({'error': str(e)}), 400
         except Exception as e:
@@ -98,8 +86,9 @@ def create_document_bp(file_manager: IFileManager):
     @token_required
     def update_document(user: User, document_id: int):
         data = request.get_json()
+        schema = UpdatePDFDocumentSchema()
+
         try:
-            schema = UpdatePDFDocumentSchema()
             validated_data = schema.load(data)
             document = document_service.get_document_check_access(document_id, user.id)
 
@@ -108,12 +97,12 @@ def create_document_bp(file_manager: IFileManager):
 
             document = document_service.update_document(document, validated_data)
             return jsonify({'data': document.to_mongo().to_dict()}), 201
-        except DoesNotExist:
-            return jsonify({'error': 'Document not found'}), 404
-        except AuthorizationError as e:
-            return jsonify({'error': str(e)}), 403
         except ValidationError as e:
             return jsonify({'error': str(e)}), 400
+        except AuthorizationError as e:
+            return jsonify({'error': str(e)}), 403
+        except DoesNotExist:
+            return jsonify({'error': 'Document not found'}), 404
         except Exception as e:
             logging.error(e)
             return jsonify({'error': str(e)}), 500
@@ -131,14 +120,17 @@ def create_document_bp(file_manager: IFileManager):
             if user != document.owner:
                 return jsonify({'error': 'Only the owner can delete the document'}), 403
 
-            # TODO - use delete_succeeded to confirm
             delete_succeeded = file_manager.delete_file(file_path)
+
+            if not delete_succeeded:
+                return jsonify({'error': 'Delete failed'}), 500
+
             document_service.delete_document(document)
             return jsonify({'data': 'Document deleted successfully'}), 200
-        except DoesNotExist:
-            return jsonify({'error': 'Document not found'}), 404
         except AuthorizationError as e:
             return jsonify({'error': str(e)}), 403
+        except DoesNotExist:
+            return jsonify({'error': 'Document not found'}), 404
         except Exception as e:
             logging.error(e)
             return jsonify({'error': str(e)}), 500
@@ -242,12 +234,12 @@ def create_document_bp(file_manager: IFileManager):
 
             document_service.add_collaborator(user, document)
             return jsonify({'data': 'User added as collaborator'}), 201
+        except AuthorizationError as e:
+            return jsonify({'error': str(e)}), 403
         except PDFDocument.DoesNotExist:
             return jsonify({'error': 'Document not found'}), 404
         except User.DoesNotExist:
             return jsonify({'error': 'User not found'}), 404
-        except AuthorizationError as e:
-            return jsonify({'error': str(e)}), 403
         except Exception as e:
             logging.error(e)
             return jsonify({'error': str(e)}), 500

@@ -1,16 +1,17 @@
 import os
 
 
-def create_file_path(username: str, file_path: str, filename: str) -> str:
-    username = username.strip(" /\\")
-    file_path = file_path.strip(" /\\")
-    filename = filename.strip(" /\\")
+def clean_path(path: str) -> str:
+    """
+    Cleans a Unix-like file path string by normalizing it.
 
-    combined_path = os.path.join(username, file_path)
+    Parameters:
+    path (str): The Unix-like file path to be cleaned.
 
-    # Check if the combined path ends in a typical file extension; if not, append the filename
-    if not os.path.splitext(combined_path)[1]:
-        combined_path = os.path.join(combined_path, filename)
+    Returns:
+    str: The cleaned and normalized file path.
+    """
+    if not isinstance(path, str):
+        raise ValueError("Path must be a string")
 
-    final_path = os.path.normpath(combined_path)
-    return final_path
+    return os.path.normpath(path)
