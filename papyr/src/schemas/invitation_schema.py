@@ -21,9 +21,9 @@ class CreateInvitationSchema(Schema):
 
 
 class AcceptInvitationSchema(Schema):
-    invitation_id = fields.String(required=True)
+    invitation = fields.String(required=True)
 
-    @validates('invitation_id')
+    @validates('invitation')
     def validate_document(self, value):
         if not Invitation.objects(id=value).first():
             raise ValidationError('Invitation not found.')

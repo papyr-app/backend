@@ -1,15 +1,10 @@
 from marshmallow import Schema, fields, validates, pre_load, ValidationError
-from marshmallow_mongoengine import ModelSchema
 
 from models.pdf_document import PDFDocument
-from models.virtual_path import VirtualPath
 from utils.helper import clean_path
 
 
-class CreateVirtualPathSchema(ModelSchema):
-    class Meta:
-        model = VirtualPath
-
+class CreateVirtualPathSchema(Schema):
     document = fields.String(required=True)
     file_path = fields.String(required=True)
 

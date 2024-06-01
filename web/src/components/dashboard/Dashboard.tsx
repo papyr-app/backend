@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PDFDocument } from '@customTypes/pdf_document';
-import { SlShare, SlPencil, SlCloudUpload, SlDocs } from "react-icons/sl";
+import { SlCloudUpload } from 'react-icons/sl';
+import { Directory } from '@components/directory/Directory';
+import { TreeNode } from '@customTypes/tree_node';
 import ShareDocument from '@components/share_document/ShareDocument';
 import EditDocument from '@components/edit_document/EditDocument';
 import Modal from '@components/modal/Modal';
@@ -10,6 +12,7 @@ import './Dashboard.scss';
 
 export default function Dashboard() {
     const [documents, setDocuments] = useState<PDFDocument[]>([]);
+    const [tree, setTree] = useState<TreeNode | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedDocument, setSelectedDocument] = useState<PDFDocument | null>(null);
@@ -32,6 +35,34 @@ export default function Dashboard() {
 
         fetchDocuments();
     }, []);
+
+    useEffect(() => {
+        function buildTree(documents: PDFDocument[]) {
+            const root: TreeNode = { name: 'root', children: [] };
+
+            documents.forEach(doc => {
+                const parts = doc.file_path.split('/').filter(part => part);
+                let current = root;
+
+                console.log(parts)
+
+                parts.forEach((part, index) => {
+                    let node = current.children.find(child => child.name === part);
+                    if (!node) {
+                        node = { name: part, children: [], isFile: index === parts.length - 1, doc };
+                        current.children.push(node);
+                    }
+                    current = node;
+                });
+            });
+
+            return root;
+        };
+
+        const treeStructure = buildTree(documents);
+        console.log(treeStructure)
+        setTree(treeStructure);
+    }, [documents]);
 
     function uploadDocument() {
         navigate(`/document/new`);
@@ -63,40 +94,24 @@ export default function Dashboard() {
     return (
         <div className="dashboard-container">
             <div className="dashboard-header">
-                <h2>My Documents</h2>
-                <button className='button-primary' onClick={uploadDocument}>
-                    <SlCloudUpload className='icon' /> Upload Document
+                <h2 className="dashboard-title">My Documents</h2>
+                <button className="button-primary upload-button" onClick={uploadDocument}>
+                    <SlCloudUpload className="icon" /> Upload Document
                 </button>
             </div>
-            <ul className="document-list">
-                {documents.map((doc) => (
-                    <li key={doc._id}>
-                        <a href={`document/${doc._id}`}>{doc.title}</a>
-                        <p>{doc.description}</p>
-                        <p>Status: {doc.status}</p>
-                        <p>Owner: {doc.owner.first_name} {doc.owner.last_name} ({doc.owner.username})</p>
-                        <p>Created at: {new Date(doc.created_at).toLocaleDateString()}</p>
-                        <p>Updated at: {new Date(doc.updated_at).toLocaleDateString()}</p>
-                        {doc.collaborators && doc.collaborators.length > 0 && (
-                            <p>Collaborators: {doc.collaborators.map(col => `${col.first_name} ${col.last_name}`).join(', ')}</p>
-                        )}
-                        <button className='button-secondary' onClick={() => handleShowEditModal(doc)}>
-                            <SlPencil className='icon' /> Edit
-                        </button>
-                        <button className='button-secondary' onClick={() => handleShowShareModal(doc)}>
-                            <SlShare className='icon' /> Share
-                        </button>
-                    </li>
-                ))}
-            </ul>
+            {tree && (
+                <ul className="document-list">
+                    {tree && <Directory {...tree} /> }
+                </ul>
+            )}
 
             <Modal show={showShareModal} onClose={handleCloseShareModal}>
-                <h2>Share</h2>
+                <h2 className="modal-title">Share</h2>
                 {selectedDocument && <ShareDocument document={selectedDocument} />}
             </Modal>
 
             <Modal show={showEditModal} onClose={handleCloseEditModal}>
-                <h2>Edit</h2>
+                <h2 className="modal-title">Edit</h2>
                 {selectedDocument && <EditDocument document={selectedDocument} />}
             </Modal>
         </div>

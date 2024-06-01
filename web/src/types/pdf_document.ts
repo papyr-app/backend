@@ -9,6 +9,7 @@ export interface PDFDocument {
     collaborators?: User[];
     can_share: boolean;
     share_token: string;
+    file_path: string;
     created_at: Date;
     updated_at: Date;
 }

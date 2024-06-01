@@ -64,18 +64,28 @@ def create_document_bp(file_manager: IFileManager):
         file = request.files.get('file')
         data = request.form
 
+        if not file:
+            return jsonify({'error': 'Missing file'}), 400
+
+        if not file.filename.endswith('.pdf'):
+            return jsonify({'error': 'Only PDF files are allowed'}), 400
+
         schema = CreatePDFDocumentSchema()
         try:
             validated_data = schema.load(data)
+            document = document_service.create_document(
+                    str(user.id),
+                    **validated_data
+            )
 
-            document_key = f'{validated_data["id"]}.pdf'
+            document_key = f'{str(document.id)}.pdf'
             upload_succeeded = file_manager.upload_file(file, document_key)
 
-            if not upload_succeeded:
+            if upload_succeeded:
+                return jsonify({'data': document.to_mongo().to_dict()}), 201
+            else:
+                document_service.delete_document(document)
                 return jsonify({'error': 'Upload failed'}), 500
-
-            pdf_document = document_service.create_document(**validated_data)
-            return jsonify({'data': pdf_document.to_mongo().to_dict()}), 201
         except ValidationError as e:
             return jsonify({'error': str(e)}), 400
         except Exception as e:
@@ -87,7 +97,6 @@ def create_document_bp(file_manager: IFileManager):
     def update_document(user: User, document_id: int):
         data = request.get_json()
         schema = UpdatePDFDocumentSchema()
-
         try:
             validated_data = schema.load(data)
             document = document_service.get_document_check_access(document_id, user.id)

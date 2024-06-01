@@ -1,14 +1,10 @@
 from marshmallow import Schema, fields, validate, validates, ValidationError
-from marshmallow_mongoengine import ModelSchema
 from models.user import User
 
 
-class CreateUserSchema(ModelSchema):
-    class Meta:
-        model = User
-
+class CreateUserSchema(Schema):
     username = fields.String(required=True, validate=validate.Length(min=2, max=20))
-    email = fields.Email(required=True, validate=validate.Email())
+    email = fields.Email(required=True)
     first_name = fields.String(required=True, validate=validate.Length(min=2, max=20))
     last_name = fields.String(required=True, validate=validate.Length(min=2, max=20))
     password = fields.String(required=True, load_only=True)
@@ -32,7 +28,7 @@ class CreateUserSchema(ModelSchema):
 
 class UpdateUserSchema(Schema):
     username = fields.String(required=False, validate=validate.Length(min=2, max=20))
-    email = fields.Email(required=False, validate=validate.Email())
+    email = fields.Email(required=False)
     first_name = fields.String(required=False, validate=validate.Length(min=2, max=20))
     last_name = fields.String(required=False, validate=validate.Length(min=2, max=20))
 
