@@ -1,4 +1,4 @@
-from marshmallow import Schema, fields, validates, pre_load, ValidationError
+from marshmallow import Schema, fields, validate, validates, pre_load, ValidationError
 
 from models.pdf_document import PDFDocument
 from utils.helper import clean_path
@@ -6,7 +6,7 @@ from utils.helper import clean_path
 
 class CreateVirtualPathSchema(Schema):
     document = fields.String(required=True)
-    file_path = fields.String(required=True)
+    file_path = fields.String(required=True, validate=validate.Length(max=100))
 
     @validates('document')
     def validate_document(self, value):
@@ -20,7 +20,7 @@ class CreateVirtualPathSchema(Schema):
 
 
 class UpdateVirtualPathSchema(Schema):
-    file_path = fields.String(required=True)
+    file_path = fields.String(required=True, validate=validate.Length(max=100))
 
     @pre_load
     def process_input(self, data, **kwargs):
