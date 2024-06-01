@@ -6,9 +6,9 @@ from marshmallow import ValidationError
 from auth.decorators import token_required
 from services import user_service
 from services import document_service
-from services import virtual_path_service
 from schemas.user_schema import UpdateUserSchema
 from models.user import User
+from dtos.pdf_document_dto import create_pdf_document_dto
 
 
 def create_user_bp():
@@ -52,16 +52,9 @@ def create_user_bp():
             documents_list = []
 
             for document in documents:
-                virtual_path = virtual_path_service.get_user_virtual_path(user.id, document.id)
                 doc_dict = document.to_dict()
-
-                if virtual_path:
-                    file_path = f'{virtual_path.file_path}/{document.title}'
-                else:
-                    file_path = document.title
-
-                doc_dict['file_path'] = file_path
-                documents_list.append(doc_dict)
+                doc_dto = create_pdf_document_dto(doc_dict, user.id)
+                documents_list.append(doc_dto)
 
             return jsonify({'data': documents_list}), 200
         except Exception as e:

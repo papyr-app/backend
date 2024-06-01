@@ -34,7 +34,6 @@ def create_auth_bp(bcrypt: Bcrypt):
     def login():
         data = request.json
         schema = LoginSchema()
-
         try:
             validated_data = schema.load(data)
             user = user_service.get_user_by_username(validated_data['username'])
