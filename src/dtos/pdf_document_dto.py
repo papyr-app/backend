@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import Dict, Any
 from dataclasses import dataclass, asdict
 from bson import ObjectId
 
@@ -12,11 +12,12 @@ class PDFDocumentDTO:
     description: str
     status: str
     owner: Dict[str, Any]
-    created_at: str
-    updated_at: str
-    collaborators: List[Dict[str, Any]]
+    can_share: bool
+    share_token: str
     file_path: str
     is_owner: bool
+    created_at: str
+    updated_at: str
 
     def to_dict(self):
         return asdict(self)
@@ -24,9 +25,8 @@ class PDFDocumentDTO:
 
 def create_pdf_document_dto(document: Dict[str, Any], user_id: ObjectId) -> PDFDocumentDTO:
     is_owner = document['owner']['_id'] == user_id
-    virtual_path = virtual_path_service.get_user_virtual_path(
-        user_id, document['_id'])
 
+    virtual_path = virtual_path_service.get_user_virtual_path(user_id, document['_id'])
     if virtual_path:
         file_path = f'{virtual_path.file_path}/{document["title"]}'
     else:
@@ -38,9 +38,10 @@ def create_pdf_document_dto(document: Dict[str, Any], user_id: ObjectId) -> PDFD
         description=document['description'],
         status=document['status'],
         owner=document['owner'],
-        created_at=document['created_at'],
-        updated_at=document['updated_at'],
-        collaborators=document['collaborators'],
+        can_share=document['can_share'],
+        share_token=document['share_token'],
         file_path=file_path,
-        is_owner=is_owner
+        is_owner=is_owner,
+        created_at=document['created_at'],
+        updated_at=document['updated_at']
     )
