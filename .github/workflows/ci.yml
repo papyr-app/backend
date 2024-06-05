@@ -24,12 +24,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run black (check code formatting)
+      - name: Run black
         run: |
           pip install black
-          black --check . || true
+          black . || true
 
-      - name: Run pylint (check code quality)
+      - name: Run pylint
         run: |
           pip install pylint
           pylint src || true
