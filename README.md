@@ -42,6 +42,19 @@ N/A.
    ```bash
    pip install -r requirements.txt
    ```
+### Environment Variables
+
+The following environment variables are required:
+
+- **S3_BUCKET_NAME**
+- **SECRET_KEY** (for JSON Web Tokens)
+
+If you are using a remote instance of MongoDB, you also need to set the following variables:
+
+- **MONGO_HOST** (e.g. cluster0.abcxyz.mongodb.net)
+- **MONGO_NAME** (The name of your database)
+- **MONGO_USER** (username)
+- **MONGO_PASS** (password)
 
 ### Running the Application
 1. **Run the Application**
