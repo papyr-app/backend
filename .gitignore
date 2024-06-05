@@ -1,5 +1,6 @@
 # Custom
 .venv
+venv
 log.txt
 
 # Byte-compiled / optimized / DLL files
