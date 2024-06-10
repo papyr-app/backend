@@ -17,7 +17,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-versio: '3.11'
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
@@ -27,12 +27,12 @@ jobs:
       - name: Run black
         run: |
           pip install black
-          black . || true
+          black . --check
 
       - name: Run pylint
         run: |
           pip install pylint
-          pylint src || true
+          pylint src
 
       - name: Run tests
         run: |
