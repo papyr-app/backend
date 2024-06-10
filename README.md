@@ -47,7 +47,7 @@ N/A.
 The following environment variables are required:
 
 - **S3_BUCKET_NAME**
-- **SECRET_KEY** (for JSON Web Tokens)
+- **SECRET_KEY** (for JWTs, during local development this can be anything)
 
 If you are using a remote instance of MongoDB, you also need to set the following variables:
 
