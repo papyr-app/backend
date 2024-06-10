@@ -38,6 +38,9 @@ def init_app(config_path: str):
     s3_bucket_name = app.config["S3_BUCKET_NAME"]
     s3_client = S3Client(s3_bucket_name)
 
+    if not app.config.get("SECRET_KEY"):
+        raise ValueError("SECRET_KEY is not defined in the configuration")
+
     with app.app_context():
         db = DB()
         db.connect()

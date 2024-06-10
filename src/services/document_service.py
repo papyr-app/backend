@@ -17,6 +17,17 @@ def get_document_by_share_token(share_token: str) -> PDFDocument:
 
 
 def get_document_check_access(document_id: int, user_id: ObjectId) -> PDFDocument:
+    """
+    Retrieves a PDF document and checks if the user has access to it.
+
+    :param document_id: The ID of the document to retrieve.
+    :type document_id: int
+    :param user_id: The ID of the user requesting access to the document.
+    :type user_id: ObjectId
+    :raises AuthorizationError: If the user does not have access to the document.
+    :return: The PDF document if access is granted.
+    :rtype: PDFDocument
+    """
     document = PDFDocument.objects(id=ObjectId(document_id)).get()
     if not document.has_access(user_id):
         raise AuthorizationError()
@@ -47,6 +58,16 @@ def delete_document(document: PDFDocument):
 
 
 def add_collaborator(user: User, document: PDFDocument) -> PDFDocument:
+    """
+    Adds a user as a collaborator to a PDF document if they are not already a collaborator and are not the owner.
+
+    :param user: The user to be added as a collaborator.
+    :type user: User
+    :param document: The PDF document to which the user will be added as a collaborator.
+    :type document: PDFDocument
+    :return: The updated PDF document with the new collaborator.
+    :rtype: PDFDocument
+    """
     if user not in document.collaborators and user != document.owner:
         document.collaborators.append(user)
         document.updated_at = datetime.utcnow()
@@ -55,6 +76,16 @@ def add_collaborator(user: User, document: PDFDocument) -> PDFDocument:
 
 
 def remove_collaborator(user: User, document: PDFDocument) -> PDFDocument:
+    """
+    Removes a user from the collaborators of a PDF document if they are a collaborator and are not the owner.
+
+    :param user: The user to be removed from the collaborators.
+    :type user: User
+    :param document: The PDF document from which the user will be removed as a collaborator.
+    :type document: PDFDocument
+    :return: The updated PDF document with the collaborator removed.
+    :rtype: PDFDocument
+    """
     if user in document.collaborators and user != document.owner:
         document.collaborators.remove(user)
         document.updated_at = datetime.utcnow()

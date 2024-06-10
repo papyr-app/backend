@@ -3,6 +3,10 @@ from bson import ObjectId
 
 
 class MongoJSONProvider(DefaultJSONProvider):
+    """
+    A wrapper for the default Flask JSON provider.
+    """
+
     def __init__(self, app):
         super().__init__(app)
 

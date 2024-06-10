@@ -13,7 +13,7 @@ def get_user_by_username(username: str) -> User:
     return User.objects(username=username).get()
 
 
-def get_user_by_email(email: str):
+def get_user_by_email(email: str) -> User:
     return User.objects(email=email).get()
 
 
