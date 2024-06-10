@@ -1,4 +1,11 @@
-from mongoengine import Document, ListField, ReferenceField, IntField, StringField, DateTimeField
+from mongoengine import (
+    Document,
+    ListField,
+    ReferenceField,
+    IntField,
+    StringField,
+    DateTimeField,
+)
 from datetime import datetime
 
 from const import AnnotationStatus
@@ -18,4 +25,4 @@ class Annotation(Document):
     created_at = DateTimeField(default=datetime.utcnow)
     updated_at = DateTimeField(default=datetime.utcnow)
 
-    meta = {'collection': 'annotations', 'allow_inheritance': True}
+    meta = {"collection": "annotations", "allow_inheritance": True}

@@ -12,17 +12,13 @@ def get_comment(comment_id: int) -> Comment:
 
 
 def create_comment(document: PDFDocument, user: User, text: str) -> Comment:
-    comment = Comment(
-            document=document,
-            user=user,
-            text=text
-    )
+    comment = Comment(document=document, user=user, text=text)
     comment.save()
     return comment
 
 
 def update_comment(comment: Comment, comment_data: Dict) -> Comment:
-    comment.text = comment_data.get('text', comment.text)
+    comment.text = comment_data.get("text", comment.text)
     comment.updated_at = datetime.utcnow()
     comment.save()
     return comment

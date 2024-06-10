@@ -10,10 +10,10 @@ class DB:
     """
 
     def __init__(self):
-        self.db_host = current_app.config.get('MONGO_HOST')
-        self.db_name = current_app.config.get('MONGO_NAME')
-        self.db_user = current_app.config.get('MONGO_USER')
-        self.db_pass = current_app.config.get('MONGO_PASS')
+        self.db_host = current_app.config.get("MONGO_HOST")
+        self.db_name = current_app.config.get("MONGO_NAME")
+        self.db_user = current_app.config.get("MONGO_USER")
+        self.db_pass = current_app.config.get("MONGO_PASS")
 
     def connect(self):
         if self.db_user:

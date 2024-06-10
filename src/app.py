@@ -19,7 +19,7 @@ from sockets.comment_socket import handle_comments
 from sockets.annotation_socket import handle_annotations
 
 
-socketio = SocketIO(async_mode='gevent')
+socketio = SocketIO(async_mode="gevent")
 bcrypt = Bcrypt()
 
 
@@ -32,10 +32,10 @@ def init_app(config_path: str):
     bcrypt.init_app(app)
     CORS(app)
 
-    debug = app.config.get('MONGO_HOST', True)
-    set_up_logger(debug, 'log.txt')
+    debug = app.config.get("MONGO_HOST", True)
+    set_up_logger(debug, "log.txt")
 
-    s3_bucket_name = app.config['S3_BUCKET_NAME']
+    s3_bucket_name = app.config["S3_BUCKET_NAME"]
     s3_client = S3Client(s3_bucket_name)
 
     with app.app_context():

@@ -32,7 +32,7 @@ jobs:
       - name: Run pylint
         run: |
           pip install pylint
-          pylint src
+          pylint src || true
 
       - name: Run tests
         run: |

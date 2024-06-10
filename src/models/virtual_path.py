@@ -9,4 +9,4 @@ class VirtualPath(Document):
     document = ReferenceField(PDFDocument, required=True)
     file_path = StringField(required=True)
 
-    meta = {'collection': 'virtual_paths'}
+    meta = {"collection": "virtual_paths"}

@@ -28,9 +28,9 @@ def get_received_invitations(user_id: ObjectId) -> List[Invitation]:
 
 def create_invitation(document: PDFDocument, invited_by: User, invitee: User):
     invitation = Invitation(
-            document=document,
-            invited_by=invited_by,
-            invitee=invitee,
+        document=document,
+        invited_by=invited_by,
+        invitee=invitee,
     )
     invitation.save()
     return invitation

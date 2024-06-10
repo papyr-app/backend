@@ -8,7 +8,9 @@ def set_up_logger(debug: bool = True, log_filename: str = None):
     Sets up the logging module
     """
     level = logging.DEBUG if debug else logging.INFO
-    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s", "%Y-%m-%d %H:%M:%S")
+    formatter = logging.Formatter(
+        "%(asctime)s - %(levelname)s - %(message)s", "%Y-%m-%d %H:%M:%S"
+    )
 
     logger = logging.getLogger()
     logger.setLevel(level)

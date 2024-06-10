@@ -9,21 +9,21 @@ class CreateInvitationSchema(Schema):
     document = fields.String(required=True)
     invitee = fields.String(required=True, validate=validate.Email())
 
-    @validates('document')
+    @validates("document")
     def validate_document(self, value):
         if not PDFDocument.objects(id=value).first():
-            raise ValidationError('Document not found.')
+            raise ValidationError("Document not found.")
 
-    @validates('invitee')
+    @validates("invitee")
     def validate_invitee(self, value):
         if not User.objects(email=value).first():
-            raise ValidationError('User with this email does not exist.')
+            raise ValidationError("User with this email does not exist.")
 
 
 class AcceptInvitationSchema(Schema):
     invitation = fields.String(required=True)
 
-    @validates('invitation')
+    @validates("invitation")
     def validate_document(self, value):
         if not Invitation.objects(id=value).first():
-            raise ValidationError('Invitation not found.')
+            raise ValidationError("Invitation not found.")

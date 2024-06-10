@@ -28,19 +28,15 @@ def get_user_documents(user_id: ObjectId) -> List[PDFDocument]:
 
 
 def create_document(owner_id: int, title: str, description: str) -> PDFDocument:
-    new_document = PDFDocument(
-        owner=owner_id,
-        title=title,
-        description=description
-    )
+    new_document = PDFDocument(owner=owner_id, title=title, description=description)
     new_document.save()
     return new_document
 
 
 def update_document(document: PDFDocument, document_data: Dict) -> PDFDocument:
-    document.title = document_data.get('title', document.title)
-    document.description = document_data.get('description', document.description)
-    document.can_share = document_data.get('can_share', document.can_share)
+    document.title = document_data.get("title", document.title)
+    document.description = document_data.get("description", document.description)
+    document.can_share = document_data.get("can_share", document.can_share)
     document.updated_at = datetime.utcnow()
     document.save()
     return document

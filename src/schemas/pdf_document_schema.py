@@ -15,7 +15,7 @@ class UpdatePDFDocumentSchema(Schema):
     status = fields.String(required=False)
     can_share = fields.Boolean(required=False)
 
-    @validates('status')
+    @validates("status")
     def validate_status(self, value):
         if value not in DocumentStatus.__members__:
-            raise ValidationError('Invalid status.')
+            raise ValidationError("Invalid status.")

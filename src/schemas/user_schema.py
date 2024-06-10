@@ -9,21 +9,21 @@ class CreateUserSchema(Schema):
     last_name = fields.String(required=True, validate=validate.Length(min=2, max=20))
     password = fields.String(required=True, load_only=True)
 
-    @validates('username')
+    @validates("username")
     def validate_username(self, value):
         if User.objects(username=value).first():
-            raise ValidationError('Username already exists.')
+            raise ValidationError("Username already exists.")
 
-    @validates('email')
+    @validates("email")
     def validate_email(self, value):
         if User.objects(email=value).first():
-            raise ValidationError('Email already exists.')
+            raise ValidationError("Email already exists.")
 
-    @validates('password')
+    @validates("password")
     def validate_password(self, value):
         # TODO - add more logic to make sure password is complex
         if len(value) < 6:
-            raise ValidationError('Password must be at least 6 characters long.')
+            raise ValidationError("Password must be at least 6 characters long.")
 
 
 class UpdateUserSchema(Schema):
@@ -32,12 +32,12 @@ class UpdateUserSchema(Schema):
     first_name = fields.String(required=False, validate=validate.Length(min=2, max=20))
     last_name = fields.String(required=False, validate=validate.Length(min=2, max=20))
 
-    @validates('username')
+    @validates("username")
     def validate_username(self, value):
         if User.objects(username=value).first():
-            raise ValidationError('Username already exists.')
+            raise ValidationError("Username already exists.")
 
-    @validates('email')
+    @validates("email")
     def validate_email(self, value):
         if User.objects(email=value).first():
-            raise ValidationError('Email already exists.')
+            raise ValidationError("Email already exists.")

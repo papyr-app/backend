@@ -12,4 +12,4 @@ class Comment(Document):
     created_at = DateTimeField(default=datetime.utcnow)
     updated_at = DateTimeField(default=datetime.utcnow)
 
-    meta = {'collection': 'comments'}
+    meta = {"collection": "comments"}

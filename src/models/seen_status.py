@@ -10,7 +10,4 @@ class SeenStatus(Document):
     annotation = ReferenceField(Annotation, required=True)
     seen_at = DateTimeField(default=datetime.utcnow)
 
-    meta = {
-        'collection': 'seen_statuses',
-        'ordering': ['-seen_at']
-    }
+    meta = {"collection": "seen_statuses", "ordering": ["-seen_at"]}
