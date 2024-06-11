@@ -1,5 +1,5 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
-from models.seen_status import SeenStatus
+from models import SeenStatus
 
 
 class SeenStatusSchema(SQLAlchemyAutoSchema):

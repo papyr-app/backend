@@ -4,7 +4,7 @@ from flask import current_app
 from marshmallow import ValidationError
 
 from app import db
-from models.user import User
+from models import User
 from schemas.user_schema import CreateUserSchema, UpdateUserSchema
 from schemas.login_schema import LoginSchema
 from auth.jwt_handler import generate_jwt

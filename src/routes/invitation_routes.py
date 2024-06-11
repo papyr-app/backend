@@ -3,7 +3,7 @@ from marshmallow import ValidationError
 
 from errors import AuthorizationError
 from auth.decorators import token_required
-from models.user import User
+from models import User
 from services.invitation_service import InvitationService
 
 

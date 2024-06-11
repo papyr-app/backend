@@ -5,7 +5,7 @@ from marshmallow import ValidationError
 
 from app import db
 from schemas.virtual_path_schema import CreateVirtualPathSchema, UpdateVirtualPathSchema
-from models.virtual_path import VirtualPath
+from models import VirtualPath
 
 
 class VirtualPathService:

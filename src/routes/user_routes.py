@@ -5,8 +5,7 @@ from marshmallow import ValidationError
 from auth.decorators import token_required
 from services.user_service import UserService
 from services.pdf_document_service import PDFDocumentService
-from schemas.user_schema import UpdateUserSchema
-from models.user import User
+from models import User
 
 
 def create_user_bp():

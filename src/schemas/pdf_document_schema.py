@@ -1,7 +1,7 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from marshmallow import fields, validates, validate, pre_load, ValidationError
 
-from models.pdf_document import PDFDocument
+from models import PDFDocument
 from const import DocumentStatus
 from utils.helper import clean_path
 

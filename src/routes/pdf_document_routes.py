@@ -7,8 +7,7 @@ from errors import AuthorizationError
 from auth.decorators import token_required
 from services.pdf_document_service import PDFDocumentService
 from services.user_service import UserService
-from models.user import User
-from models.pdf_document import PDFDocument
+from models import User
 
 
 def create_document_bp(file_manager: IFileManager):

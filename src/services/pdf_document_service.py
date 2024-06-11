@@ -7,11 +7,10 @@ from app import db
 from errors import AuthorizationError
 from services.user_service import UserService
 from schemas.pdf_document_schema import (
-    PDFDocumentSchema,
     CreatePDFDocumentSchema,
     UpdatePDFDocumentSchema,
 )
-from models.pdf_document import PDFDocument
+from models import PDFDocument
 
 
 class PDFDocumentService:

@@ -8,12 +8,10 @@ from app import db
 from errors import AuthorizationError
 from services.pdf_document_service import PDFDocumentService
 from schemas.invitation_schema import (
-    InvitationSchema,
     CreateInvitationSchema,
-    UpdateInvitationSchema,
     AcceptInvitationSchema,
 )
-from models.invitation import Invitation
+from models import Invitation
 
 
 class InvitationService:
@@ -38,24 +36,6 @@ class InvitationService:
 
             invitation = Invitation(**validated_data)
             db.session.add(invitation)
-            db.session.commit()
-            return invitation
-        except ValidationError as e:
-            logging.error(f"Validation error: {e.messages}")
-            raise
-        except SQLAlchemyError as e:
-            db.session.rollback()
-            logging.error(f"SQLAlchemy error: {str(e)}")
-            raise
-
-    @staticmethod
-    def update_invitation(invitation_id, data):
-        schema = UpdateInvitationSchema()
-        try:
-            invitation = Invitation.query.get(invitation_id)
-            validated_data = schema.load(data, partial=True)
-            for key, value in validated_data.items():
-                setattr(invitation, key, value)
             db.session.commit()
             return invitation
         except ValidationError as e:

@@ -1,7 +1,7 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from marshmallow import fields, validate, validates, ValidationError
 
-from models.user import User
+from models import User
 
 
 class UserSchema(SQLAlchemyAutoSchema):
