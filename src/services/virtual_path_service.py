@@ -1,29 +1,63 @@
-from bson import ObjectId
-from mongoengine import Q
-from typing import Dict
+import logging
+from sqlalchemy.exc import SQLAlchemyError
+from flask import current_app
+from marshmallow import ValidationError
 
+from app import db
+from schemas.virtual_path_schema import CreateVirtualPathSchema, UpdateVirtualPathSchema
 from models.virtual_path import VirtualPath
-from models.user import User
-from models.pdf_document import PDFDocument
 
 
-def get_virtual_path(virtual_path_id: str) -> VirtualPath:
-    return VirtualPath.objects(id=ObjectId(virtual_path_id)).get()
+class VirtualPathService:
+    @staticmethod
+    def create_virtual_path(data):
+        schema = CreateVirtualPathSchema()
+        try:
+            validated_data = schema.load(data)
+            virtual_path = VirtualPath(**validated_data)
+            db.session.add(virtual_path)
+            db.session.commit()
+            return virtual_path
+        except ValidationError as e:
+            logging.error(f"Validation error: {e.messages}")
+            raise
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logging.error(f"SQLAlchemy error: {str(e)}")
+            raise
 
+    @staticmethod
+    def update_virtual_path(virtual_path_id, data):
+        schema = UpdateVirtualPathSchema()
+        try:
+            virtual_path = VirtualPath.query.get(virtual_path_id)
+            if not virtual_path:
+                raise ValidationError("VirtualPath not found.")
+            validated_data = schema.load(data, partial=True)
+            for key, value in validated_data.items():
+                setattr(virtual_path, key, value)
+            db.session.commit()
+            return virtual_path
+        except ValidationError as e:
+            logging.error(f"Validation error: {e.messages}")
+            raise
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logging.error(f"SQLAlchemy error: {str(e)}")
+            raise
 
-def get_user_virtual_path(user_id: ObjectId, document_id: ObjectId) -> VirtualPath:
-    return VirtualPath.objects(Q(user=user_id) & Q(document=document_id)).first()
-
-
-def create_virtual_path(
-    user: User, document: PDFDocument, file_path: str
-) -> VirtualPath:
-    virtual_path = VirtualPath(user=user, document=document, file_path=file_path)
-    virtual_path.save()
-    return virtual_path
-
-
-def update_virtual_path(virtual_path: VirtualPath, update_data: Dict):
-    virtual_path.file_path = update_data.get("file_path", virtual_path.file_path)
-    virtual_path.save()
-    return virtual_path
+    @staticmethod
+    def delete_virtual_path(virtual_path_id):
+        try:
+            virtual_path = VirtualPath.query.get(virtual_path_id)
+            if not virtual_path:
+                raise ValidationError("VirtualPath not found.")
+            db.session.delete(virtual_path)
+            db.session.commit()
+        except ValidationError as e:
+            logging.error(f"Validation error: {e.messages}")
+            raise
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            current_app.logger.error(f"SQLAlchemy error: {str(e)}")
+            raise

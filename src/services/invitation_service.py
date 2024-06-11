@@ -1,49 +1,141 @@
-from bson import ObjectId
-from typing import List
+import logging
+from datetime import datetime
+from sqlalchemy.exc import SQLAlchemyError
+from flask import current_app
+from marshmallow import ValidationError
 
+from app import db
 from errors import AuthorizationError
+from services.pdf_document_service import PDFDocumentService
+from schemas.invitation_schema import (
+    InvitationSchema,
+    CreateInvitationSchema,
+    UpdateInvitationSchema,
+    AcceptInvitationSchema,
+)
 from models.invitation import Invitation
-from models.pdf_document import PDFDocument
-from models.user import User
 
 
-def get_invitation(invitation_id: ObjectId) -> Invitation:
-    return Invitation.objects(id=invitation_id).get()
+class InvitationService:
+    @staticmethod
+    def create_invitation(data, user):
+        schema = CreateInvitationSchema()
+        try:
+            validated_data = schema.load(data)
+            invitee = validated_data["document_id"]
+            document = PDFDocumentService.get_pdf_document_by_id(
+                validated_data["document_id"]
+            )
 
+            if user != document.owner:
+                raise ValidationError("User is already a collaborator")
 
-def get_invitation_check_access(invitation_id: int, user_id: ObjectId) -> Invitation:
-    """
-    Retrieves an invitation and checks if the user has access to it.
+            if user == invitee:
+                raise ValidationError("User is already a collaborator")
 
-    :param invitation_id: The ID of the invitation to retrieve.
-    :type invitation_id: int
-    :param user_id: The ID of the user requesting access to the invitation.
-    :type user_id: ObjectId
-    :raises AuthorizationError: If the user does not have access to the invitation.
-    :return: The invitation if access is granted.
-    :rtype: Invitation
-    """
-    invitation = Invitation.objects(id=ObjectId(invitation_id)).get()
-    if not invitation.has_access(user_id):
-        raise AuthorizationError()
-    return invitation
+            if invitee in document.collaborators:
+                raise ValidationError("User is already a collaborator")
 
+            invitation = Invitation(**validated_data)
+            db.session.add(invitation)
+            db.session.commit()
+            return invitation
+        except ValidationError as e:
+            logging.error(f"Validation error: {e.messages}")
+            raise
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logging.error(f"SQLAlchemy error: {str(e)}")
+            raise
 
-def get_sent_invitations(user_id: ObjectId) -> List[Invitation]:
-    return Invitation.objects(invited_by=user_id).all()
+    @staticmethod
+    def update_invitation(invitation_id, data):
+        schema = UpdateInvitationSchema()
+        try:
+            invitation = Invitation.query.get(invitation_id)
+            validated_data = schema.load(data, partial=True)
+            for key, value in validated_data.items():
+                setattr(invitation, key, value)
+            db.session.commit()
+            return invitation
+        except ValidationError as e:
+            logging.error(f"Validation error: {e.messages}")
+            raise
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logging.error(f"SQLAlchemy error: {str(e)}")
+            raise
 
+    @staticmethod
+    def delete_invitation(invitation_id):
+        try:
+            invitation = Invitation.query.get(invitation_id)
+            if not invitation:
+                raise ValidationError("Invitation not found.")
+            db.session.delete(invitation)
+            db.session.commit()
+        except ValidationError as e:
+            logging.error(f"Validation error: {e.messages}")
+            raise
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            current_app.logger.error(f"SQLAlchemy error: {str(e)}")
+            raise
 
-def get_received_invitations(user_id: ObjectId) -> List[Invitation]:
-    return Invitation.objects(invitee=user_id).all()
+    @staticmethod
+    def get_invitation_by_id(invitation_id, user_id):
+        try:
+            invitation = Invitation.query.get(invitation_id)
+            if not invitation:
+                raise ValidationError("Invitation not found.")
+            if not invitation.has_access(user_id):
+                raise AuthorizationError()
+            return invitation
+        except SQLAlchemyError as e:
+            logging.error(f"SQLAlchemy error: {str(e)}")
+            raise
 
+    @staticmethod
+    def get_invitations_sent_by_user(user_id):
+        try:
+            invitations = Invitation.query.filter_by(invited_by_id=user_id).all()
+            return invitations
+        except SQLAlchemyError as e:
+            logging.error(f"SQLAlchemy error: {str(e)}")
+            raise
 
-def create_invitation(
-    document: PDFDocument, invited_by: User, invitee: User
-) -> Invitation:
-    invitation = Invitation(
-        document=document,
-        invited_by=invited_by,
-        invitee=invitee,
-    )
-    invitation.save()
-    return invitation
+    @staticmethod
+    def get_invitations_received_by_user(user_id):
+        try:
+            invitations = Invitation.query.filter_by(invitee_id=user_id).all()
+            return invitations
+        except SQLAlchemyError as e:
+            logging.error(f"SQLAlchemy error: {str(e)}")
+            raise
+
+    @staticmethod
+    def accept_invitation(data, user):
+        schema = AcceptInvitationSchema()
+        try:
+            validated_data = schema.load(data)
+            invitation = InvitationService.get_invitation_by_id(
+                validated_data["invitation_id"]
+            )
+
+            if invitation.invitee != user:
+                raise ValidationError("Cannot invite yourself")
+
+            if invitation.expires_at < datetime.utcnow():
+                raise ValidationError("Invitation is expired")
+
+            document_id = invitation.document_id
+            invitee_id = invitation.invitee_id
+            PDFDocumentService.add_collaborator(document_id, user.id, invitee_id)
+            return invitation
+        except ValidationError as e:
+            logging.error(f"Validation error: {e.messages}")
+            raise
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logging.error(f"SQLAlchemy error: {str(e)}")
+            raise

@@ -1,64 +1,91 @@
-from datetime import datetime
-from bson import ObjectId
+import logging
+from sqlalchemy.exc import SQLAlchemyError
+from marshmallow import ValidationError
 
-from models.annotation import Annotation
-from models.highlight_annotation import HighlightAnnotation
-from models.drawing_annotation import DrawingAnnotation
-
-
-def get_annotation(annotation_id: int) -> Annotation:
-    return Annotation.objects(id=ObjectId(annotation_id)).get()
-
-
-def create_highlight_annotation(
-    document, user, page_number, position, layer, text_range, color
-) -> HighlightAnnotation:
-    annotation = HighlightAnnotation(
-        document=document,
-        user=user,
-        page_number=page_number,
-        position=position,
-        layer=layer,
-        text_range=text_range,
-        color=color,
-    )
-    annotation.save()
-    return annotation
+from app import db
+from models.annotation import Annotation, DrawingAnnotation, HighlightAnnotation
+from schemas.annotation_schema import (
+    CreateDrawingAnnotationSchema,
+    UpdateDrawingAnnotationSchema,
+    CreateHighlightAnnotationSchema,
+    UpdateHighlightAnnotationSchema,
+)
 
 
-def create_drawing_annotation(
-    document, user, page_number, position, layer, path, color, width
-) -> DrawingAnnotation:
-    annotation = DrawingAnnotation(
-        document=document,
-        user=user,
-        page_number=page_number,
-        position=position,
-        layer=layer,
-        path=path,
-        color=color,
-        width=width,
-    )
-    annotation.save()
-    return annotation
+class AnnotationService:
+    @staticmethod
+    def create_drawing_annotation(data):
+        schema = CreateDrawingAnnotationSchema()
+        try:
+            validated_data = schema.load(data)
+            annotation = DrawingAnnotation(**validated_data)
+            db.session.add(annotation)
+            db.session.commit()
+            return annotation
+        except ValidationError as e:
+            logging.error(f"Validation error: {e.messages}")
+            raise
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logging.error(f"SQLAlchemy error: {str(e)}")
+            raise
 
+    @staticmethod
+    def create_highlight_annotation(data):
+        schema = CreateHighlightAnnotationSchema()
+        try:
+            validated_data = schema.load(data)
+            annotation = HighlightAnnotation(**validated_data)
+            db.session.add(annotation)
+            db.session.commit()
+            return annotation
+        except ValidationError as e:
+            logging.error(f"Validation error: {e.messages}")
+            raise
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logging.error(f"SQLAlchemy error: {str(e)}")
+            raise
 
-def update_annotation(annotation: Annotation, annotation_data) -> Annotation:
-    for field in ["page_number", "position", "layer", "comments", "status"]:
-        if field in annotation_data:
-            if field == "comments":
-                # comments_schema = CommentSchema(many=True)
-                # comments = comments_schema.load(validated_data[field])
-                # annotation.comments = [
-                #     Comment.objects.get(id=comment['id']) for comment in comments
-                # ]
-                pass
+    @staticmethod
+    def update_annotation(annotation_id, data):
+        try:
+            annotation = Annotation.query.get(annotation_id)
+            if not annotation:
+                raise ValidationError("Annotation not found.")
+
+            if isinstance(annotation, DrawingAnnotation):
+                schema = UpdateDrawingAnnotationSchema()
+            elif isinstance(annotation, HighlightAnnotation):
+                schema = UpdateHighlightAnnotationSchema()
             else:
-                setattr(annotation, field, annotation_data[field])
-    annotation.updated_at = datetime.utcnow()
-    annotation.save()
+                raise ValidationError("Invalid annotation type.")
 
+            validated_data = schema.load(data, partial=True)
+            for key, value in validated_data.items():
+                setattr(annotation, key, value)
+            db.session.commit()
+            return annotation
+        except ValidationError as e:
+            logging.error(f"Validation error: {e.messages}")
+            raise
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logging.error(f"SQLAlchemy error: {str(e)}")
+            raise
 
-def delete_annotation(annotation_id: int):
-    annotation = get_annotation(annotation_id)
-    annotation.delete()
+    @staticmethod
+    def delete_annotation(annotation_id):
+        try:
+            annotation = Annotation.query.get(annotation_id)
+            if not annotation:
+                raise ValidationError("Annotation not found.")
+            db.session.delete(annotation)
+            db.session.commit()
+        except ValidationError as e:
+            logging.error(f"Validation error: {e.messages}")
+            raise
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logging.error(f"SQLAlchemy error: {str(e)}")
+            raise

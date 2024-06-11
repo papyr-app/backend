@@ -1,28 +1,24 @@
-from mongoengine import Document, StringField, DateTimeField
-from flask_bcrypt import Bcrypt
 from datetime import datetime
 
 from const import RoleType
+from app import db, bcrypt
 
-bcrypt = Bcrypt()
 
+class User(db.Model):
+    __tablename__ = "users"
 
-class User(Document):
-    username = StringField(required=True)
-    email = StringField(required=True)
-    first_name = StringField(required=True)
-    last_name = StringField(required=True)
-    password_hash = StringField()
-    role = StringField(default=RoleType.USER)
-    created_at = DateTimeField(default=datetime.utcnow)
-    last_updated = DateTimeField(default=datetime.utcnow)
-    last_login = DateTimeField(default=datetime.utcnow)
-
-    meta = {
-        "collection": "users",
-        "indexes": ["username", "email"],
-        "ordering": ["-created_at"],
-    }
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String, nullable=False, unique=True)
+    email = db.Column(db.String, nullable=False, unique=True)
+    first_name = db.Column(db.String, nullable=False)
+    last_name = db.Column(db.String, nullable=False)
+    password_hash = db.Column(db.String, nullable=False)
+    role = db.Column(db.String, default=RoleType.USER)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_updated = db.Column(
+        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
+    last_login = db.Column(db.DateTime, default=datetime.utcnow)
 
     def set_password(self, password):
         self.password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
@@ -32,8 +28,4 @@ class User(Document):
 
     def record_login(self):
         self.last_login = datetime.utcnow()
-        self.save()
-
-    def to_dict(self):
-        data = self.to_mongo().to_dict()
-        return data
+        db.session.commit()

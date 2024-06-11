@@ -1,13 +1,17 @@
-from mongoengine import Document, ReferenceField, DateTimeField
 from datetime import datetime
 
-from models.user import User
-from models.annotation import Annotation
+from app import db
 
 
-class SeenStatus(Document):
-    user = ReferenceField(User, required=True)
-    annotation = ReferenceField(Annotation, required=True)
-    seen_at = DateTimeField(default=datetime.utcnow)
+class SeenStatus(db.Model):
+    __tablename__ = "seen_statuses"
 
-    meta = {"collection": "seen_statuses", "ordering": ["-seen_at"]}
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    annotation_id = db.Column(
+        db.Integer, db.ForeignKey("annotations.id"), nullable=False
+    )
+    seen_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship("User")
+    annotation = db.relationship("Annotation")

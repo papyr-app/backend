@@ -1,29 +1,61 @@
-from typing import Dict
-from datetime import datetime
-from bson import ObjectId
+import logging
+from sqlalchemy.exc import SQLAlchemyError
+from flask import current_app
+from marshmallow import ValidationError
 
-from models.pdf_document import PDFDocument
-from models.user import User
+from app import db
+from schemas.comment_schema import CreateCommentSchema, UpdateCommentSchema
 from models.comment import Comment
 
 
-def get_comment(comment_id: int) -> Comment:
-    return Comment.objects(id=ObjectId(comment_id)).get()
+class CommentService:
+    @staticmethod
+    def create_comment(data):
+        schema = CreateCommentSchema()
+        try:
+            validated_data = schema.load(data)
+            comment = Comment(**validated_data)
+            db.session.add(comment)
+            db.session.commit()
+            return comment
+        except ValidationError as e:
+            logging.error(f"Validation error: {e.messages}")
+            raise
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logging.error(f"SQLAlchemy error: {str(e)}")
+            raise
 
+    @staticmethod
+    def update_comment(comment_id, data):
+        schema = UpdateCommentSchema()
+        try:
+            comment = Comment.query.get(comment_id)
+            validated_data = schema.load(data, partial=True)
+            for key, value in validated_data.items():
+                setattr(comment, key, value)
+            db.session.commit()
+            return comment
+        except ValidationError as e:
+            logging.error(f"Validation error: {e.messages}")
+            raise
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logging.error(f"SQLAlchemy error: {str(e)}")
+            raise
 
-def create_comment(document: PDFDocument, user: User, text: str) -> Comment:
-    comment = Comment(document=document, user=user, text=text)
-    comment.save()
-    return comment
-
-
-def update_comment(comment: Comment, comment_data: Dict) -> Comment:
-    comment.text = comment_data.get("text", comment.text)
-    comment.updated_at = datetime.utcnow()
-    comment.save()
-    return comment
-
-
-def delete_comment(comment_id: int):
-    comment = get_comment(comment_id)
-    comment.delete()
+    @staticmethod
+    def delete_comment(comment_id):
+        try:
+            comment = Comment.query.get(comment_id)
+            if not comment:
+                raise ValidationError("Comment not found.")
+            db.session.delete(comment)
+            db.session.commit()
+        except ValidationError as e:
+            logging.error(f"Validation error: {e.messages}")
+            raise
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            current_app.logger.error(f"SQLAlchemy error: {str(e)}")
+            raise
