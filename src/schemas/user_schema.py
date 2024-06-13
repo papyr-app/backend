@@ -1,6 +1,7 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
-from marshmallow import fields, validate, validates, ValidationError
+from marshmallow import Schema, fields, validate, validates, ValidationError
 
+from app import db
 from models import User
 
 
@@ -9,14 +10,11 @@ class UserSchema(SQLAlchemyAutoSchema):
         model = User
         include_fk = True
         load_instance = True
+        sqla_session = db.session
+        exclude = ("password_hash", )
 
 
-class CreateUserSchema(SQLAlchemyAutoSchema):
-    class Meta:
-        model = User
-        load_instance = True
-        include_fk = True
-
+class CreateUserSchema(Schema):
     username = fields.String(required=True, validate=validate.Length(min=2, max=20))
     email = fields.Email(required=True)
     first_name = fields.String(required=True, validate=validate.Length(min=2, max=20))
@@ -39,12 +37,7 @@ class CreateUserSchema(SQLAlchemyAutoSchema):
             raise ValidationError("Password must be at least 6 characters long.")
 
 
-class UpdateUserSchema(SQLAlchemyAutoSchema):
-    class Meta:
-        model = User
-        load_instance = True
-        include_fk = True
-
+class UpdateUserSchema(Schema):
     username = fields.String(required=False, validate=validate.Length(min=2, max=20))
     email = fields.Email(required=False)
     first_name = fields.String(required=False, validate=validate.Length(min=2, max=20))

@@ -1,24 +1,34 @@
+from werkzeug.datastructures import ImmutableMultiDict
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
-from marshmallow import fields, validates, validate, pre_load, ValidationError
+from marshmallow import Schema, fields, validates, validate, post_dump, pre_load, ValidationError
 
-from models import PDFDocument
+from app import db
+from models import PDFDocument, VirtualPath
 from const import DocumentStatus
+from schemas.user_schema import UserSchema
 from utils.helper import clean_path
 
 
 class PDFDocumentSchema(SQLAlchemyAutoSchema):
+    owner = fields.Nested(UserSchema)
+
     class Meta:
         model = PDFDocument
         include_fk = True
         load_instance = True
+        sqla_session = db.session
+
+    @post_dump(pass_many=False)
+    def add_file_path(self, data, many, **kwargs):
+        user = self.context.get('user')
+        if user:
+            virtual_path = VirtualPath.query.filter_by(user_id=user.id, document_id=data['id']).first()
+            if virtual_path:
+                data['file_path'] = virtual_path.file_path
+        return data
 
 
-class CreatePDFDocumentSchema(SQLAlchemyAutoSchema):
-    class Meta:
-        model = PDFDocument
-        load_instance = True
-        include_fk = True
-
+class CreatePDFDocumentSchema(Schema):
     title = fields.String(required=True, validate=validate.Length(min=1, max=40))
     description = fields.String(required=False, validate=validate.Length(max=300))
     can_share = fields.Boolean(required=False, default=False)
@@ -26,16 +36,17 @@ class CreatePDFDocumentSchema(SQLAlchemyAutoSchema):
 
     @pre_load
     def process_input(self, data, **kwargs):
+        if isinstance(data, ImmutableMultiDict):
+            data = data.to_dict()
+
+        if "file_path" not in data:
+            raise ValidationError("file_path is required.")
+
         data["file_path"] = clean_path(data["file_path"])
         return data
 
 
-class UpdatePDFDocumentSchema(SQLAlchemyAutoSchema):
-    class Meta:
-        model = PDFDocument
-        load_instance = True
-        include_fk = True
-
+class UpdatePDFDocumentSchema(Schema):
     title = fields.String(required=False, validate=validate.Length(min=1, max=40))
     description = fields.String(required=False, validate=validate.Length(max=300))
     status = fields.String(required=False)
@@ -44,7 +55,8 @@ class UpdatePDFDocumentSchema(SQLAlchemyAutoSchema):
 
     @pre_load
     def process_input(self, data, **kwargs):
-        data["file_path"] = clean_path(data["file_path"])
+        if "file_path" in data:
+            data["file_path"] = clean_path(data["file_path"])
         return data
 
     @validates("status")

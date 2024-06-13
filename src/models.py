@@ -21,18 +21,18 @@ class Invitation(db.Model):
     __tablename__ = "invitations"
 
     id = db.Column(db.Integer, primary_key=True)
-    document_id = db.Column(
-        db.Integer, db.ForeignKey("pdf_documents.id"), nullable=False
-    )
+    document_id = db.Column(db.Integer, db.ForeignKey("pdf_documents.id"), nullable=False)
     invited_by_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     invitee_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    expires_at = db.Column(
-        db.DateTime, default=lambda: datetime.utcnow() + timedelta(days=7)
-    )
+    expires_at = db.Column(db.DateTime, default=lambda: datetime.utcnow() + timedelta(days=7))
 
     document = db.relationship("PDFDocument", backref="invitations")
-    invited_by = db.relationship("User", foreign_keys=[invited_by_id], backref="invited_invitations")
-    invitee = db.relationship("User", foreign_keys=[invitee_id], backref="received_invitations")
+    invited_by = db.relationship(
+        "User", foreign_keys=[invited_by_id], backref="invited_invitations"
+    )
+    invitee = db.relationship(
+        "User", foreign_keys=[invitee_id], backref="received_invitations"
+    )
 
     def has_access(self, user_id):
         return self.invitee.id == user_id or self.invited_by.id == user_id
@@ -53,8 +53,9 @@ class PDFDocument(db.Model):
 
     owner = db.relationship("User", backref="owned_documents")
     collaborators = db.relationship("User", secondary=document_collaborators, backref="collaborations")
+    virtual_paths = db.relationship("VirtualPath", backref="pdf_document", cascade="all, delete-orphan")
 
-    def has_access(self, user_id):
+    def has_access(self, user_id: int) -> bool:
         return self.owner.id == user_id or user_id in [
             collaborator.id for collaborator in self.collaborators
         ]
@@ -71,9 +72,7 @@ class User(db.Model):
     password_hash = db.Column(db.String, nullable=False)
     role = db.Column(db.String, default=RoleType.USER)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    last_updated = db.Column(
-        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
-    )
+    last_updated = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     last_login = db.Column(db.DateTime, default=datetime.utcnow)
 
     def set_password(self, password):
@@ -97,7 +96,6 @@ class VirtualPath(db.Model):
         db.ForeignKey("pdf_documents.id", ondelete="CASCADE"),
         nullable=False,
     )
-    file_path = db.Column(db.String, nullable=False)
+    file_path = db.Column(db.String, default="", nullable=False)
 
     user = db.relationship("User", backref="virtual_paths")
-    document = db.relationship("PDFDocument", backref="virtual_paths", passive_deletes=True)

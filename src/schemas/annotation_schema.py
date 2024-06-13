@@ -1,6 +1,7 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from marshmallow import fields, validate
 
+from app import db
 from models import Annotation, DrawingAnnotation, HighlightAnnotation
 
 
@@ -9,6 +10,7 @@ class CreateAnnotationSchema(SQLAlchemyAutoSchema):
         model = Annotation
         load_instance = True
         include_fk = True
+        sqla_session = db.session
 
     document_id = fields.Str(required=True)
     user_id = fields.Str(required=True)
@@ -27,6 +29,7 @@ class UpdateAnnotationSchema(SQLAlchemyAutoSchema):
         model = Annotation
         load_instance = True
         include_fk = True
+        sqla_session = db.session
 
     id = fields.Str(required=True)
     page_number = fields.Int(required=False, validate=validate.Range(min=1))
@@ -40,6 +43,7 @@ class CreateDrawingAnnotationSchema(CreateAnnotationSchema, SQLAlchemyAutoSchema
         model = DrawingAnnotation
         load_instance = True
         include_fk = True
+        sqla_session = db.session
 
     path = fields.Str(required=True)
     color = fields.Str(required=True)
@@ -52,6 +56,7 @@ class UpdateDrawingAnnotationSchema(UpdateAnnotationSchema, SQLAlchemyAutoSchema
         model = DrawingAnnotation
         load_instance = True
         include_fk = True
+        sqla_session = db.session
 
     path = fields.Str(required=False)
     color = fields.Str(required=False)
@@ -64,6 +69,7 @@ class CreateHighlightAnnotationSchema(CreateAnnotationSchema, SQLAlchemyAutoSche
         model = HighlightAnnotation
         load_instance = True
         include_fk = True
+        sqla_session = db.session
 
     text_range = fields.Str(required=True)
     color = fields.Str(required=True)
@@ -75,6 +81,7 @@ class UpdateHighlightAnnotationSchema(UpdateAnnotationSchema, SQLAlchemyAutoSche
         model = HighlightAnnotation
         load_instance = True
         include_fk = True
+        sqla_session = db.session
 
     text_range = fields.Str(required=False)
     color = fields.Str(required=False)

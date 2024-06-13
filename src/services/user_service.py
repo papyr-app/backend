@@ -1,4 +1,5 @@
 import logging
+from typing import Dict, Any
 from sqlalchemy.exc import SQLAlchemyError
 from flask import current_app
 from marshmallow import ValidationError
@@ -12,7 +13,7 @@ from auth.jwt_handler import generate_jwt
 
 class UserService:
     @staticmethod
-    def create_user(data):
+    def create_user(data: Dict[str, Any]) -> User:
         schema = CreateUserSchema()
         try:
             validated_data = schema.load(data)
@@ -31,7 +32,7 @@ class UserService:
             raise
 
     @staticmethod
-    def update_user(user_id, data):
+    def update_user(user_id: int, data: Dict[str, Any]) -> User:
         schema = UpdateUserSchema()
         try:
             user = User.query.get(user_id)
@@ -53,7 +54,7 @@ class UserService:
             raise
 
     @staticmethod
-    def delete_user(user_id):
+    def delete_user(user_id: int) -> None:
         try:
             user = User.query.get(user_id)
             if not user:
@@ -69,7 +70,7 @@ class UserService:
             raise
 
     @staticmethod
-    def get_user_by_id(user_id):
+    def get_user_by_id(user_id: int) -> User:
         try:
             user = User.query.get(user_id)
             if not user:
@@ -80,7 +81,7 @@ class UserService:
             raise
 
     @staticmethod
-    def get_user_by_username(username):
+    def get_user_by_username(username: str) -> User:
         try:
             user = User.query.filter_by(username=username).first()
             if not user:
@@ -91,7 +92,7 @@ class UserService:
             raise
 
     @staticmethod
-    def get_user_by_email(email):
+    def get_user_by_email(email: str) -> User:
         try:
             user = User.query.filter_by(email=email).first()
             if not user:
@@ -102,7 +103,7 @@ class UserService:
             raise
 
     @staticmethod
-    def login(data):
+    def login(data: Dict[str, Any]) -> str:
         schema = LoginSchema()
         try:
             validated_data = schema.load(data)

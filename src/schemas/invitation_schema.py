@@ -1,6 +1,7 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
-from marshmallow import fields, validate, validates, ValidationError
+from marshmallow import Schema, fields, validate, validates, ValidationError
 
+from app import db
 from models import Invitation, User, PDFDocument
 
 
@@ -9,18 +10,12 @@ class InvitationSchema(SQLAlchemyAutoSchema):
         model = Invitation
         include_fk = True
         load_instance = True
+        sqla_session = db.session
 
 
-class CreateInvitationSchema(SQLAlchemyAutoSchema):
-    class Meta:
-        model = Invitation
-        load_instance = True
-        include_fk = True
-
+class CreateInvitationSchema(Schema):
     document_id = fields.String(required=True, attribute="document_id")
-    invitee = fields.String(
-        required=True, validate=validate.Email(), attribute="invitee"
-    )
+    invitee = fields.String(required=True, validate=validate.Email(), attribute="invitee")
 
     @validates("document_id")
     def validate_document(self, value):
@@ -33,13 +28,8 @@ class CreateInvitationSchema(SQLAlchemyAutoSchema):
             raise ValidationError("User with this email does not exist.")
 
 
-class AcceptInvitationSchema(SQLAlchemyAutoSchema):
-    class Meta:
-        model = Invitation
-        load_instance = True
-        include_fk = True
-
-    invitation_id = fields.String(required=True, attribute="id")
+class AcceptInvitationSchema(Schema):
+    invitation_id = fields.String(required=True, attribute="invitation_id")
 
     @validates("invitation_id")
     def validate_invitation(self, value):

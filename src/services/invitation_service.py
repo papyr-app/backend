@@ -1,4 +1,5 @@
 import logging
+from typing import List, Dict, Any
 from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
 from flask import current_app
@@ -6,35 +7,35 @@ from marshmallow import ValidationError
 
 from app import db
 from errors import AuthorizationError
+from models import User, Invitation
 from services.pdf_document_service import PDFDocumentService
+from services.user_service import UserService
 from schemas.invitation_schema import (
     CreateInvitationSchema,
     AcceptInvitationSchema,
 )
-from models import Invitation
 
 
 class InvitationService:
     @staticmethod
-    def create_invitation(data, user):
+    def create_invitation(data: Dict[str, Any], user: User) -> Invitation:
         schema = CreateInvitationSchema()
         try:
             validated_data = schema.load(data)
-            invitee = validated_data["document_id"]
-            document = PDFDocumentService.get_pdf_document_by_id(
-                validated_data["document_id"]
-            )
-
-            if user != document.owner:
-                raise ValidationError("User is already a collaborator")
+            invitee = UserService.get_user_by_email(validated_data["invitee"])
+            document = PDFDocumentService.get_pdf_document_by_id(validated_data["document_id"], user.id)
 
             if user == invitee:
-                raise ValidationError("User is already a collaborator")
+                raise ValidationError("Cannot invite yourself.")
 
-            if invitee in document.collaborators:
-                raise ValidationError("User is already a collaborator")
+            if invitee == document.owner or invitee in document.collaborators:
+                raise ValidationError("User is already a collaborator.")
 
-            invitation = Invitation(**validated_data)
+            invitation = Invitation(
+                document_id=document.id,
+                invited_by_id=user.id,
+                invitee_id=invitee.id
+            )
             db.session.add(invitation)
             db.session.commit()
             return invitation
@@ -47,11 +48,10 @@ class InvitationService:
             raise
 
     @staticmethod
-    def delete_invitation(invitation_id):
+    def delete_invitation(invitation_id: int, user_id: int) -> None:
         try:
-            invitation = Invitation.query.get(invitation_id)
-            if not invitation:
-                raise ValidationError("Invitation not found.")
+            invitation = InvitationService.get_invitation_by_id(invitation_id)
+            InvitationService.check_user_access(invitation, user_id)
             db.session.delete(invitation)
             db.session.commit()
         except ValidationError as e:
@@ -63,20 +63,18 @@ class InvitationService:
             raise
 
     @staticmethod
-    def get_invitation_by_id(invitation_id, user_id):
+    def get_invitation_by_id(invitation_id: int) -> Invitation:
         try:
             invitation = Invitation.query.get(invitation_id)
             if not invitation:
                 raise ValidationError("Invitation not found.")
-            if not invitation.has_access(user_id):
-                raise AuthorizationError()
             return invitation
         except SQLAlchemyError as e:
             logging.error(f"SQLAlchemy error: {str(e)}")
             raise
 
     @staticmethod
-    def get_invitations_sent_by_user(user_id):
+    def get_invitations_sent_by_user(user_id: int) -> List[Invitation]:
         try:
             invitations = Invitation.query.filter_by(invited_by_id=user_id).all()
             return invitations
@@ -85,7 +83,7 @@ class InvitationService:
             raise
 
     @staticmethod
-    def get_invitations_received_by_user(user_id):
+    def get_invitations_received_by_user(user_id: int) -> List[Invitation]:
         try:
             invitations = Invitation.query.filter_by(invitee_id=user_id).all()
             return invitations
@@ -94,23 +92,20 @@ class InvitationService:
             raise
 
     @staticmethod
-    def accept_invitation(data, user):
+    def accept_invitation(data: Dict[str, Any], user: User) -> Invitation:
         schema = AcceptInvitationSchema()
         try:
             validated_data = schema.load(data)
-            invitation = InvitationService.get_invitation_by_id(
-                validated_data["invitation_id"]
-            )
+            invitation = InvitationService.get_invitation_by_id(validated_data["invitation_id"])
 
             if invitation.invitee != user:
-                raise ValidationError("Cannot invite yourself")
+                raise ValidationError("This is not your invite.")
 
             if invitation.expires_at < datetime.utcnow():
                 raise ValidationError("Invitation is expired")
 
-            document_id = invitation.document_id
-            invitee_id = invitation.invitee_id
-            PDFDocumentService.add_collaborator(document_id, user.id, invitee_id)
+            document = PDFDocumentService.get_pdf_document_by_id(invitation.document_id)
+            PDFDocumentService.add_collaborator(document, user)
             return invitation
         except ValidationError as e:
             logging.error(f"Validation error: {e.messages}")
@@ -119,3 +114,9 @@ class InvitationService:
             db.session.rollback()
             logging.error(f"SQLAlchemy error: {str(e)}")
             raise
+
+    @staticmethod
+    def check_user_access(invitation: Invitation, user_id: int) -> bool:
+        if not invitation.has_access(user_id):
+            raise AuthorizationError()
+        return True

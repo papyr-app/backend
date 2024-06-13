@@ -7,9 +7,9 @@ from flask_sqlalchemy import SQLAlchemy
 from file_manager.s3_client import S3Client
 from utils.log import set_up_logger
 
-socketio = SocketIO(async_mode="gevent")
-bcrypt = Bcrypt()
 db = SQLAlchemy()
+bcrypt = Bcrypt()
+socketio = SocketIO(async_mode="gevent")
 
 
 def init_app(config_path: str):
