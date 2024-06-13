@@ -184,10 +184,10 @@ def create_document_bp(file_manager: IFileManager):
     @token_required
     def use_share_token(user: User, share_token: str):
         try:
-            document = PDFDocumentService.get_pdf_document_by_share_token(
-                share_token, user.id
-            )
-            PDFDocumentService.add_collaborator(document.id, user.id, document.owner.id)
+            document = PDFDocumentService.get_pdf_document_by_share_token(share_token)
+            if not document.can_share:
+                raise ValidationError("Document is not shareable.")
+            PDFDocumentService.add_collaborator(document, user)
             return jsonify({"data": "User added as collaborator"}), 201
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
