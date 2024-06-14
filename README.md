@@ -7,16 +7,20 @@
 ## Description
 N/A.
 
-## Installation
+## Installation For Local Development
 
 ### Prerequisites
-- **MongoDB** (either local or remote)
+- **SQLite3**
 - **Python 3.11**
 - **awscli** (for access to AWS S3 via boto3)
 
 ### Setup
-1. **Get MongoDB**
-   - [Set up MongoDB locally](https://www.mongodb.com/docs/manual/installation/) or use a remote instance.
+1. **Get SQLite3**
+   - Install via the apt package manager
+     ```bash
+     sudo apt update
+     sudo apt install sqlite3
+     ```
 
 2. **Install AWS CLI**
    - Install the AWS CLI following the instructions [here](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
@@ -42,19 +46,21 @@ N/A.
    ```bash
    pip install -r requirements.txt
    ```
+
+5. **Create and Apply Database Migration**
+   ```bash
+    flask db migrate -m "Initial migration"
+    flask db upgrade
+   ```
+
 ### Environment Variables
 
 The following environment variables are required:
 
 - **S3_BUCKET_NAME**
 - **SECRET_KEY** (for JWTs, during local development this can be anything)
-
-If you are using a remote instance of MongoDB, you also need to set the following variables:
-
-- **MONGO_HOST** (e.g. cluster0.abcxyz.mongodb.net)
-- **MONGO_NAME** (The name of your database)
-- **MONGO_USER** (username)
-- **MONGO_PASS** (password)
+- **FLASK_ENV**
+- **DEV_DATABASE_URL** 
 
 ### Running the Application
 1. **Run the Application**

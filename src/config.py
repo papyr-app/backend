@@ -9,16 +9,19 @@ class Config:
     AWS_SECRET_ACCESS_KEY = getenv("AWS_SECRET_ACCESS_KEY")
     AWS_DEFAULT_REGION = getenv("AWS_DEFAULT_REGION")
     S3_BUCKET_NAME = getenv("S3_BUCKET_NAME")
-
-    SQLALCHEMY_DATABASE_URI = getenv("SQLALCHEMY_DATABASE_URI")
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-
     SECRET_KEY = getenv("SECRET_KEY")
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class DevelopmentConfig(Config):
     DEBUG = True
+    SQLALCHEMY_DATABASE_URI = getenv("DEV_DATABASE_URL")
+
+
+class TestingConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = getenv("TEST_DATABASE_URL")
 
 
 class ProductionConfig(Config):
-    DEBUG = False
+    SQLALCHEMY_DATABASE_URI = getenv("PROD_DATABASE_URL")
