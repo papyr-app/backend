@@ -49,6 +49,7 @@ N/A.
 
 5. **Apply Database Migration**
    ```bash
+    export FLASK_APP=src/manage.py
     flask db upgrade
    ```
 
