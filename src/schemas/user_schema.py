@@ -1,5 +1,17 @@
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from marshmallow import Schema, fields, validate, validates, ValidationError
-from models.user import User
+
+from app import db
+from models import User
+
+
+class UserSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = User
+        include_fk = True
+        load_instance = True
+        sqla_session = db.session
+        exclude = ("password_hash", )
 
 
 class CreateUserSchema(Schema):
@@ -11,17 +23,16 @@ class CreateUserSchema(Schema):
 
     @validates("username")
     def validate_username(self, value):
-        if User.objects(username=value).first():
+        if User.query.filter_by(username=value).first():
             raise ValidationError("Username already exists.")
 
     @validates("email")
     def validate_email(self, value):
-        if User.objects(email=value).first():
+        if User.query.filter_by(email=value).first():
             raise ValidationError("Email already exists.")
 
     @validates("password")
     def validate_password(self, value):
-        # TODO - add more logic to make sure password is complex
         if len(value) < 6:
             raise ValidationError("Password must be at least 6 characters long.")
 
@@ -34,10 +45,10 @@ class UpdateUserSchema(Schema):
 
     @validates("username")
     def validate_username(self, value):
-        if User.objects(username=value).first():
+        if User.query.filter_by(username=value).first():
             raise ValidationError("Username already exists.")
 
     @validates("email")
     def validate_email(self, value):
-        if User.objects(email=value).first():
+        if User.query.filter_by(email=value).first():
             raise ValidationError("Email already exists.")

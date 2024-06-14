@@ -2,6 +2,7 @@
 .venv
 venv
 log.txt
+src/instance/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
