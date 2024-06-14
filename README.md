@@ -47,9 +47,8 @@ N/A.
    pip install -r requirements.txt
    ```
 
-5. **Create and Apply Database Migration**
+5. **Apply Database Migration**
    ```bash
-    flask db migrate -m "Initial migration"
     flask db upgrade
    ```
 
