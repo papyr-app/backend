@@ -8,11 +8,11 @@ from app import init_app, socketio
 
 
 if __name__ == "__main__":
-    env = getenv('FLASK_ENV', 'development')
+    env = getenv("FLASK_ENV", "development")
 
-    if env == 'development':
+    if env == "development":
         app = init_app("config.DevelopmentConfig")
-    elif env == 'testing':
+    elif env == "testing":
         app = init_app("config.TestingConfig")
     else:
         app = init_app("config.ProductionConfig")

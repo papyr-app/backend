@@ -15,7 +15,9 @@ class InvitationSchema(SQLAlchemyAutoSchema):
 
 class CreateInvitationSchema(Schema):
     document_id = fields.String(required=True, attribute="document_id")
-    invitee = fields.String(required=True, validate=validate.Email(), attribute="invitee")
+    invitee = fields.String(
+        required=True, validate=validate.Email(), attribute="invitee"
+    )
 
     @validates("document_id")
     def validate_document(self, value):

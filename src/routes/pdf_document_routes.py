@@ -20,7 +20,7 @@ def create_document_bp(file_manager: IFileManager):
         try:
             document = PDFDocumentService.get_pdf_document_by_id(document_id)
             PDFDocumentService.check_user_access(document, user.id)
-            schema = PDFDocumentSchema(context={'user': user})
+            schema = PDFDocumentSchema(context={"user": user})
             return jsonify({"data": schema.dump(document)}), 200
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
@@ -92,7 +92,9 @@ def create_document_bp(file_manager: IFileManager):
     def update_document(user: User, document_id: int):
         data = request.get_json()
         try:
-            updated_document = PDFDocumentService.update_pdf_document(document_id, data, user.id)
+            updated_document = PDFDocumentService.update_pdf_document(
+                document_id, data, user.id
+            )
             schema = PDFDocumentSchema(context={"user": user}).dump(updated_document)
             return jsonify({"data": schema}), 200
         except ValidationError as err:

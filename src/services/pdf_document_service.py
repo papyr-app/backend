@@ -25,7 +25,9 @@ class PDFDocumentService:
             db.session.add(pdf_document)
             db.session.flush()
 
-            virtual_path = VirtualPath(user_id=user_id, document_id=pdf_document.id, file_path=file_path)
+            virtual_path = VirtualPath(
+                user_id=user_id, document_id=pdf_document.id, file_path=file_path
+            )
             db.session.add(virtual_path)
             db.session.commit()
             return pdf_document
@@ -49,11 +51,15 @@ class PDFDocumentService:
 
             if "file_path" in validated_data:
                 file_path = validated_data.pop("file_path")
-                virtual_path = VirtualPath.query.filter_by(user_id=user_id, document_id=document_id).first()
+                virtual_path = VirtualPath.query.filter_by(
+                    user_id=user_id, document_id=document_id
+                ).first()
                 if virtual_path:
                     virtual_path.file_path = file_path
                 else:
-                    virtual_path = VirtualPath(user_id=user_id, document_id=document_id, file_path=file_path)
+                    virtual_path = VirtualPath(
+                        user_id=user_id, document_id=document_id, file_path=file_path
+                    )
                     db.session.add(virtual_path)
 
             for key, value in validated_data.items():
@@ -98,7 +104,9 @@ class PDFDocumentService:
     @staticmethod
     def get_pdf_document_by_share_token(share_token: str) -> PDFDocument:
         try:
-            pdf_document = PDFDocument.query.filter((PDFDocument.share_token == share_token)).first()
+            pdf_document = PDFDocument.query.filter(
+                (PDFDocument.share_token == share_token)
+            ).first()
             if not pdf_document:
                 raise ValidationError("PDF Document not found.")
             return pdf_document
@@ -127,7 +135,9 @@ class PDFDocumentService:
             pdf_document.collaborators.append(collaborator)
             db.session.flush()
 
-            virtual_path = VirtualPath(user_id=collaborator.id, document_id=pdf_document.id)
+            virtual_path = VirtualPath(
+                user_id=collaborator.id, document_id=pdf_document.id
+            )
             db.session.add(virtual_path)
             db.session.commit()
             return pdf_document
@@ -140,12 +150,18 @@ class PDFDocumentService:
             raise
 
     @staticmethod
-    def remove_collaborator(pdf_document: PDFDocument, collaborator: User) -> PDFDocument:
+    def remove_collaborator(
+        pdf_document: PDFDocument, collaborator: User
+    ) -> PDFDocument:
         try:
             if collaborator not in pdf_document.collaborators:
-                raise ValidationError("Collaborator is not associated with the document.")
+                raise ValidationError(
+                    "Collaborator is not associated with the document."
+                )
 
-            virtual_path = VirtualPath.query.filter_by(user_id=collaborator.id, document_id=pdf_document.id).first()
+            virtual_path = VirtualPath.query.filter_by(
+                user_id=collaborator.id, document_id=pdf_document.id
+            ).first()
             if virtual_path:
                 db.session.delete(virtual_path)
 

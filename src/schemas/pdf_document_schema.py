@@ -1,6 +1,14 @@
 from werkzeug.datastructures import ImmutableMultiDict
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
-from marshmallow import Schema, fields, validates, validate, post_dump, pre_load, ValidationError
+from marshmallow import (
+    Schema,
+    fields,
+    validates,
+    validate,
+    post_dump,
+    pre_load,
+    ValidationError,
+)
 
 from app import db
 from models import PDFDocument, VirtualPath
@@ -20,11 +28,13 @@ class PDFDocumentSchema(SQLAlchemyAutoSchema):
 
     @post_dump(pass_many=False)
     def add_file_path(self, data, many, **kwargs):
-        user = self.context.get('user')
+        user = self.context.get("user")
         if user:
-            virtual_path = VirtualPath.query.filter_by(user_id=user.id, document_id=data['id']).first()
+            virtual_path = VirtualPath.query.filter_by(
+                user_id=user.id, document_id=data["id"]
+            ).first()
             if virtual_path:
-                data['file_path'] = virtual_path.file_path
+                data["file_path"] = virtual_path.file_path
         return data
 
 

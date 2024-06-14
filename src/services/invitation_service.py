@@ -23,7 +23,9 @@ class InvitationService:
         try:
             validated_data = schema.load(data)
             invitee = UserService.get_user_by_email(validated_data["invitee"])
-            document = PDFDocumentService.get_pdf_document_by_id(validated_data["document_id"], user.id)
+            document = PDFDocumentService.get_pdf_document_by_id(
+                validated_data["document_id"], user.id
+            )
 
             if user == invitee:
                 raise ValidationError("Cannot invite yourself.")
@@ -32,9 +34,7 @@ class InvitationService:
                 raise ValidationError("User is already a collaborator.")
 
             invitation = Invitation(
-                document_id=document.id,
-                invited_by_id=user.id,
-                invitee_id=invitee.id
+                document_id=document.id, invited_by_id=user.id, invitee_id=invitee.id
             )
             db.session.add(invitation)
             db.session.commit()
@@ -96,7 +96,9 @@ class InvitationService:
         schema = AcceptInvitationSchema()
         try:
             validated_data = schema.load(data)
-            invitation = InvitationService.get_invitation_by_id(validated_data["invitation_id"])
+            invitation = InvitationService.get_invitation_by_id(
+                validated_data["invitation_id"]
+            )
 
             if invitation.invitee != user:
                 raise ValidationError("This is not your invite.")

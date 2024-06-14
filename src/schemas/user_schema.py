@@ -11,7 +11,7 @@ class UserSchema(SQLAlchemyAutoSchema):
         include_fk = True
         load_instance = True
         sqla_session = db.session
-        exclude = ("password_hash", )
+        exclude = ("password_hash",)
 
 
 class CreateUserSchema(Schema):
