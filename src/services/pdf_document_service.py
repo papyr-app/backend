@@ -4,14 +4,13 @@ from sqlalchemy.exc import SQLAlchemyError
 from flask import current_app
 from marshmallow import ValidationError
 
-from app import db
-from errors import AuthorizationError
-from services.user_service import UserService
-from schemas.pdf_document_schema import (
+from src.app import db
+from src.errors import AuthorizationError
+from src.schemas.pdf_document_schema import (
     CreatePDFDocumentSchema,
     UpdatePDFDocumentSchema,
 )
-from models import PDFDocument, VirtualPath, User
+from src.models import PDFDocument, VirtualPath, User
 
 
 class PDFDocumentService:

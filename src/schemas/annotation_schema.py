@@ -1,8 +1,8 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from marshmallow import fields, validate
 
-from app import db
-from models import Annotation, DrawingAnnotation, HighlightAnnotation
+from src.app import db
+from src.models import Annotation, DrawingAnnotation, HighlightAnnotation
 
 
 class CreateAnnotationSchema(SQLAlchemyAutoSchema):

@@ -4,14 +4,14 @@ from gevent import monkey
 monkey.patch_all()
 
 import logging
-from app import init_app, socketio
+from src.app import init_app, socketio
 
 env = getenv("FLASK_ENV", "testing")
 
 if env == "testing":
-    app = init_app("config.TestingConfig")
+    app = init_app("src.config.TestingConfig")
 else:
-    app = init_app("config.ProductionConfig")
+    app = init_app("src.config.ProductionConfig")
 
 if __name__ != "__main__":
     logging.info("Starting app...")

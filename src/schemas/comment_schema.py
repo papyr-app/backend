@@ -1,8 +1,8 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from marshmallow import Schema, fields, validates, ValidationError
 
-from app import db
-from models import Comment
+from src.app import db
+from src.models import Comment
 
 
 class CommentSchema(SQLAlchemyAutoSchema):

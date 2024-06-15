@@ -2,13 +2,13 @@ import logging
 from flask import request, jsonify, send_file, Blueprint
 from marshmallow import ValidationError
 
-from file_manager.ifile_manager import IFileManager
-from errors import AuthorizationError
-from auth.decorators import token_required
-from services.pdf_document_service import PDFDocumentService
-from services.user_service import UserService
-from schemas.pdf_document_schema import PDFDocumentSchema
-from models import User
+from src.file_manager.ifile_manager import IFileManager
+from src.errors import AuthorizationError
+from src.auth.decorators import token_required
+from src.services.pdf_document_service import PDFDocumentService
+from src.services.user_service import UserService
+from src.schemas.pdf_document_schema import PDFDocumentSchema
+from src.models import User
 
 
 def create_document_bp(file_manager: IFileManager):

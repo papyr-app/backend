@@ -1,8 +1,8 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from marshmallow import Schema, fields, validate, validates, ValidationError
 
-from app import db
-from models import Invitation, User, PDFDocument
+from src.app import db
+from src.models import Invitation, User, PDFDocument
 
 
 class InvitationSchema(SQLAlchemyAutoSchema):

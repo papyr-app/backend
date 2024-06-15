@@ -5,12 +5,12 @@ from sqlalchemy.exc import SQLAlchemyError
 from flask import current_app
 from marshmallow import ValidationError
 
-from app import db
-from errors import AuthorizationError
-from models import User, Invitation
-from services.pdf_document_service import PDFDocumentService
-from services.user_service import UserService
-from schemas.invitation_schema import (
+from src.app import db
+from src.errors import AuthorizationError
+from src.models import User, Invitation
+from src.services.pdf_document_service import PDFDocumentService
+from src.services.user_service import UserService
+from src.schemas.invitation_schema import (
     CreateInvitationSchema,
     AcceptInvitationSchema,
 )

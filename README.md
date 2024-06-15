@@ -49,7 +49,7 @@ N/A.
 
 5. **Apply Database Migration**
    ```bash
-    export FLASK_APP=src/manage.py
+    export FLASK_APP=manage.py
     flask db upgrade
    ```
 
@@ -60,12 +60,12 @@ The following environment variables are required:
 - **S3_BUCKET_NAME**
 - **SECRET_KEY** (for JWTs, during local development this can be anything)
 - **FLASK_ENV**
-- **DEV_DATABASE_URL** 
+- **DATABASE_URL** 
 
 ### Running the Application
 1. **Run the Application**
    ```bash
-   python src/run.py
+   python run.py
    ```
 
    By default, this starts a local server on port 5000. Test it by making a GET request to this endpoint:

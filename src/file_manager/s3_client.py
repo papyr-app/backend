@@ -3,7 +3,7 @@ from io import BytesIO
 import boto3
 from botocore.exceptions import NoCredentialsError, ClientError
 
-from file_manager.ifile_manager import IFileManager
+from src.file_manager.ifile_manager import IFileManager
 
 
 class S3Client(IFileManager):

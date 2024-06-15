@@ -4,8 +4,8 @@ from flask_socketio import SocketIO
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 
-from file_manager.s3_client import S3Client
-from utils.log import set_up_logger
+from src.file_manager.s3_client import S3Client
+from src.utils.log import set_up_logger
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -37,10 +37,10 @@ def init_app(config_path: str):
         db.create_all()
 
         # Import and register sockets
-        from sockets.connection_socket import handle_connections
-        from sockets.chat_socket import handle_chat
-        from sockets.comment_socket import handle_comments
-        from sockets.annotation_socket import handle_annotations
+        from src.sockets.connection_socket import handle_connections
+        from src.sockets.chat_socket import handle_chat
+        from src.sockets.comment_socket import handle_comments
+        from src.sockets.annotation_socket import handle_annotations
 
         handle_connections(socketio)
         handle_chat(socketio)
@@ -48,11 +48,11 @@ def init_app(config_path: str):
         handle_annotations(socketio)
 
         # Import and register blueprints
-        from routes.health_routes import create_health_bp
-        from routes.user_routes import create_user_bp
-        from routes.authentication_routes import create_auth_bp
-        from routes.pdf_document_routes import create_document_bp
-        from routes.invitation_routes import create_invitation_bp
+        from src.routes.health_routes import create_health_bp
+        from src.routes.user_routes import create_user_bp
+        from src.routes.authentication_routes import create_auth_bp
+        from src.routes.pdf_document_routes import create_document_bp
+        from src.routes.invitation_routes import create_invitation_bp
 
         health_bp = create_health_bp()
         user_bp = create_user_bp()

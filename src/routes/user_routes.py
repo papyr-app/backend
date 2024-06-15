@@ -2,12 +2,12 @@ import logging
 from flask import request, jsonify, Blueprint
 from marshmallow import ValidationError
 
-from auth.decorators import token_required
-from services.user_service import UserService
-from services.pdf_document_service import PDFDocumentService
-from models import User
-from schemas.user_schema import UserSchema
-from schemas.pdf_document_schema import PDFDocumentSchema
+from src.auth.decorators import token_required
+from src.services.user_service import UserService
+from src.services.pdf_document_service import PDFDocumentService
+from src.models import User
+from src.schemas.user_schema import UserSchema
+from src.schemas.pdf_document_schema import PDFDocumentSchema
 
 
 def create_user_bp():

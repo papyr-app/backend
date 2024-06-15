@@ -2,8 +2,8 @@ import logging
 from flask import Blueprint, request, jsonify
 from marshmallow import ValidationError
 
-from services.user_service import UserService
-from schemas.user_schema import UserSchema
+from src.services.user_service import UserService
+from src.schemas.user_schema import UserSchema
 
 
 def create_auth_bp():

@@ -2,11 +2,11 @@ import logging
 from flask import request, jsonify, Blueprint
 from marshmallow import ValidationError
 
-from errors import AuthorizationError
-from auth.decorators import token_required
-from models import User
-from services.invitation_service import InvitationService
-from schemas.invitation_schema import InvitationSchema
+from src.errors import AuthorizationError
+from src.auth.decorators import token_required
+from src.models import User
+from src.services.invitation_service import InvitationService
+from src.schemas.invitation_schema import InvitationSchema
 
 
 def create_invitation_bp():

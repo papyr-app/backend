@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime, timedelta
 
-from app import db, bcrypt
-from const import RoleType, DocumentStatus
+from src.app import db, bcrypt
+from src.const import RoleType, DocumentStatus
 
 # Association table for the many-to-many relationship
 document_collaborators = db.Table(

@@ -10,11 +10,11 @@ from marshmallow import (
     ValidationError,
 )
 
-from app import db
-from models import PDFDocument, VirtualPath
-from const import DocumentStatus
-from schemas.user_schema import UserSchema
-from utils.helper import clean_path
+from src.app import db
+from src.models import PDFDocument, VirtualPath
+from src.const import DocumentStatus
+from src.schemas.user_schema import UserSchema
+from src.utils.helper import clean_path
 
 
 class PDFDocumentSchema(SQLAlchemyAutoSchema):

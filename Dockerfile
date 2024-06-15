@@ -6,6 +6,4 @@ ADD . /app
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-ENV PYTHONPATH=/app/src
-
-CMD ["gunicorn", "-k", "gevent", "-w", "1", "-b", "0.0.0.0:8000", "src.wsgi:app"]
+CMD ["gunicorn", "-k", "gevent", "-w", "1", "-b", "0.0.0.0:8000", "wsgi:app"]
