@@ -16,10 +16,13 @@ N/A.
 
 ### Setup
 1. **Get SQLite3**
-   - Install via the apt package manager
      ```bash
+     # Via apt
      sudo apt update
      sudo apt install sqlite3
+
+     # Via Brew
+     brew install sqlite3
      ```
 
 2. **Install AWS CLI**
@@ -36,9 +39,6 @@ N/A.
      python -m venv .venv
 
      # Activate the virtual environment
-     # On Windows
-     .venv\Scripts\activate
-     # On Unix or MacOS
      source .venv/bin/activate
      ```
 
