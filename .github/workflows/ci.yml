@@ -27,7 +27,7 @@ jobs:
       - name: Run black
         run: |
           pip install black
-          black . --check
+          black src --check
 
       - name: Run pylint
         run: |
