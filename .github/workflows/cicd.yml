@@ -62,14 +62,14 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest
+          tags: ghcr.io/${{ github.repository }}:latest
 
       - name: Trigger deployment webhook for develop
         if: github.ref == 'refs/heads/develop'
         run: |
-          curl -X POST https://listener.papyr-app.xyz/webhook/test?token=${{ secrets.LISTENER_TOKEN }}
+          curl -X POST -H "Content-Type: application/json" https://listener.papyr-app.xyz/webhook/test?token=${{ secrets.LISTENER_TOKEN }}
 
       - name: Trigger deployment webhook for main
         if: github.ref == 'refs/heads/main'
         run: |
-          curl -X POST https://listener.papyr-app.xyz/webhook/prod?token=${{ secrets.LISTENER_TOKEN }}
+          curl -X POST -H "Content-Type: application/json" https://listener.papyr-app.xyz/webhook/prod?token=${{ secrets.LISTENER_TOKEN }}
