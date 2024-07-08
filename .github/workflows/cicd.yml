@@ -66,10 +66,14 @@ jobs:
 
       - name: Trigger deployment webhook for develop
         if: github.ref == 'refs/heads/develop'
+        env:
+          SECRET_TOKEN: ${{ secrets.SECRET_TOKEN }}
         run: |
-          curl -X POST -H "Content-Type: application/json" https://listener.papyr-app.xyz/webhook/test?token=${{ secrets.LISTENER_TOKEN }} -d '{}'
+          python deploy_script.py test
 
       - name: Trigger deployment webhook for main
         if: github.ref == 'refs/heads/main'
+        env:
+          SECRET_TOKEN: ${{ secrets.SECRET_TOKEN }}
         run: |
-          curl -X POST -H "Content-Type: application/json" https://listener.papyr-app.xyz/webhook/prod?token=${{ secrets.LISTENER_TOKEN }} -d '{}'
+          python deploy_script.py prod
