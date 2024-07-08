@@ -6,6 +6,6 @@ def create_health_bp():
 
     @health_bp.route("", methods=["GET"])
     def health_check():
-        return "OK", 200
+        return "Test", 200
 
     return health_bp
