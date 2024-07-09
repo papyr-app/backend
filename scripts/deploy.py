@@ -13,7 +13,7 @@ def deploy(environment):
 
     response = requests.post(f"{url}?token={token}")
 
-    if response.status_code != 200:
+    if response.status_code not in [200, 202]:
         print(f"Deployment failed with status code {response.status_code}")
         sys.exit(1)
 
