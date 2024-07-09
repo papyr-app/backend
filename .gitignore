@@ -1,6 +1,8 @@
 # Custom
 .venv
+venv
 log.txt
+instance/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

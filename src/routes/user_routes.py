@@ -1,64 +1,54 @@
 import logging
 from flask import request, jsonify, Blueprint
-from mongoengine.errors import DoesNotExist
 from marshmallow import ValidationError
 
-from auth.decorators import token_required
-from services import user_service
-from services import document_service
-from schemas.user_schema import UpdateUserSchema
-from models.user import User
-from dtos.pdf_document_dto import create_pdf_document_dto
+from src.auth.decorators import token_required
+from src.services.user_service import UserService
+from src.services.pdf_document_service import PDFDocumentService
+from src.models import User
+from src.schemas.user_schema import UserSchema
+from src.schemas.pdf_document_schema import PDFDocumentSchema
 
 
 def create_user_bp():
-    user_bp = Blueprint('user', __name__, url_prefix='/api/users')
+    user_bp = Blueprint("user", __name__, url_prefix="/api/users")
 
-    @user_bp.route('', methods=['GET'])
+    @user_bp.route("", methods=["GET"])
     @token_required
     def get_user(user: User):
         try:
-            user = user_service.get_user_by_id(user.id)
-            return jsonify({'data': user.to_mongo().to_dict()}), 200
-        except DoesNotExist:
-            return jsonify({"error": "User not found"}), 404
-        except Exception as e:
-            logging.error(e)
-            return jsonify({'error': str(e)}), 500
+            user = UserService.get_user_by_id(user.id)
+            return jsonify({"data": UserSchema().dump(user)}), 200
+        except ValidationError as err:
+            return jsonify({"error": str(err)}), 400
+        except Exception as err:
+            logging.error(f"Error getting user: {str(err)}")
+            logging.error("Exception", exc_info=True)
+            return jsonify({"error": "Internal error"}), 500
 
-    @user_bp.route('', methods=['PATCH'])
+    @user_bp.route("", methods=["PATCH"])
     @token_required
     def update_user(user: User):
         data = request.get_json()
-        schema = UpdateUserSchema()
         try:
-            validated_data = schema.load(data)
-            user = user_service.get_user_by_id(user.id)
-            user_service.update_user(user, validated_data)
-            return jsonify({'data': user.to_mongo().to_dict()}), 200
-        except ValidationError as e:
-            return jsonify({'error': str(e)}), 400
-        except DoesNotExist:
-            return jsonify({"error": "User not found"}), 404
-        except Exception as e:
-            logging.error(e)
-            return jsonify({'error': str(e)}), 500
+            user = UserService.update_user(user.id, data)
+            return jsonify({"data": UserSchema().dump(user)}), 201
+        except ValidationError as err:
+            return jsonify({"error": str(err)}), 400
+        except Exception as err:
+            logging.error(f"Error updating user: {str(err)}")
+            logging.error("Exception", exc_info=True)
+            return jsonify({"error": "Internal error"}), 500
 
-    @user_bp.route('/documents', methods=['GET'])
+    @user_bp.route("/documents", methods=["GET"])
     @token_required
     def get_documents(user: User):
         try:
-            documents = document_service.get_user_documents(user.id)
-            documents_list = []
-
-            for document in documents:
-                doc_dict = document.to_dict()
-                doc_dto = create_pdf_document_dto(doc_dict, user.id)
-                documents_list.append(doc_dto)
-
-            return jsonify({'data': documents_list}), 200
-        except Exception as e:
-            logging.error(e)
-            return jsonify({'error': str(e)}), 500
+            documents = PDFDocumentService.get_documents_by_user(user.id)
+            return jsonify({"data": PDFDocumentSchema(many=True).dump(documents)}), 200
+        except Exception as err:
+            logging.error(f"Error getting user documents: {str(err)}")
+            logging.error("Exception", exc_info=True)
+            return jsonify({"error": "Internal error"}), 500
 
     return user_bp
