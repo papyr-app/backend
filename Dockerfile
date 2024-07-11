@@ -9,4 +9,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 8000
 
 RUN chmod +x /app/scripts/entrypoint.sh
-ENTRYPOINT ["scripts/entrypoint.sh"]
+ENTRYPOINT ["/app/scripts/entrypoint.sh"]
