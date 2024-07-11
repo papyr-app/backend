@@ -8,4 +8,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 8000
 
-CMD ["gunicorn", "-k", "gevent", "-w", "1", "-b", "0.0.0.0:8000", "wsgi:app"]
+RUN chmod +x /app/scripts/entrypoint.sh
+ENTRYPOINT ["/app/scripts/entrypoint.sh"]
