@@ -141,7 +141,9 @@ class PDFDocumentService:
             )
             db.session.add(virtual_path)
             db.session.commit()
-            logging.debug("Added collaborator %i to document %i", collaborator.id, pdf_document.id)
+            logging.debug(
+                "Added collaborator %i to document %i", collaborator.id, pdf_document.id
+            )
             return pdf_document
         except ValidationError as e:
             logging.error("Validation error: %s", e.messages)
@@ -169,7 +171,11 @@ class PDFDocumentService:
 
             pdf_document.collaborators.remove(collaborator)
             db.session.commit()
-            logging.debug("Removed collaborator %i from document %i", collaborator.id, pdf_document.id)
+            logging.debug(
+                "Removed collaborator %i from document %i",
+                collaborator.id,
+                pdf_document.id,
+            )
             return pdf_document
         except ValidationError as e:
             logging.error("Validation error: %s", e.messages)
