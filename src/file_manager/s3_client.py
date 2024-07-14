@@ -14,7 +14,7 @@ class S3Client(IFileManager):
     def upload_file(self, file: BytesIO, path: str) -> bool:
         try:
             self.s3.upload_fileobj(file, self.bucket_name, path)
-            logging.info(f"File uploaded to {self.bucket_name}/{path}")
+            logging.debug(f"File uploaded to {self.bucket_name}/{path}")
             return True
         except NoCredentialsError:
             logging.error("Credentials not available")
@@ -27,7 +27,7 @@ class S3Client(IFileManager):
         try:
             buffer = BytesIO()
             self.s3.download_fileobj(self.bucket_name, path, buffer)
-            logging.info(f"File downloaded from {self.bucket_name}/{path}")
+            logging.debug(f"File downloaded from {self.bucket_name}/{path}")
             buffer.seek(0)
             return buffer
         except NoCredentialsError:
@@ -40,7 +40,7 @@ class S3Client(IFileManager):
     def delete_file(self, path: str) -> bool:
         try:
             self.s3.delete_object(Bucket=self.bucket_name, Key=path)
-            logging.info(f"File deleted from {self.bucket_name}/{path}")
+            logging.debug(f"File deleted from {self.bucket_name}/{path}")
             return True
         except NoCredentialsError:
             logging.error("Credentials not available")

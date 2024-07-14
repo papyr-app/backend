@@ -4,6 +4,7 @@ from marshmallow import ValidationError
 
 from src.services.user_service import UserService
 from src.schemas.user_schema import UserSchema
+from src.errors import AuthenticationError
 
 
 def create_auth_bp():
@@ -30,6 +31,8 @@ def create_auth_bp():
             return jsonify({"data": jwt}), 200
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
+        except AuthenticationError as err:
+            return jsonify({"error": str(err)}), 401
         except Exception as err:
             logging.error(f"Error logging in: {str(err)}")
             logging.error("Exception", exc_info=True)

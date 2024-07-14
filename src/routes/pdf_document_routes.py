@@ -147,7 +147,7 @@ def create_document_bp(file_manager: IFileManager):
 
             collaborator = UserService.get_user_by_email(email)
             PDFDocumentService.add_collaborator(document, collaborator)
-            return jsonify({"data": "Collaborator added"}), 201
+            return jsonify({"data": "Collaborator added"}), 200
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
         except AuthorizationError as err:
@@ -172,7 +172,7 @@ def create_document_bp(file_manager: IFileManager):
 
             collaborator = UserService.get_user_by_email(email)
             PDFDocumentService.remove_collaborator(document, collaborator)
-            return jsonify({"data": "Collaborator added"}), 201
+            return jsonify({"data": "Collaborator added"}), 200
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
         except AuthorizationError as err:
@@ -190,7 +190,7 @@ def create_document_bp(file_manager: IFileManager):
             if not document.can_share:
                 raise ValidationError("Document is not shareable.")
             PDFDocumentService.add_collaborator(document, user)
-            return jsonify({"data": "User added as collaborator"}), 201
+            return jsonify({"data": "User added as collaborator"}), 200
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
         except Exception as err:
