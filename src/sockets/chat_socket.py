@@ -15,12 +15,12 @@ def handle_chat(socketio):
             username = validated_data["username"]
             message = validated_data["message"]
             emit("new_message", {"username": username, "message": message}, room=room)
-            logging.debug(f"{username} sent a message: {message} in room {room}.")
+            logging.debug("%s sent a message: %s in room %s.", username, message, room)
         except ValidationError as err:
-            logging.error(f"Validation error: {err.messages}")
+            logging.error("Validation error: %s", err.messages)
             emit("error", {"errors": err.messages})
         except Exception as err:
-            logging.error(f"Error handling message: {str(err)}")
+            logging.error("Error handling message: %s", str(err))
             logging.error("Exception", exc_info=True)
             emit("error", {"errors": "Internal error"})
 
@@ -37,12 +37,12 @@ def handle_chat(socketio):
                 {"username": "System", "message": f"{username} has joined the room."},
                 room=room,
             )
-            logging.debug(f"{username} joined room {room}.")
+            logging.debug("%s joined room %s.", username, room)
         except ValidationError as err:
-            logging.error(f"Validation error: {err.messages}")
+            logging.error("Validation error: %s", err.messages)
             emit("error", {"errors": err.messages})
         except Exception as err:
-            logging.error(f"Error joining room: {str(err)}")
+            logging.error("Error joining room: %s", str(err))
             logging.error("Exception", exc_info=True)
             emit("error", {"errors": "Internal error"})
 
@@ -59,11 +59,11 @@ def handle_chat(socketio):
                 {"username": "System", "message": f"{username} has joined the room."},
                 room=room,
             )
-            logging.debug(f"{username} left room {room}.")
+            logging.debug("%s left room %s.", username, room)
         except ValidationError as err:
-            logging.error(f"Validation error: {err.messages}")
+            logging.error("Validation error: %s", err.messages)
             emit("error", {"errors": err.messages})
         except Exception as err:
-            logging.error(f"Error leaving room: {str(err)}")
+            logging.error("Error leaving room: %s", str(err))
             logging.error("Exception", exc_info=True)
             emit("error", {"errors": "Internal error"})

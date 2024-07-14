@@ -22,7 +22,7 @@ def create_user_bp():
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
         except Exception as err:
-            logging.error(f"Error getting user: {str(err)}")
+            logging.error("Error getting user: %s", str(err))
             logging.error("Exception", exc_info=True)
             return jsonify({"error": "Internal error"}), 500
 
@@ -36,7 +36,7 @@ def create_user_bp():
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
         except Exception as err:
-            logging.error(f"Error updating user: {str(err)}")
+            logging.error("Error updating user: %s", str(err))
             logging.error("Exception", exc_info=True)
             return jsonify({"error": "Internal error"}), 500
 
@@ -47,7 +47,7 @@ def create_user_bp():
             documents = PDFDocumentService.get_documents_by_user(user.id)
             return jsonify({"data": PDFDocumentSchema(many=True).dump(documents)}), 200
         except Exception as err:
-            logging.error(f"Error getting user documents: {str(err)}")
+            logging.error("Error getting user documents: %s", str(err))
             logging.error("Exception", exc_info=True)
             return jsonify({"error": "Internal error"}), 500
 

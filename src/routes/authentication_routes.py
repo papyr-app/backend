@@ -19,7 +19,7 @@ def create_auth_bp():
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
         except Exception as err:
-            logging.error(f"Error registering user: {str(err)}")
+            logging.error("Error registering user: %s", str(err))
             logging.error("Exception", exc_info=True)
             return jsonify({"error": "Internal error"}), 500
 
@@ -34,7 +34,7 @@ def create_auth_bp():
         except AuthenticationError as err:
             return jsonify({"error": str(err)}), 401
         except Exception as err:
-            logging.error(f"Error logging in: {str(err)}")
+            logging.error("Error logging in: %s", str(err))
             logging.error("Exception", exc_info=True)
             return jsonify({"error": "Internal error"}), 500
 

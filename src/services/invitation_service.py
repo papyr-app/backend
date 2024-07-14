@@ -36,14 +36,14 @@ class InvitationService:
             )
             db.session.add(invitation)
             db.session.commit()
-            logging.debug(f"Created invitation {invitation.id}")
+            logging.debug("Created invitation %i", invitation.id)
             return invitation
         except ValidationError as e:
-            logging.error(f"Validation error: {e.messages}")
+            logging.error("Validation error %s", e.messages)
             raise
         except SQLAlchemyError as e:
             db.session.rollback()
-            logging.error(f"SQLAlchemy error: {str(e)}")
+            logging.error("SQLAlchemy error: %s", str(e))
             raise
 
     @staticmethod
@@ -54,7 +54,7 @@ class InvitationService:
                 raise ValidationError("Invitation not found.")
             return invitation
         except SQLAlchemyError as e:
-            logging.error(f"SQLAlchemy error: {str(e)}")
+            logging.error("SQLAlchemy error: %s", str(e))
             raise
 
     @staticmethod
@@ -63,7 +63,7 @@ class InvitationService:
             invitations = Invitation.query.filter_by(invited_by_id=user_id).all()
             return invitations
         except SQLAlchemyError as e:
-            logging.error(f"SQLAlchemy error: {str(e)}")
+            logging.error("SQLAlchemy error: %s", str(e))
             raise
 
     @staticmethod
@@ -72,7 +72,7 @@ class InvitationService:
             invitations = Invitation.query.filter_by(invitee_id=user_id).all()
             return invitations
         except SQLAlchemyError as e:
-            logging.error(f"SQLAlchemy error: {str(e)}")
+            logging.error("SQLAlchemy error: %s", str(e))
             raise
 
     @staticmethod
@@ -94,9 +94,9 @@ class InvitationService:
             PDFDocumentService.add_collaborator(document, user)
             return invitation
         except ValidationError as e:
-            logging.error(f"Validation error: {e.messages}")
+            logging.error("Validation error: %s", e.messages)
             raise
         except SQLAlchemyError as e:
             db.session.rollback()
-            logging.error(f"SQLAlchemy error: {str(e)}")
+            logging.error("SQLAlchemy error: %s", str(e))
             raise
