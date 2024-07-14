@@ -1,7 +1,6 @@
 import logging
 from typing import List, Dict, Any
 from sqlalchemy.exc import SQLAlchemyError
-from flask import current_app
 from marshmallow import ValidationError
 
 from src.app import db
@@ -29,10 +28,10 @@ class PDFDocumentService:
             )
             db.session.add(virtual_path)
             db.session.commit()
-            logging.debug(f"Created document {pdf_document.id}")
+            logging.debug("Created document %i", pdf_document.id)
             return pdf_document
         except ValidationError as e:
-            logging.error(f"Validation error: {e.messages}")
+            logging.error("Validation error: %s", e.messages)
             raise
         except SQLAlchemyError as e:
             db.session.rollback()
@@ -66,14 +65,14 @@ class PDFDocumentService:
                 setattr(pdf_document, key, value)
 
             db.session.commit()
-            logging.debug(f"Updated document {pdf_document.id}")
+            logging.debug("Updated document %i", pdf_document.id)
             return pdf_document
         except ValidationError as e:
-            logging.error(f"Validation error: {e.messages}")
+            logging.error("Validation error: %s", e.messages)
             raise
         except SQLAlchemyError as e:
             db.session.rollback()
-            logging.error(f"SQLAlchemy error: {str(e)}")
+            logging.error("SQLAlchemy error: %s", str(e))
             raise
 
     @staticmethod
@@ -83,13 +82,13 @@ class PDFDocumentService:
             PDFDocumentService.check_user_access(pdf_document, user_id)
             db.session.delete(pdf_document)
             db.session.commit()
-            logging.debug(f"Deleted document {pdf_document.id}")
+            logging.debug("Deleted document %i", pdf_document.id)
         except ValidationError as e:
-            logging.error(f"Validation error: {e.messages}")
+            logging.error("Validation error: %s", e.messages)
             raise
         except SQLAlchemyError as e:
             db.session.rollback()
-            current_app.logger.error(f"SQLAlchemy error: {str(e)}")
+            logging.error("SQLAlchemy error: %s", str(e))
             raise
 
     @staticmethod
@@ -100,7 +99,7 @@ class PDFDocumentService:
                 raise ValidationError("PDF Document not found.")
             return pdf_document
         except SQLAlchemyError as e:
-            logging.error(f"SQLAlchemy error: {str(e)}")
+            logging.error("SQLAlchemy error: %s", str(e))
             raise
 
     @staticmethod
@@ -113,7 +112,7 @@ class PDFDocumentService:
                 raise ValidationError("PDF Document not found.")
             return pdf_document
         except SQLAlchemyError as e:
-            logging.error(f"SQLAlchemy error: {str(e)}")
+            logging.error("SQLAlchemy error: %s", str(e))
             raise
 
     @staticmethod
@@ -125,7 +124,7 @@ class PDFDocumentService:
             ).all()
             return pdf_documents
         except SQLAlchemyError as e:
-            logging.error(f"SQLAlchemy error: {str(e)}")
+            logging.error("SQLAlchemy error: %s", str(e))
             raise
 
     @staticmethod
@@ -142,14 +141,14 @@ class PDFDocumentService:
             )
             db.session.add(virtual_path)
             db.session.commit()
-            logging.debug(f"Added collaborator {collaborator.id} to document {pdf_document.id}")
+            logging.debug("Added collaborator %i to document %i", collaborator.id, pdf_document.id)
             return pdf_document
         except ValidationError as e:
-            logging.error(f"Validation error: {e.messages}")
+            logging.error("Validation error: %s", e.messages)
             raise
         except SQLAlchemyError as e:
             db.session.rollback()
-            logging.error(f"SQLAlchemy error: {str(e)}")
+            logging.error("SQLAlchemy error: %s", str(e))
             raise
 
     @staticmethod
@@ -170,14 +169,14 @@ class PDFDocumentService:
 
             pdf_document.collaborators.remove(collaborator)
             db.session.commit()
-            logging.debug(f"Removed collaborator {collaborator.id} from document {pdf_document.id}")
+            logging.debug("Removed collaborator %i from document %i", collaborator.id, pdf_document.id)
             return pdf_document
         except ValidationError as e:
-            logging.error(f"Validation error: {e.messages}")
+            logging.error("Validation error: %s", e.messages)
             raise
         except SQLAlchemyError as e:
             db.session.rollback()
-            logging.error(f"SQLAlchemy error: {str(e)}")
+            logging.error("SQLAlchemy error: %s", str(e))
             raise
 
     @staticmethod

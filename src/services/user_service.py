@@ -1,7 +1,6 @@
 import logging
 from typing import Dict, Any
 from sqlalchemy.exc import SQLAlchemyError
-from flask import current_app
 from marshmallow import ValidationError
 
 from src.app import db
@@ -23,14 +22,14 @@ class UserService:
             user.set_password(password)
             db.session.add(user)
             db.session.commit()
-            logging.info(f"Created user {user.id}")
+            logging.debug("Created user %i", user.id)
             return user
         except ValidationError as e:
-            logging.error(f"Validation error: {e.messages}")
+            logging.error("Validation error: %s", e.messages)
             raise
         except SQLAlchemyError as e:
             db.session.rollback()
-            logging.error(f"SQLAlchemy error: {str(e)}")
+            logging.error("SQLAlchemy error: %s", str(e))
             raise
 
     @staticmethod
@@ -46,10 +45,10 @@ class UserService:
             for key, value in validated_data.items():
                 setattr(user, key, value)
             db.session.commit()
-            logging.info(f"Updated user {user.id}")
+            logging.debug("Updated user %i", user.id)
             return user
         except ValidationError as e:
-            logging.error(f"Validation error: {e.messages}")
+            logging.error("Validation error: %s", e.messages)
             raise
         except SQLAlchemyError as e:
             db.session.rollback()
@@ -64,13 +63,13 @@ class UserService:
                 raise ValidationError("User not found.")
             db.session.delete(user)
             db.session.commit()
-            logging.info(f"Deleted user {user.id}")
+            logging.debug("Deleted user %i", user.id)
         except ValidationError as e:
-            logging.error(f"Validation error: {e.messages}")
+            logging.error("Validation error: %s", e.messages)
             raise
         except SQLAlchemyError as e:
             db.session.rollback()
-            current_app.logger.error(f"SQLAlchemy error: {str(e)}")
+            logging.error("SQLAlchemy error: %s", str(e))
             raise
 
     @staticmethod
@@ -81,7 +80,7 @@ class UserService:
                 raise ValidationError("User not found.")
             return user
         except SQLAlchemyError as e:
-            logging.error(f"SQLAlchemy error: {str(e)}")
+            logging.error("SQLAlchemy error: %s", str(e))
             raise
 
     @staticmethod
@@ -92,7 +91,7 @@ class UserService:
                 raise ValidationError("User not found.")
             return user
         except SQLAlchemyError as e:
-            logging.error(f"SQLAlchemy error: {str(e)}")
+            logging.error("SQLAlchemy error: %s", str(e))
             raise
 
     @staticmethod
@@ -103,7 +102,7 @@ class UserService:
                 raise ValidationError("User not found.")
             return user
         except SQLAlchemyError as e:
-            logging.error(f"SQLAlchemy error: {str(e)}")
+            logging.error("SQLAlchemy error: %s", str(e))
             raise
 
     @staticmethod
@@ -118,8 +117,8 @@ class UserService:
             else:
                 raise AuthenticationError()
         except ValidationError as e:
-            logging.error(f"Validation error: {e.messages}")
+            logging.error("Validation error: %s", e.messages)
             raise
         except Exception as e:
-            logging.error(f"Exception: {str(e)}")
+            logging.error("Exception: %s", str(e))
             raise

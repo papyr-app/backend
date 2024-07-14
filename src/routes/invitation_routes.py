@@ -24,7 +24,7 @@ def create_invitation_bp():
         except AuthorizationError as err:
             return jsonify({"error": str(err)}), 403
         except Exception as err:
-            logging.error(f"Error getting invitation: {str(err)}")
+            logging.error("Error getting invitation: %s", str(err))
             logging.error("Exception", exc_info=True)
             return jsonify({"error": "Internal error"}), 500
 
@@ -35,7 +35,7 @@ def create_invitation_bp():
             invitations = InvitationService.get_invitations_sent_by_user(user.id)
             return jsonify({"data": InvitationSchema(many=True).dump(invitations)}), 200
         except Exception as err:
-            logging.error(f"Error getting sent invitations: {str(err)}")
+            logging.error("Error getting sent invitations: %s", str(err))
             logging.error("Exception", exc_info=True)
             return jsonify({"error": "Internal error"}), 500
 
@@ -46,7 +46,7 @@ def create_invitation_bp():
             invitations = InvitationService.get_invitations_received_by_user(user.id)
             return jsonify({"data": InvitationSchema(many=True).dump(invitations)}), 200
         except Exception as err:
-            logging.error(f"Error getting received invitations: {str(err)}")
+            logging.error("Error getting received invitations: %s", str(err))
             logging.error("Exception", exc_info=True)
             return jsonify({"error": "Internal error"}), 500
 
@@ -60,7 +60,7 @@ def create_invitation_bp():
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
         except Exception as err:
-            logging.error(f"Error creating invitation: {str(err)}")
+            logging.error("Error creating invitation: %s", str(err))
             logging.error("Exception", exc_info=True)
             return jsonify({"error": "Internal error"}), 500
 
@@ -76,7 +76,7 @@ def create_invitation_bp():
         except AuthorizationError as err:
             return jsonify({"error": str(err)}), 403
         except Exception as err:
-            logging.error(f"Error accepting invitation: {str(err)}")
+            logging.error("Error accepting invitation: %s", str(err))
             logging.error("Exception", exc_info=True)
             return jsonify({"error": "Internal error"}), 500
 

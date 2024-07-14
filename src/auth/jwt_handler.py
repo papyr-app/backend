@@ -1,5 +1,5 @@
-import jwt
 import datetime
+import jwt
 from flask import current_app
 
 
