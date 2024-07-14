@@ -9,6 +9,7 @@ from src.models import User
 from src.schemas.user_schema import CreateUserSchema, UpdateUserSchema
 from src.schemas.login_schema import LoginSchema
 from src.auth.jwt_handler import generate_jwt
+from src.errors import AuthenticationError
 
 
 class UserService:
@@ -22,6 +23,7 @@ class UserService:
             user.set_password(password)
             db.session.add(user)
             db.session.commit()
+            logging.info(f"Created user {user.id}")
             return user
         except ValidationError as e:
             logging.error(f"Validation error: {e.messages}")
@@ -44,6 +46,7 @@ class UserService:
             for key, value in validated_data.items():
                 setattr(user, key, value)
             db.session.commit()
+            logging.info(f"Updated user {user.id}")
             return user
         except ValidationError as e:
             logging.error(f"Validation error: {e.messages}")
@@ -61,6 +64,7 @@ class UserService:
                 raise ValidationError("User not found.")
             db.session.delete(user)
             db.session.commit()
+            logging.info(f"Deleted user {user.id}")
         except ValidationError as e:
             logging.error(f"Validation error: {e.messages}")
             raise
@@ -112,7 +116,7 @@ class UserService:
                 user.record_login()
                 return generate_jwt(str(user.id))
             else:
-                raise ValidationError("Invalid username or password")
+                raise AuthenticationError()
         except ValidationError as e:
             logging.error(f"Validation error: {e.messages}")
             raise

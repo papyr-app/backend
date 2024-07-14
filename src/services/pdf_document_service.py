@@ -29,6 +29,7 @@ class PDFDocumentService:
             )
             db.session.add(virtual_path)
             db.session.commit()
+            logging.debug(f"Created document {pdf_document.id}")
             return pdf_document
         except ValidationError as e:
             logging.error(f"Validation error: {e.messages}")
@@ -65,6 +66,7 @@ class PDFDocumentService:
                 setattr(pdf_document, key, value)
 
             db.session.commit()
+            logging.debug(f"Updated document {pdf_document.id}")
             return pdf_document
         except ValidationError as e:
             logging.error(f"Validation error: {e.messages}")
@@ -81,6 +83,7 @@ class PDFDocumentService:
             PDFDocumentService.check_user_access(pdf_document, user_id)
             db.session.delete(pdf_document)
             db.session.commit()
+            logging.debug(f"Deleted document {pdf_document.id}")
         except ValidationError as e:
             logging.error(f"Validation error: {e.messages}")
             raise
@@ -139,6 +142,7 @@ class PDFDocumentService:
             )
             db.session.add(virtual_path)
             db.session.commit()
+            logging.debug(f"Added collaborator {collaborator.id} to document {pdf_document.id}")
             return pdf_document
         except ValidationError as e:
             logging.error(f"Validation error: {e.messages}")
@@ -166,6 +170,7 @@ class PDFDocumentService:
 
             pdf_document.collaborators.remove(collaborator)
             db.session.commit()
+            logging.debug(f"Removed collaborator {collaborator.id} from document {pdf_document.id}")
             return pdf_document
         except ValidationError as e:
             logging.error(f"Validation error: {e.messages}")

@@ -1,3 +1,4 @@
+import logging
 from flask import Flask
 from flask_cors import CORS
 from flask_socketio import SocketIO
@@ -47,6 +48,8 @@ def init_app(config_path: str):
         handle_comments(socketio)
         handle_annotations(socketio)
 
+        logging.info("Set up sockets")
+
         # Import and register blueprints
         from src.routes.health_routes import create_health_bp
         from src.routes.user_routes import create_user_bp
@@ -66,4 +69,7 @@ def init_app(config_path: str):
         app.register_blueprint(document_bp)
         app.register_blueprint(invitation_bp)
 
+        logging.info("Registered blueprints")
+
+    logging.info("Created app")
     return app

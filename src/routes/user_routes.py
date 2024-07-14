@@ -32,7 +32,7 @@ def create_user_bp():
         data = request.get_json()
         try:
             user = UserService.update_user(user.id, data)
-            return jsonify({"data": UserSchema().dump(user)}), 201
+            return jsonify({"data": UserSchema().dump(user)}), 200
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
         except Exception as err:
