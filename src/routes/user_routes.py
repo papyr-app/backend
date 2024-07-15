@@ -11,7 +11,7 @@ from src.schemas.pdf_document_schema import PDFDocumentSchema
 
 
 def create_user_bp():
-    user_bp = Blueprint("user", __name__, url_prefix="/api/users")
+    user_bp = Blueprint("user", __name__, url_prefix="/users")
 
     @user_bp.route("", methods=["GET"])
     @token_required

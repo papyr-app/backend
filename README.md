@@ -70,5 +70,5 @@ The following environment variables are required:
 
    By default, this starts a local server on port 5000. Test it by making a GET request to this endpoint:
    ```bash
-   curl http://localhost:5000/api/health
+   curl http://localhost:5000/health
    ```

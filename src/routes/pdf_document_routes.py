@@ -12,7 +12,7 @@ from src.models import User
 
 
 def create_document_bp(file_manager: IFileManager):
-    document_bp = Blueprint("document", __name__, url_prefix="/api/documents")
+    document_bp = Blueprint("document", __name__, url_prefix="/documents")
 
     @document_bp.route("/<document_id>", methods=["GET"])
     @token_required
