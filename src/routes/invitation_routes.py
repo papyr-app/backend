@@ -10,7 +10,7 @@ from src.schemas.invitation_schema import InvitationSchema
 
 
 def create_invitation_bp():
-    invitation_bp = Blueprint("invitation", __name__, url_prefix="/api/invitation")
+    invitation_bp = Blueprint("invitation", __name__, url_prefix="/invitation")
 
     @invitation_bp.route("/<invitation_id>", methods=["GET"])
     @token_required
