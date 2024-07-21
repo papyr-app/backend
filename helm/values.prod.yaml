@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: ghcr.io/papyr-app/backend
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   tag: "prod"
 
 service:
@@ -63,11 +63,11 @@ resources: {}
 
 livenessProbe:
   httpGet:
-    path: /api/health
+    path: /health
     port: http
 readinessProbe:
   httpGet:
-    path: /api/health
+    path: /health
     port: http
 
 autoscaling:
