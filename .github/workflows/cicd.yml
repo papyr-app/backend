@@ -58,7 +58,6 @@ jobs:
           password: ${{ secrets.GHCR_PAT }}
 
       - name: Set environment variables
-        id: set-env
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
             echo "ENVIRONMENT=test" >> $GITHUB_ENV
@@ -86,7 +85,6 @@ jobs:
         uses: azure/setup-helm@v1
 
       - name: Set environment variables
-        id: set-env
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
             echo "ENVIRONMENT=test" >> $GITHUB_ENV
@@ -94,6 +92,14 @@ jobs:
             echo "ENVIRONMENT=prod" >> $GITHUB_ENV
           fi
 
-      - name: Deploy with Helm
+      - name: Ensure namespace exists
+        env:
+          ENVIRONMENT: ${{ env.ENVIRONMENT }}
         run: |
-          helm upgrade --install backend ./helm --namespace ${{ env.ENVIRONMENT }} -f ./helm/values.${{ env.ENVIRONMENT }}.yaml
+          kubectl get namespace $ENVIRONMENT || kubectl create namespace $ENVIRONMENT
+
+      - name: Deploy with Helm
+        env:
+          ENVIRONMENT: ${{ env.ENVIRONMENT }}
+        run: |
+          helm upgrade --install backend ./helm --namespace $ENVIRONMENT -f ./helm/values.$ENVIRONMENT.yaml
