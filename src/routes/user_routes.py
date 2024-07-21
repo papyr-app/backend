@@ -11,7 +11,7 @@ from src.schemas.pdf_document_schema import PDFDocumentSchema
 
 
 def create_user_bp():
-    user_bp = Blueprint("user", __name__, url_prefix="/api/users")
+    user_bp = Blueprint("user", __name__, url_prefix="/users")
 
     @user_bp.route("", methods=["GET"])
     @token_required
@@ -22,7 +22,7 @@ def create_user_bp():
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
         except Exception as err:
-            logging.error(f"Error getting user: {str(err)}")
+            logging.error("Error getting user: %s", str(err))
             logging.error("Exception", exc_info=True)
             return jsonify({"error": "Internal error"}), 500
 
@@ -32,11 +32,11 @@ def create_user_bp():
         data = request.get_json()
         try:
             user = UserService.update_user(user.id, data)
-            return jsonify({"data": UserSchema().dump(user)}), 201
+            return jsonify({"data": UserSchema().dump(user)}), 200
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
         except Exception as err:
-            logging.error(f"Error updating user: {str(err)}")
+            logging.error("Error updating user: %s", str(err))
             logging.error("Exception", exc_info=True)
             return jsonify({"error": "Internal error"}), 500
 
@@ -47,7 +47,7 @@ def create_user_bp():
             documents = PDFDocumentService.get_documents_by_user(user.id)
             return jsonify({"data": PDFDocumentSchema(many=True).dump(documents)}), 200
         except Exception as err:
-            logging.error(f"Error getting user documents: {str(err)}")
+            logging.error("Error getting user documents: %s", str(err))
             logging.error("Exception", exc_info=True)
             return jsonify({"error": "Internal error"}), 500
 

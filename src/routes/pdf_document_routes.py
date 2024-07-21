@@ -12,7 +12,7 @@ from src.models import User
 
 
 def create_document_bp(file_manager: IFileManager):
-    document_bp = Blueprint("document", __name__, url_prefix="/api/documents")
+    document_bp = Blueprint("document", __name__, url_prefix="/documents")
 
     @document_bp.route("/<document_id>", methods=["GET"])
     @token_required
@@ -27,7 +27,7 @@ def create_document_bp(file_manager: IFileManager):
         except AuthorizationError as err:
             return jsonify({"error": str(err)}), 403
         except Exception as err:
-            logging.error(f"Error getting PDF document: {str(err)}")
+            logging.error("Error getting PDF document: %s", str(err))
             logging.error("Exception", exc_info=True)
             return jsonify({"error": "Internal error"}), 500
 
@@ -54,7 +54,7 @@ def create_document_bp(file_manager: IFileManager):
         except AuthorizationError as err:
             return jsonify({"error": str(err)}), 403
         except Exception as err:
-            logging.error(f"Error dowloading PDF document: {str(err)}")
+            logging.error("Error dowloading PDF document: %s", str(err))
             logging.error("Exception", exc_info=True)
             return jsonify({"error": "Internal error"}), 500
 
@@ -83,7 +83,7 @@ def create_document_bp(file_manager: IFileManager):
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
         except Exception as err:
-            logging.error(f"Error creating PDF document: {str(err)}")
+            logging.error("Error creating PDF document: %s", str(err))
             logging.error("Exception", exc_info=True)
             return jsonify({"error": "Internal error"}), 500
 
@@ -102,7 +102,7 @@ def create_document_bp(file_manager: IFileManager):
         except AuthorizationError as err:
             return jsonify({"error": str(err)}), 403
         except Exception as err:
-            logging.error(f"Error updating PDF document: {str(err)}")
+            logging.error("Error updating PDF document: %s", str(err))
             logging.error("Exception", exc_info=True)
             return jsonify({"error": "Internal error"}), 500
 
@@ -128,7 +128,7 @@ def create_document_bp(file_manager: IFileManager):
         except AuthorizationError as err:
             return jsonify({"error": str(err)}), 403
         except Exception as err:
-            logging.error(f"Error deleting PDF document: {str(err)}")
+            logging.error("Error deleting PDF document: %s", str(err))
             logging.error("Exception", exc_info=True)
             return jsonify({"error": "Internal error"}), 500
 
@@ -147,13 +147,13 @@ def create_document_bp(file_manager: IFileManager):
 
             collaborator = UserService.get_user_by_email(email)
             PDFDocumentService.add_collaborator(document, collaborator)
-            return jsonify({"data": "Collaborator added"}), 201
+            return jsonify({"data": "Collaborator added"}), 200
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
         except AuthorizationError as err:
             return jsonify({"error": str(err)}), 403
         except Exception as err:
-            logging.error(f"Error adding collaborator: {str(err)}")
+            logging.error("Error adding collaborator: %s", str(err))
             logging.error("Exception", exc_info=True)
             return jsonify({"error": "Internal error"}), 500
 
@@ -172,13 +172,13 @@ def create_document_bp(file_manager: IFileManager):
 
             collaborator = UserService.get_user_by_email(email)
             PDFDocumentService.remove_collaborator(document, collaborator)
-            return jsonify({"data": "Collaborator added"}), 201
+            return jsonify({"data": "Collaborator added"}), 200
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
         except AuthorizationError as err:
             return jsonify({"error": str(err)}), 403
         except Exception as err:
-            logging.error(f"Error removing collaborator: {str(err)}")
+            logging.error("Error removing collaborator: %s", str(err))
             logging.error("Exception", exc_info=True)
             return jsonify({"error": "Internal error"}), 500
 
@@ -190,11 +190,11 @@ def create_document_bp(file_manager: IFileManager):
             if not document.can_share:
                 raise ValidationError("Document is not shareable.")
             PDFDocumentService.add_collaborator(document, user)
-            return jsonify({"data": "User added as collaborator"}), 201
+            return jsonify({"data": "User added as collaborator"}), 200
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
         except Exception as err:
-            logging.error(f"Error using share token: {str(err)}")
+            logging.error("Error using share token: %s", str(err))
             logging.error("Exception", exc_info=True)
             return jsonify({"error": "Internal error"}), 500
 

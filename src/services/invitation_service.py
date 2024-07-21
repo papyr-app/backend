@@ -2,11 +2,9 @@ import logging
 from typing import List, Dict, Any
 from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
-from flask import current_app
 from marshmallow import ValidationError
 
 from src.app import db
-from src.errors import AuthorizationError
 from src.models import User, Invitation
 from src.services.pdf_document_service import PDFDocumentService
 from src.services.user_service import UserService
@@ -38,28 +36,14 @@ class InvitationService:
             )
             db.session.add(invitation)
             db.session.commit()
+            logging.debug("Created invitation %i", invitation.id)
             return invitation
         except ValidationError as e:
-            logging.error(f"Validation error: {e.messages}")
+            logging.error("Validation error %s", e.messages)
             raise
         except SQLAlchemyError as e:
             db.session.rollback()
-            logging.error(f"SQLAlchemy error: {str(e)}")
-            raise
-
-    @staticmethod
-    def delete_invitation(invitation_id: int, user_id: int) -> None:
-        try:
-            invitation = InvitationService.get_invitation_by_id(invitation_id)
-            InvitationService.check_user_access(invitation, user_id)
-            db.session.delete(invitation)
-            db.session.commit()
-        except ValidationError as e:
-            logging.error(f"Validation error: {e.messages}")
-            raise
-        except SQLAlchemyError as e:
-            db.session.rollback()
-            current_app.logger.error(f"SQLAlchemy error: {str(e)}")
+            logging.error("SQLAlchemy error: %s", str(e))
             raise
 
     @staticmethod
@@ -70,7 +54,7 @@ class InvitationService:
                 raise ValidationError("Invitation not found.")
             return invitation
         except SQLAlchemyError as e:
-            logging.error(f"SQLAlchemy error: {str(e)}")
+            logging.error("SQLAlchemy error: %s", str(e))
             raise
 
     @staticmethod
@@ -79,7 +63,7 @@ class InvitationService:
             invitations = Invitation.query.filter_by(invited_by_id=user_id).all()
             return invitations
         except SQLAlchemyError as e:
-            logging.error(f"SQLAlchemy error: {str(e)}")
+            logging.error("SQLAlchemy error: %s", str(e))
             raise
 
     @staticmethod
@@ -88,7 +72,7 @@ class InvitationService:
             invitations = Invitation.query.filter_by(invitee_id=user_id).all()
             return invitations
         except SQLAlchemyError as e:
-            logging.error(f"SQLAlchemy error: {str(e)}")
+            logging.error("SQLAlchemy error: %s", str(e))
             raise
 
     @staticmethod
@@ -110,15 +94,9 @@ class InvitationService:
             PDFDocumentService.add_collaborator(document, user)
             return invitation
         except ValidationError as e:
-            logging.error(f"Validation error: {e.messages}")
+            logging.error("Validation error: %s", e.messages)
             raise
         except SQLAlchemyError as e:
             db.session.rollback()
-            logging.error(f"SQLAlchemy error: {str(e)}")
+            logging.error("SQLAlchemy error: %s", str(e))
             raise
-
-    @staticmethod
-    def check_user_access(invitation: Invitation, user_id: int) -> bool:
-        if not invitation.has_access(user_id):
-            raise AuthorizationError()
-        return True
