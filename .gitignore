@@ -3,6 +3,14 @@
 venv
 log.txt
 instance/
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

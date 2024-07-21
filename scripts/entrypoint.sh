@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-./scripts/wait-for-it.sh db:5432 --timeout=60 --strict -- echo "Database is up"
+./scripts/wait-for-it.sh db:5432 --timeout=30 --strict -- echo "Database is up"
 
 export FLASK_APP=manage.py
 flask db upgrade
