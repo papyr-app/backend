@@ -5,6 +5,11 @@ image:
   pullPolicy: IfNotPresent
   tag: "test"
 
+deploymentAnnotations:
+  keel.sh/policy: all
+  keel.sh/tag: test
+  keel.sh/pollSchedule: "@every 5m"
+
 service:
   type: ClusterIP
   port: 8000
