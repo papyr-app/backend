@@ -83,11 +83,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up kubectl
-        uses: azure/setup-kubectl@v1
-        with:
-          version: 'v1.21.0'
-
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -95,14 +90,8 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_PAT }}
 
-      - name: Set up Kubeconfig
-        run: |
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > ${HOME}/.kube/config
-          
-      - name: Install Helm
-        run: |
-          curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
-
-      - name: Deploy to Kubernetes with Helm
-        run: |
-          helm upgrade --install frontend ./helm --namespace ${{ env.ENVIRONMENT }} -f ${{ env.VALUES_FILE }}
+      - name: helm-deploy
+        uses: WyriHaximus/github-action-helm3@v2.0
+        with:
+          exec: helm upgrade --install backend ./helm --namespace ${{ env.ENVIRONMENT }} -f ${{ env.VALUES_FILE }}
+          kubeconfig: '${{ secrets.KUBE_CONFIG }}'
