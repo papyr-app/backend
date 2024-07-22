@@ -61,8 +61,10 @@ jobs:
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
             echo "ENVIRONMENT=test" >> $GITHUB_ENV
+            echo "IMAGE_TAG=test-${{ github.sha }}" >> $GITHUB_ENV
           elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             echo "ENVIRONMENT=prod" >> $GITHUB_ENV
+            echo "IMAGE_TAG=prod-${{ github.sha }}" >> $GITHUB_ENV
           fi
 
       - name: Build and push Docker image
@@ -70,7 +72,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository }}:${{ env.ENVIRONMENT }}
+          tags: ghcr.io/${{ github.repository }}:${{ env.IMAGE_TAG }} , ghcr.io/${{ github.repository }}:${{ env.ENVIRONMENT }}
 
   deploy:
     needs: build-and-push
