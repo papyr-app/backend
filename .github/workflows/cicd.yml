@@ -41,6 +41,9 @@ jobs:
   build-and-push:
     needs: lint-format-test
     runs-on: self-hosted
+    outputs:
+      environment: ${{ steps.set-env.outputs.ENVIRONMENT }} 
+      image_tag: ${{ steps.set-env.outputs.IMAGE_TAG }} 
     if: success()
 
     steps:
@@ -58,6 +61,7 @@ jobs:
           password: ${{ secrets.GHCR_PAT }}
 
       - name: Set environment variables
+        id: set-env
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
             echo "ENVIRONMENT=test" >> $GITHUB_ENV
@@ -66,8 +70,8 @@ jobs:
             echo "ENVIRONMENT=prod" >> $GITHUB_ENV
             echo "IMAGE_TAG=prod-${{ github.sha }}" >> $GITHUB_ENV
           fi
-          echo "environment=${{ env.ENVIRONMENT }}" >> $GITHUB_OUTPUT
-          echo "image_tag=${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
+          echo "ENVIRONMENT=${{ env.ENVIRONMENT }}" >> $GITHUB_OUTPUT
+          echo "IMAGE_TAG=${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
