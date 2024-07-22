@@ -17,4 +17,4 @@ jobs:
           image-names: "backend"
           image-tags: "test* prod*"
           cut-off: 2w
-          dry-run: true
+          dry-run: false
