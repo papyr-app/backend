@@ -78,7 +78,7 @@ def create_document_bp(file_manager: IFileManager):
                 schema = PDFDocumentSchema(context={"user": user}).dump(document)
                 return jsonify({"data": schema}), 201
             else:
-                PDFDocumentService.delete_pdf_document(document.id)
+                PDFDocumentService.delete_pdf_document(document.id, user.id)
                 return jsonify({"error": "Upload failed"}), 500
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
