@@ -1,21 +1,24 @@
 import logging
+from typing import Dict, Any
 from flask_socketio import emit, join_room, leave_room
 from marshmallow import ValidationError
 
+from src.models import User
+from src.auth.decorators import token_required_socket
 from src.schemas.socket_schema import SocketSchema, MessageSchema
 
 
 def handle_chat(socketio):
     @socketio.on("send_message")
-    def handle_message(data):
+    @token_required_socket
+    def handle_message(user: User, data: Dict[str, Any]):
         schema = MessageSchema()
         try:
             validated_data = schema.load(data)
             room = validated_data["room"]
-            username = validated_data["username"]
             message = validated_data["message"]
-            emit("new_message", {"username": username, "message": message}, room=room)
-            logging.debug("%s sent a message: %s in room %s.", username, message, room)
+            emit("new_message", {"username": user.username, "message": message}, room=room)
+            logging.debug("%s sent a message: %s in room %s.", user.username, message, room)
         except ValidationError as err:
             logging.error("Validation error: %s", err.messages)
             emit("error", {"errors": err.messages})
@@ -25,19 +28,19 @@ def handle_chat(socketio):
             emit("error", {"errors": "Internal error"})
 
     @socketio.on("join")
-    def on_join(data):
+    @token_required_socket
+    def on_join(user: User, data: Dict[str, Any]):
         schema = SocketSchema()
         try:
             validated_data = schema.load(data)
             room = validated_data["room"]
-            username = validated_data["username"]
             join_room(room)
             emit(
                 "new_message",
-                {"username": "System", "message": f"{username} has joined the room."},
+                {"username": "System", "message": f"{user.username} has joined the room."},
                 room=room,
             )
-            logging.debug("%s joined room %s.", username, room)
+            logging.debug("%s joined room %s.", user.username, room)
         except ValidationError as err:
             logging.error("Validation error: %s", err.messages)
             emit("error", {"errors": err.messages})
@@ -47,19 +50,19 @@ def handle_chat(socketio):
             emit("error", {"errors": "Internal error"})
 
     @socketio.on("leave")
-    def on_leave(data):
+    @token_required_socket
+    def on_leave(user: User, data: Dict[str, Any]):
         schema = SocketSchema()
         try:
             validated_data = schema.load(data)
             room = validated_data["room"]
-            username = validated_data["username"]
             leave_room(room)
             emit(
                 "new_message",
-                {"username": "System", "message": f"{username} has joined the room."},
+                {"username": "System", "message": f"{user.username} has joined the room."},
                 room=room,
             )
-            logging.debug("%s left room %s.", username, room)
+            logging.debug("%s left room %s.", user.username, room)
         except ValidationError as err:
             logging.error("Validation error: %s", err.messages)
             emit("error", {"errors": err.messages})

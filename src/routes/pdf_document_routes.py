@@ -18,10 +18,10 @@ def create_document_bp(file_manager: IFileManager):
     @token_required
     def get_document(user: User, document_id: int):
         try:
-            document = PDFDocumentService.get_pdf_document_by_id(document_id)
-            PDFDocumentService.check_user_access(document, user.id)
+            pdf_document = PDFDocumentService.get_pdf_document_by_id(document_id)
+            PDFDocumentService.check_user_access(pdf_document, user.id)
             schema = PDFDocumentSchema(context={"user": user})
-            return jsonify({"data": schema.dump(document)}), 200
+            return jsonify({"data": schema.dump(pdf_document)}), 200
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
         except AuthorizationError as err:
@@ -35,9 +35,9 @@ def create_document_bp(file_manager: IFileManager):
     @token_required
     def download_document(user: User, document_id: str):
         try:
-            document = PDFDocumentService.get_pdf_document_by_id(document_id)
-            document_key = f"{str(document.id)}.pdf"
-            PDFDocumentService.check_user_access(document, user.id)
+            pdf_document = PDFDocumentService.get_pdf_document_by_id(document_id)
+            PDFDocumentService.check_user_access(pdf_document, user.id)
+            document_key = f"{str(pdf_document.id)}.pdf"
 
             if not file_manager.file_exists(document_key):
                 return jsonify({"error": "File not found"}), 404
@@ -46,9 +46,7 @@ def create_document_bp(file_manager: IFileManager):
             if not file_stream:
                 return jsonify({"error": "File not found"}), 404
 
-            return send_file(
-                file_stream, download_name=document_key, as_attachment=True
-            )
+            return send_file(file_stream, download_name=document_key, as_attachment=True)
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
         except AuthorizationError as err:
@@ -92,9 +90,9 @@ def create_document_bp(file_manager: IFileManager):
     def update_document(user: User, document_id: int):
         data = request.get_json()
         try:
-            updated_document = PDFDocumentService.update_pdf_document(
-                document_id, data, user.id
-            )
+            pdf_document = PDFDocumentService.get_pdf_document_by_id(document_id)
+            PDFDocumentService.check_user_access(pdf_document, user.id)
+            updated_document = PDFDocumentService.update_pdf_document(pdf_document, data, user.id)
             schema = PDFDocumentSchema(context={"user": user}).dump(updated_document)
             return jsonify({"data": schema}), 200
         except ValidationError as err:
@@ -110,8 +108,9 @@ def create_document_bp(file_manager: IFileManager):
     @token_required
     def delete_document(user: User, document_id: int):
         try:
-            document = PDFDocumentService.get_pdf_document_by_id(document_id, user.id)
-            document_key = f"{str(document.id)}.pdf"
+            pdf_document = PDFDocumentService.get_pdf_document_by_id(document_id)
+            PDFDocumentService.check_user_access(pdf_document, user.id)
+            document_key = f"{str(pdf_document.id)}.pdf"
 
             if not file_manager.file_exists(document_key):
                 return jsonify({"error": "File not found"}), 404
@@ -119,7 +118,7 @@ def create_document_bp(file_manager: IFileManager):
             delete_succeeded = file_manager.delete_file(document_key)
 
             if delete_succeeded:
-                PDFDocumentService.delete_pdf_document(document_id, user.id)
+                PDFDocumentService.delete_pdf_document(pdf_document)
                 return jsonify({"data": "Document deleted successfully"}), 200
             else:
                 return jsonify({"error": "Failed to delete document"}), 500
@@ -142,11 +141,10 @@ def create_document_bp(file_manager: IFileManager):
             return jsonify({"error": "Missing required field"}), 400
 
         try:
-            document = PDFDocumentService.get_pdf_document_by_id(document_id)
-            PDFDocumentService.check_user_access(document, user.id)
-
+            pdf_document = PDFDocumentService.get_pdf_document_by_id(document_id)
+            PDFDocumentService.check_user_access(pdf_document, user.id)
             collaborator = UserService.get_user_by_email(email)
-            PDFDocumentService.add_collaborator(document, collaborator)
+            PDFDocumentService.add_collaborator(pdf_document, collaborator)
             return jsonify({"data": "Collaborator added"}), 200
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
@@ -167,11 +165,10 @@ def create_document_bp(file_manager: IFileManager):
             return jsonify({"error": "Missing required field"}), 400
 
         try:
-            document = PDFDocumentService.get_pdf_document_by_id(document_id)
-            PDFDocumentService.check_user_access(document, user.id)
-
+            pdf_document = PDFDocumentService.get_pdf_document_by_id(document_id)
+            PDFDocumentService.check_user_access(pdf_document, user.id)
             collaborator = UserService.get_user_by_email(email)
-            PDFDocumentService.remove_collaborator(document, collaborator)
+            PDFDocumentService.remove_collaborator(pdf_document, collaborator)
             return jsonify({"data": "Collaborator added"}), 200
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
@@ -186,10 +183,10 @@ def create_document_bp(file_manager: IFileManager):
     @token_required
     def use_share_token(user: User, share_token: str):
         try:
-            document = PDFDocumentService.get_pdf_document_by_share_token(share_token)
-            if not document.can_share:
+            pdf_document = PDFDocumentService.get_pdf_document_by_share_token(share_token)
+            if not pdf_document.can_share:
                 raise ValidationError("Document is not shareable.")
-            PDFDocumentService.add_collaborator(document, user)
+            PDFDocumentService.add_collaborator(pdf_document, user)
             return jsonify({"data": "User added as collaborator"}), 200
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400

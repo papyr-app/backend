@@ -3,7 +3,6 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from marshmallow import Schema, fields, validate, validates, ValidationError
 
 from src.app import db
-from src.schemas.socket_schema import SocketSchema
 from src.models import HighlightAnnotation, PDFDocument
 
 
@@ -15,10 +14,10 @@ class AnnotationSchema(SQLAlchemyAutoSchema):
         sqla_session = db.session
 
 
-class CreateAnnotationSchema(SocketSchema):
+class CreateAnnotationSchema(Schema):
     document_id = fields.String(required=True)
     page_number = fields.Integer(required=True, validate=validate.Range(min=1))
-    quad_points = fields.List(required=True)
+    quad_points = fields.List(fields.Float(), required=True)
     color = fields.String(required=True)
     opacity = fields.Float(required=True, validate=validate.Range(min=0, max=1))
 
@@ -29,15 +28,15 @@ class CreateAnnotationSchema(SocketSchema):
 
     @validates("color")
     def validate_color(self, value):
-        if not re.match(r'^#(?:[0-9a-fA-F]{3}){1,2}$', value):
+        if not re.match(r"^#(?:[0-9a-fA-F]{3}){1,2}$", value):
             raise ValidationError("Invalid color string")
 
 
-class UpdateAnnotationSchema(SocketSchema):
+class UpdateAnnotationSchema(Schema):
     color = fields.String(required=True)
     opacity = fields.Float(required=True, validate=validate.Range(min=0, max=1))
 
     @validates("color")
     def validate_color(self, value):
-        if not re.match(r'^#(?:[0-9a-fA-F]{3}){1,2}$', value):
+        if not re.match(r"^#(?:[0-9a-fA-F]{3}){1,2}$", value):
             raise ValidationError("Invalid color string")

@@ -3,6 +3,7 @@ from typing import Dict, Any
 from sqlalchemy.exc import SQLAlchemyError
 from marshmallow import ValidationError
 
+from src.errors import AuthorizationError
 from src.app import db
 from src.models import User
 from src.schemas.user_schema import CreateUserSchema, UpdateUserSchema
@@ -122,3 +123,9 @@ class UserService:
         except Exception as e:
             logging.error("Exception: %s", str(e))
             raise
+
+    @staticmethod
+    def check_user_access(user: User, user_id: int) -> bool:
+        if not user.id == user_id:
+            raise AuthorizationError()
+        return True
