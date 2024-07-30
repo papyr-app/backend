@@ -23,7 +23,9 @@ class PDFDocumentService:
             db.session.add(pdf_document)
             db.session.flush()
 
-            virtual_path = VirtualPath(user_id=user_id, document_id=pdf_document.id, file_path=file_path)
+            virtual_path = VirtualPath(
+                user_id=user_id, document_id=pdf_document.id, file_path=file_path
+            )
             db.session.add(virtual_path)
             db.session.commit()
             logging.debug("Created document %i", pdf_document.id)
@@ -37,18 +39,26 @@ class PDFDocumentService:
             raise
 
     @staticmethod
-    def update_pdf_document(pdf_document: PDFDocument, data: Dict[str, Any], user_id: int = None) -> PDFDocument:
+    def update_pdf_document(
+        pdf_document: PDFDocument, data: Dict[str, Any], user_id: int = None
+    ) -> PDFDocument:
         schema = UpdatePDFDocumentSchema()
         try:
             validated_data = schema.load(data, partial=True)
 
             if "file_path" in validated_data and user_id:
                 file_path = validated_data.pop("file_path")
-                virtual_path = VirtualPath.query.filter_by(user_id=user_id, document_id=pdf_document.id).first()
+                virtual_path = VirtualPath.query.filter_by(
+                    user_id=user_id, document_id=pdf_document.id
+                ).first()
                 if virtual_path:
                     virtual_path.file_path = file_path
                 else:
-                    virtual_path = VirtualPath(user_id=user_id, document_id=pdf_document.id, file_path=file_path)
+                    virtual_path = VirtualPath(
+                        user_id=user_id,
+                        document_id=pdf_document.id,
+                        file_path=file_path,
+                    )
                     db.session.add(virtual_path)
 
             for key, value in validated_data.items():
@@ -71,9 +81,6 @@ class PDFDocumentService:
             db.session.delete(pdf_document)
             db.session.commit()
             logging.debug("Deleted document %i", pdf_document.id)
-        except ValidationError as e:
-            logging.error("Validation error: %s", e.messages)
-            raise
         except SQLAlchemyError as e:
             db.session.rollback()
             logging.error("SQLAlchemy error: %s", str(e))
@@ -119,7 +126,10 @@ class PDFDocumentService:
     def add_collaborator(pdf_document: PDFDocument, collaborator: User) -> PDFDocument:
         try:
             if collaborator in pdf_document.collaborators:
-                raise ValidationError("Collaborator is already added to the document.")
+                raise ValidationError("User is already a collaborator.")
+
+            if collaborator == pdf_document.owner:
+                raise ValidationError("User owns the document.")
 
             pdf_document.collaborators.append(collaborator)
             db.session.flush()
@@ -148,7 +158,7 @@ class PDFDocumentService:
         try:
             if collaborator not in pdf_document.collaborators:
                 raise ValidationError(
-                    "Collaborator is not associated with the document."
+                    "User is not associated with the document."
                 )
 
             virtual_path = VirtualPath.query.filter_by(

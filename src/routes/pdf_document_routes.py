@@ -46,7 +46,9 @@ def create_document_bp(file_manager: IFileManager):
             if not file_stream:
                 return jsonify({"error": "File not found"}), 404
 
-            return send_file(file_stream, download_name=document_key, as_attachment=True)
+            return send_file(
+                file_stream, download_name=document_key, as_attachment=True
+            )
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
         except AuthorizationError as err:
@@ -92,7 +94,9 @@ def create_document_bp(file_manager: IFileManager):
         try:
             pdf_document = PDFDocumentService.get_pdf_document_by_id(document_id)
             PDFDocumentService.check_user_access(pdf_document, user.id)
-            updated_document = PDFDocumentService.update_pdf_document(pdf_document, data, user.id)
+            updated_document = PDFDocumentService.update_pdf_document(
+                pdf_document, data, user.id
+            )
             schema = PDFDocumentSchema(context={"user": user}).dump(updated_document)
             return jsonify({"data": schema}), 200
         except ValidationError as err:
@@ -169,7 +173,7 @@ def create_document_bp(file_manager: IFileManager):
             PDFDocumentService.check_user_access(pdf_document, user.id)
             collaborator = UserService.get_user_by_email(email)
             PDFDocumentService.remove_collaborator(pdf_document, collaborator)
-            return jsonify({"data": "Collaborator added"}), 200
+            return jsonify({"data": "Collaborator removed"}), 200
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
         except AuthorizationError as err:
@@ -183,7 +187,9 @@ def create_document_bp(file_manager: IFileManager):
     @token_required
     def use_share_token(user: User, share_token: str):
         try:
-            pdf_document = PDFDocumentService.get_pdf_document_by_share_token(share_token)
+            pdf_document = PDFDocumentService.get_pdf_document_by_share_token(
+                share_token
+            )
             if not pdf_document.can_share:
                 raise ValidationError("Document is not shareable.")
             PDFDocumentService.add_collaborator(pdf_document, user)

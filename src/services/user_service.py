@@ -57,17 +57,11 @@ class UserService:
             raise
 
     @staticmethod
-    def delete_user(user_id: int) -> None:
+    def delete_user(user: User) -> None:
         try:
-            user = User.query.get(user_id)
-            if not user:
-                raise ValidationError("User not found.")
             db.session.delete(user)
             db.session.commit()
             logging.debug("Deleted user %i", user.id)
-        except ValidationError as e:
-            logging.error("Validation error: %s", e.messages)
-            raise
         except SQLAlchemyError as e:
             db.session.rollback()
             logging.error("SQLAlchemy error: %s", str(e))
