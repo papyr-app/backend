@@ -157,9 +157,7 @@ class PDFDocumentService:
     ) -> PDFDocument:
         try:
             if collaborator not in pdf_document.collaborators:
-                raise ValidationError(
-                    "User is not associated with the document."
-                )
+                raise ValidationError("User is not associated with the document.")
 
             virtual_path = VirtualPath.query.filter_by(
                 user_id=collaborator.id, document_id=pdf_document.id

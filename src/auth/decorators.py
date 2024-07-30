@@ -38,10 +38,11 @@ def token_required_socket(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         query_params = parse_qs(urlparse(request.url).query)
-        token = query_params.get('token', [None])[0]
+        token = query_params.get("token", [None])[0]
+        room = query_params.get("room", [None])[0]
 
-        if not token:
-            emit("error", {"message": "Missing token"})
+        if not token or not room:
+            emit("error", {"message": "Missing token or room in request."})
             disconnect()
             return
 
@@ -63,6 +64,6 @@ def token_required_socket(f):
             disconnect()
             return
 
-        return f(current_user, *args, **kwargs)
+        return f(current_user, room, *args, **kwargs)
 
     return decorated

@@ -5,9 +5,5 @@ from marshmallow import (
 )
 
 
-class RoomSchema(Schema):
-    room = fields.String(required=True, validate=validate.Length(min=1))
-
-
-class MessageSchema(RoomSchema):
+class MessageSchema(Schema):
     message = fields.String(required=True, validate=validate.Length(min=1))

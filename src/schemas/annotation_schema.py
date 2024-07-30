@@ -15,7 +15,7 @@ class AnnotationSchema(SQLAlchemyAutoSchema):
 
 
 class CreateAnnotationSchema(Schema):
-    document_id = fields.String(required=True)
+    document_id = fields.Integer(required=True)
     page_number = fields.Integer(required=True, validate=validate.Range(min=1))
     quad_points = fields.List(fields.Float(), required=True)
     color = fields.String(required=True)
@@ -33,6 +33,7 @@ class CreateAnnotationSchema(Schema):
 
 
 class UpdateAnnotationSchema(Schema):
+    quad_points = fields.List(fields.Float(), required=True)
     color = fields.String(required=True)
     opacity = fields.Float(required=True, validate=validate.Range(min=0, max=1))
 

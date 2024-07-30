@@ -10,14 +10,15 @@ from src.schemas.annotation_schema import CreateAnnotationSchema, UpdateAnnotati
 
 class AnnotationService:
     @staticmethod
-    def create_annotation(data: Dict[str, Any]):
+    def create_annotation(data: Dict[str, Any], user_id: int):
         schema = CreateAnnotationSchema()
         try:
             validated_data = schema.load(data)
+            validated_data["user_id"] = user_id
             annotation = HighlightAnnotation(**validated_data)
             db.session.add(annotation)
             db.session.commit()
-            logging.debug("Created highlight annotation")
+            logging.debug("Created highlight annotation.")
             return annotation
         except ValidationError as err:
             logging.error("Validation error: %s", err.messages)
@@ -35,7 +36,7 @@ class AnnotationService:
             for key, value in validated_data.items():
                 setattr(annotation, key, value)
             db.session.commit()
-            logging.debug("Updated highlight annotation")
+            logging.debug("Updated highlight annotation.")
             return annotation
         except ValidationError as err:
             logging.error("Validation error: %s", err.messages)
@@ -50,7 +51,7 @@ class AnnotationService:
         try:
             db.session.delete(annotation)
             db.session.commit()
-            logging.debug("Deleted highlight annotation")
+            logging.debug("Deleted highlight annotation.")
         except SQLAlchemyError as err:
             db.session.rollback()
             logging.error(f"SQLAlchemy error: {str(err)}")
