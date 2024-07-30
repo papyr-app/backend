@@ -111,3 +111,24 @@ class VirtualPath(db.Model):
     file_path = db.Column(db.String, default="", nullable=False)
 
     user = db.relationship("User", backref="virtual_paths")
+
+
+class HighlightAnnotation(db.Model):
+    __tablename__ = "highlight_annotations"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    document_id = db.Column(
+        db.Integer,
+        db.ForeignKey("pdf_documents.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    page_number = db.Column(db.Integer, nullable=False)
+    quad_points = db.Column(db.JSON, nullable=False)
+    color = db.Column(db.String, nullable=False)
+    opacity = db.Column(db.Float, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
+
+    user = db.relationship("User", backref="highlight_annotations")
+    document = db.relationship("PDFDocument", backref="highlights_annotations")

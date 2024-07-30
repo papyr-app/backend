@@ -40,24 +40,24 @@ class PDFDocumentService:
 
     @staticmethod
     def update_pdf_document(
-        document_id: int, data: Dict[str, Any], user_id: int
+        pdf_document: PDFDocument, data: Dict[str, Any], user_id: int = None
     ) -> PDFDocument:
         schema = UpdatePDFDocumentSchema()
         try:
-            pdf_document = PDFDocumentService.get_pdf_document_by_id(document_id)
             validated_data = schema.load(data, partial=True)
-            PDFDocumentService.check_user_access(pdf_document, user_id)
 
-            if "file_path" in validated_data:
+            if "file_path" in validated_data and user_id:
                 file_path = validated_data.pop("file_path")
                 virtual_path = VirtualPath.query.filter_by(
-                    user_id=user_id, document_id=document_id
+                    user_id=user_id, document_id=pdf_document.id
                 ).first()
                 if virtual_path:
                     virtual_path.file_path = file_path
                 else:
                     virtual_path = VirtualPath(
-                        user_id=user_id, document_id=document_id, file_path=file_path
+                        user_id=user_id,
+                        document_id=pdf_document.id,
+                        file_path=file_path,
                     )
                     db.session.add(virtual_path)
 
@@ -76,16 +76,11 @@ class PDFDocumentService:
             raise
 
     @staticmethod
-    def delete_pdf_document(document_id: int, user_id: int) -> None:
+    def delete_pdf_document(pdf_document: PDFDocument) -> None:
         try:
-            pdf_document = PDFDocumentService.get_pdf_document_by_id(document_id)
-            PDFDocumentService.check_user_access(pdf_document, user_id)
             db.session.delete(pdf_document)
             db.session.commit()
             logging.debug("Deleted document %i", pdf_document.id)
-        except ValidationError as e:
-            logging.error("Validation error: %s", e.messages)
-            raise
         except SQLAlchemyError as e:
             db.session.rollback()
             logging.error("SQLAlchemy error: %s", str(e))
@@ -131,7 +126,10 @@ class PDFDocumentService:
     def add_collaborator(pdf_document: PDFDocument, collaborator: User) -> PDFDocument:
         try:
             if collaborator in pdf_document.collaborators:
-                raise ValidationError("Collaborator is already added to the document.")
+                raise ValidationError("User is already a collaborator.")
+
+            if collaborator == pdf_document.owner:
+                raise ValidationError("User owns the document.")
 
             pdf_document.collaborators.append(collaborator)
             db.session.flush()
@@ -159,9 +157,7 @@ class PDFDocumentService:
     ) -> PDFDocument:
         try:
             if collaborator not in pdf_document.collaborators:
-                raise ValidationError(
-                    "Collaborator is not associated with the document."
-                )
+                raise ValidationError("User is not associated with the document.")
 
             virtual_path = VirtualPath.query.filter_by(
                 user_id=collaborator.id, document_id=pdf_document.id
