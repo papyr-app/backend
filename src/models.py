@@ -9,11 +9,11 @@ document_collaborators = db.Table(
     "document_collaborators",
     db.Column(
         "pdf_document_id",
-        db.String(32),
+        db.String(36),
         db.ForeignKey("pdf_documents.id", ondelete="CASCADE"),
         primary_key=True,
     ),
-    db.Column("user_id", db.String(32), db.ForeignKey("users.id"), primary_key=True),
+    db.Column("user_id", db.String(36), db.ForeignKey("users.id"), primary_key=True),
 )
 
 
