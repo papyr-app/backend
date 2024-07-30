@@ -37,7 +37,7 @@ class InvitationService:
             )
             db.session.add(invitation)
             db.session.commit()
-            logging.debug("Created invitation %i", invitation.id)
+            logging.debug("Created invitation %s", invitation.id)
             return invitation
         except ValidationError as e:
             logging.error("Validation error %s", e.messages)

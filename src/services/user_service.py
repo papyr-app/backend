@@ -23,7 +23,7 @@ class UserService:
             user.set_password(password)
             db.session.add(user)
             db.session.commit()
-            logging.debug("Created user %i", user.id)
+            logging.debug("Created user %s", user.id)
             return user
         except ValidationError as e:
             logging.error("Validation error: %s", e.messages)
@@ -46,7 +46,7 @@ class UserService:
             for key, value in validated_data.items():
                 setattr(user, key, value)
             db.session.commit()
-            logging.debug("Updated user %i", user.id)
+            logging.debug("Updated user %s", user.id)
             return user
         except ValidationError as e:
             logging.error("Validation error: %s", e.messages)
@@ -61,7 +61,7 @@ class UserService:
         try:
             db.session.delete(user)
             db.session.commit()
-            logging.debug("Deleted user %i", user.id)
+            logging.debug("Deleted user %s", user.id)
         except SQLAlchemyError as e:
             db.session.rollback()
             logging.error("SQLAlchemy error: %s", str(e))
