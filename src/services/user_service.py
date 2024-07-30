@@ -108,7 +108,7 @@ class UserService:
             user = UserService.get_user_by_username(validated_data["username"])
             if user and user.check_password(validated_data["password"]):
                 user.record_login()
-                return generate_jwt(str(user.id))
+                return generate_jwt({"sub": user.id})
             else:
                 raise AuthenticationError()
         except ValidationError as e:

@@ -18,7 +18,7 @@ def token_required(f):
             return jsonify({"message": "Missing token"}), 403
 
         try:
-            user_id = decode_jwt(token)
+            user_id = decode_jwt(token)["sub"]
             if not user_id:
                 return jsonify({"error": "Token is invalid"}), 403
             current_user = UserService.get_user_by_id(user_id)
@@ -47,7 +47,7 @@ def token_required_socket(f):
             return
 
         try:
-            user_id = decode_jwt(token)
+            user_id = decode_jwt(token)["sub"]
             if not user_id:
                 emit("error", {"error": "Token is invalid"})
                 disconnect()

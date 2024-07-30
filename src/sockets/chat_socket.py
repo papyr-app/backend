@@ -25,7 +25,6 @@ def handle_chat(socketio):
             logging.debug("%s #%s: '%s'", user.username, room, message)
             return
         except ValidationError as err:
-            logging.error("Validation error: %s", err.messages)
             emit("error", {"errors": err.messages}, broadcast=False)
             return
         except Exception as err:
