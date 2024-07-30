@@ -28,7 +28,7 @@ class PDFDocumentService:
             )
             db.session.add(virtual_path)
             db.session.commit()
-            logging.debug("Created document %i", pdf_document.id)
+            logging.debug("Created document %s", pdf_document.id)
             return pdf_document
         except ValidationError as e:
             logging.error("Validation error: %s", e.messages)
@@ -65,7 +65,7 @@ class PDFDocumentService:
                 setattr(pdf_document, key, value)
 
             db.session.commit()
-            logging.debug("Updated document %i", pdf_document.id)
+            logging.debug("Updated document %s", pdf_document.id)
             return pdf_document
         except ValidationError as e:
             logging.error("Validation error: %s", e.messages)
@@ -80,7 +80,7 @@ class PDFDocumentService:
         try:
             db.session.delete(pdf_document)
             db.session.commit()
-            logging.debug("Deleted document %i", pdf_document.id)
+            logging.debug("Deleted document %s", pdf_document.id)
         except SQLAlchemyError as e:
             db.session.rollback()
             logging.error("SQLAlchemy error: %s", str(e))
@@ -140,7 +140,7 @@ class PDFDocumentService:
             db.session.add(virtual_path)
             db.session.commit()
             logging.debug(
-                "Added collaborator %i to document %i", collaborator.id, pdf_document.id
+                "Added collaborator %s to document %s", collaborator.id, pdf_document.id
             )
             return pdf_document
         except ValidationError as e:
@@ -168,7 +168,7 @@ class PDFDocumentService:
             pdf_document.collaborators.remove(collaborator)
             db.session.commit()
             logging.debug(
-                "Removed collaborator %i from document %i",
+                "Removed collaborator %s from document %s",
                 collaborator.id,
                 pdf_document.id,
             )
