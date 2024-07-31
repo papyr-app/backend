@@ -34,7 +34,7 @@ class UserService:
             raise
 
     @staticmethod
-    def update_user(user_id: int, data: Dict[str, Any]) -> User:
+    def update_user(user_id: str, data: Dict[str, Any]) -> User:
         schema = UpdateUserSchema()
         try:
             user = User.query.get(user_id)
@@ -68,7 +68,7 @@ class UserService:
             raise
 
     @staticmethod
-    def get_user_by_id(user_id: int) -> User:
+    def get_user_by_id(user_id: str) -> User:
         try:
             user = User.query.get(user_id)
             if not user:
@@ -119,7 +119,7 @@ class UserService:
             raise
 
     @staticmethod
-    def check_user_access(user: User, user_id: int) -> bool:
+    def check_user_access(user: User, user_id: str) -> bool:
         if not user.id == user_id:
             raise AuthorizationError()
         return True

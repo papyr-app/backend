@@ -48,7 +48,7 @@ class InvitationService:
             raise
 
     @staticmethod
-    def get_invitation_by_id(invitation_id: int) -> Invitation:
+    def get_invitation_by_id(invitation_id: str) -> Invitation:
         try:
             invitation = Invitation.query.get(invitation_id)
             if not invitation:
@@ -59,7 +59,7 @@ class InvitationService:
             raise
 
     @staticmethod
-    def get_invitations_sent_by_user(user_id: int) -> List[Invitation]:
+    def get_invitations_sent_by_user(user_id: str) -> List[Invitation]:
         try:
             invitations = Invitation.query.filter_by(invited_by_id=user_id).all()
             return invitations
@@ -68,7 +68,7 @@ class InvitationService:
             raise
 
     @staticmethod
-    def get_invitations_received_by_user(user_id: int) -> List[Invitation]:
+    def get_invitations_received_by_user(user_id: str) -> List[Invitation]:
         try:
             invitations = Invitation.query.filter_by(invitee_id=user_id).all()
             return invitations
@@ -103,7 +103,7 @@ class InvitationService:
             raise
 
     @staticmethod
-    def check_user_access(invitation: Invitation, user_id: int) -> bool:
+    def check_user_access(invitation: Invitation, user_id: str) -> bool:
         if not invitation.has_access(user_id):
             raise AuthorizationError()
         return True

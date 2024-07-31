@@ -14,7 +14,7 @@ from src.models import PDFDocument, VirtualPath, User
 
 class PDFDocumentService:
     @staticmethod
-    def create_pdf_document(data: Dict[str, Any], user_id: int) -> PDFDocument:
+    def create_pdf_document(data: Dict[str, Any], user_id: str) -> PDFDocument:
         schema = CreatePDFDocumentSchema()
         try:
             validated_data = schema.load(data)
@@ -40,7 +40,7 @@ class PDFDocumentService:
 
     @staticmethod
     def update_pdf_document(
-        pdf_document: PDFDocument, data: Dict[str, Any], user_id: int = None
+        pdf_document: PDFDocument, data: Dict[str, Any], user_id: str = None
     ) -> PDFDocument:
         schema = UpdatePDFDocumentSchema()
         try:
@@ -87,7 +87,7 @@ class PDFDocumentService:
             raise
 
     @staticmethod
-    def get_pdf_document_by_id(document_id: int) -> PDFDocument:
+    def get_pdf_document_by_id(document_id: str) -> PDFDocument:
         try:
             pdf_document = PDFDocument.query.get(document_id)
             if not pdf_document:
@@ -111,7 +111,7 @@ class PDFDocumentService:
             raise
 
     @staticmethod
-    def get_documents_by_user(user_id: int) -> List[PDFDocument]:
+    def get_documents_by_user(user_id: str) -> List[PDFDocument]:
         try:
             pdf_documents = PDFDocument.query.filter(
                 (PDFDocument.owner_id == user_id)
@@ -182,7 +182,7 @@ class PDFDocumentService:
             raise
 
     @staticmethod
-    def check_user_access(document: PDFDocument, user_id: int) -> bool:
+    def check_user_access(document: PDFDocument, user_id: str) -> bool:
         if not document.has_access(user_id):
             raise AuthorizationError()
         return True
