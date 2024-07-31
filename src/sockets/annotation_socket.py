@@ -10,7 +10,7 @@ from src.models import User
 
 
 def handle_annotations(socketio):
-    @socketio.on("get_annotations")
+    @socketio.on("fetch_annotations")
     @token_required_socket
     def handle_fetch_annotations(user: User, room: str, data: Dict[str, Any]):
         try:
