@@ -4,6 +4,7 @@ from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
 from marshmallow import ValidationError
 
+from src.errors import AuthorizationError
 from src.app import db
 from src.models import User, Invitation
 from src.services.pdf_document_service import PDFDocumentService
@@ -36,7 +37,7 @@ class InvitationService:
             )
             db.session.add(invitation)
             db.session.commit()
-            logging.debug("Created invitation %i", invitation.id)
+            logging.debug("Created invitation %s", invitation.id)
             return invitation
         except ValidationError as e:
             logging.error("Validation error %s", e.messages)
@@ -100,3 +101,9 @@ class InvitationService:
             db.session.rollback()
             logging.error("SQLAlchemy error: %s", str(e))
             raise
+
+    @staticmethod
+    def check_user_access(invitation: Invitation, user_id: int) -> bool:
+        if not invitation.has_access(user_id):
+            raise AuthorizationError()
+        return True

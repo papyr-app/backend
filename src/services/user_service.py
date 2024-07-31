@@ -3,6 +3,7 @@ from typing import Dict, Any
 from sqlalchemy.exc import SQLAlchemyError
 from marshmallow import ValidationError
 
+from src.errors import AuthorizationError
 from src.app import db
 from src.models import User
 from src.schemas.user_schema import CreateUserSchema, UpdateUserSchema
@@ -22,7 +23,7 @@ class UserService:
             user.set_password(password)
             db.session.add(user)
             db.session.commit()
-            logging.debug("Created user %i", user.id)
+            logging.debug("Created user %s", user.id)
             return user
         except ValidationError as e:
             logging.error("Validation error: %s", e.messages)
@@ -45,7 +46,7 @@ class UserService:
             for key, value in validated_data.items():
                 setattr(user, key, value)
             db.session.commit()
-            logging.debug("Updated user %i", user.id)
+            logging.debug("Updated user %s", user.id)
             return user
         except ValidationError as e:
             logging.error("Validation error: %s", e.messages)
@@ -56,17 +57,11 @@ class UserService:
             raise
 
     @staticmethod
-    def delete_user(user_id: int) -> None:
+    def delete_user(user: User) -> None:
         try:
-            user = User.query.get(user_id)
-            if not user:
-                raise ValidationError("User not found.")
             db.session.delete(user)
             db.session.commit()
-            logging.debug("Deleted user %i", user.id)
-        except ValidationError as e:
-            logging.error("Validation error: %s", e.messages)
-            raise
+            logging.debug("Deleted user %s", user.id)
         except SQLAlchemyError as e:
             db.session.rollback()
             logging.error("SQLAlchemy error: %s", str(e))
@@ -113,7 +108,7 @@ class UserService:
             user = UserService.get_user_by_username(validated_data["username"])
             if user and user.check_password(validated_data["password"]):
                 user.record_login()
-                return generate_jwt(str(user.id))
+                return generate_jwt({"sub": user.id})
             else:
                 raise AuthenticationError()
         except ValidationError as e:
@@ -122,3 +117,9 @@ class UserService:
         except Exception as e:
             logging.error("Exception: %s", str(e))
             raise
+
+    @staticmethod
+    def check_user_access(user: User, user_id: int) -> bool:
+        if not user.id == user_id:
+            raise AuthorizationError()
+        return True

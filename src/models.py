@@ -9,23 +9,28 @@ document_collaborators = db.Table(
     "document_collaborators",
     db.Column(
         "pdf_document_id",
-        db.Integer,
+        db.String(36),
         db.ForeignKey("pdf_documents.id", ondelete="CASCADE"),
         primary_key=True,
     ),
-    db.Column("user_id", db.Integer, db.ForeignKey("users.id"), primary_key=True),
+    db.Column("user_id", db.String(36), db.ForeignKey("users.id"), primary_key=True),
 )
 
 
 class Invitation(db.Model):
     __tablename__ = "invitations"
 
-    id = db.Column(db.Integer, primary_key=True)
-    document_id = db.Column(
-        db.Integer, db.ForeignKey("pdf_documents.id"), nullable=False
+    id = db.Column(
+        db.String(36),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4()),
+        nullable=False,
     )
-    invited_by_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    invitee_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    document_id = db.Column(
+        db.String(36), db.ForeignKey("pdf_documents.id"), nullable=False
+    )
+    invited_by_id = db.Column(db.String(36), db.ForeignKey("users.id"), nullable=False)
+    invitee_id = db.Column(db.String(36), db.ForeignKey("users.id"), nullable=False)
     expires_at = db.Column(
         db.DateTime, default=lambda: datetime.utcnow() + timedelta(days=7)
     )
@@ -45,8 +50,13 @@ class Invitation(db.Model):
 class PDFDocument(db.Model):
     __tablename__ = "pdf_documents"
 
-    id = db.Column(db.Integer, primary_key=True)
-    owner_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    id = db.Column(
+        db.String(36),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4()),
+        nullable=False,
+    )
+    owner_id = db.Column(db.String(36), db.ForeignKey("users.id"), nullable=False)
     title = db.Column(db.String, nullable=False)
     description = db.Column(db.String)
     status = db.Column(db.String, default=DocumentStatus.ACTIVE)
@@ -74,7 +84,12 @@ class PDFDocument(db.Model):
 class User(db.Model):
     __tablename__ = "users"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(
+        db.String(36),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4()),
+        nullable=False,
+    )
     username = db.Column(db.String, nullable=False, unique=True)
     email = db.Column(db.String, nullable=False, unique=True)
     first_name = db.Column(db.String, nullable=False)
@@ -101,13 +116,44 @@ class User(db.Model):
 class VirtualPath(db.Model):
     __tablename__ = "virtual_paths"
 
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    id = db.Column(
+        db.String(36),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4()),
+        nullable=False,
+    )
+    user_id = db.Column(db.String(36), db.ForeignKey("users.id"), nullable=False)
     document_id = db.Column(
-        db.Integer,
+        db.String(36),
         db.ForeignKey("pdf_documents.id", ondelete="CASCADE"),
         nullable=False,
     )
     file_path = db.Column(db.String, default="", nullable=False)
 
     user = db.relationship("User", backref="virtual_paths")
+
+
+class HighlightAnnotation(db.Model):
+    __tablename__ = "highlight_annotations"
+
+    id = db.Column(
+        db.String(36),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4()),
+        nullable=False,
+    )
+    user_id = db.Column(db.String(36), db.ForeignKey("users.id"), nullable=False)
+    document_id = db.Column(
+        db.String(36),
+        db.ForeignKey("pdf_documents.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    page_number = db.Column(db.Integer, nullable=False)
+    quad_points = db.Column(db.JSON, nullable=False)
+    color = db.Column(db.String, nullable=False)
+    opacity = db.Column(db.Float, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
+
+    user = db.relationship("User", backref="highlight_annotations")
+    document = db.relationship("PDFDocument", backref="highlights_annotations")

@@ -5,10 +5,5 @@ from marshmallow import (
 )
 
 
-class SocketSchema(Schema):
-    room = fields.String(required=True, validate=validate.Length(min=1))
-    username = fields.String(required=True, validate=validate.Length(min=1))
-
-
-class MessageSchema(SocketSchema):
+class MessageSchema(Schema):
     message = fields.String(required=True, validate=validate.Length(min=1))
