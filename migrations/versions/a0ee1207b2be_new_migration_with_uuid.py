@@ -1,8 +1,8 @@
-"""Initial migration with UUID primary key
+"""New migration with UUID
 
-Revision ID: 93ede0c3f0a5
+Revision ID: a0ee1207b2be
 Revises: 
-Create Date: 2024-07-30 20:25:13.817006
+Create Date: 2024-07-31 08:52:55.276963
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '93ede0c3f0a5'
+revision = 'a0ee1207b2be'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -48,8 +48,8 @@ def upgrade():
     sa.UniqueConstraint('share_token')
     )
     op.create_table('document_collaborators',
-    sa.Column('pdf_document_id', sa.Integer(), nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('pdf_document_id', sa.String(length=36), nullable=False),
+    sa.Column('user_id', sa.String(length=36), nullable=False),
     sa.ForeignKeyConstraint(['pdf_document_id'], ['pdf_documents.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('pdf_document_id', 'user_id')
