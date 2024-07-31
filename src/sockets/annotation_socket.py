@@ -62,8 +62,8 @@ def handle_annotations(socketio):
 
         try:
             annotation = AnnotationService.get_annotation_by_id(annotation_id)
-            annotation = AnnotationService.delete_annotation(annotation)
-            emit("deleted_annotation", AnnotationSchema().dump(annotation), room=room)
+            AnnotationService.delete_annotation(annotation)
+            emit("deleted_annotation", {"annotation_id": annotation_id}, room=room)
         except ValidationError as err:
             emit("error", {"errors": err.messages}, broadcast=False)
             return

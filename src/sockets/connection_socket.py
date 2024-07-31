@@ -13,12 +13,8 @@ def handle_connections(socketio):
     @token_required_socket
     def handle_connect(user: User, room: str):
         try:
-            # TODO:
-            # create a JWT for the room and send it back to the user
-            # in subsequent messages, use the token to authorize
-
-            # pdf_document = PDFDocumentService.get_pdf_document_by_id(room)
-            # PDFDocumentService.check_user_access(pdf_document, user.id)
+            pdf_document = PDFDocumentService.get_pdf_document_by_id(room)
+            PDFDocumentService.check_user_access(pdf_document, user.id)
 
             join_room(room)
             emit(
