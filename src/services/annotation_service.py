@@ -29,7 +29,9 @@ class AnnotationService:
             raise
 
     @staticmethod
-    def update_annotation(annotation: HighlightAnnotation, data: Dict[str, Any]) -> HighlightAnnotation:
+    def update_annotation(
+        annotation: HighlightAnnotation, data: Dict[str, Any]
+    ) -> HighlightAnnotation:
         schema = UpdateAnnotationSchema()
         try:
             validated_data = schema.load(data)
