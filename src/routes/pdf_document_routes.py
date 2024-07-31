@@ -16,7 +16,7 @@ def create_document_bp(file_manager: IFileManager):
 
     @document_bp.route("/<document_id>", methods=["GET"])
     @token_required
-    def get_document(user: User, document_id: int):
+    def get_document(user: User, document_id: str):
         try:
             pdf_document = PDFDocumentService.get_pdf_document_by_id(document_id)
             PDFDocumentService.check_user_access(pdf_document, user.id)
@@ -89,7 +89,7 @@ def create_document_bp(file_manager: IFileManager):
 
     @document_bp.route("/<document_id>", methods=["PATCH"])
     @token_required
-    def update_document(user: User, document_id: int):
+    def update_document(user: User, document_id: str):
         data = request.get_json()
         try:
             pdf_document = PDFDocumentService.get_pdf_document_by_id(document_id)
@@ -110,7 +110,7 @@ def create_document_bp(file_manager: IFileManager):
 
     @document_bp.route("/<document_id>", methods=["DELETE"])
     @token_required
-    def delete_document(user: User, document_id: int):
+    def delete_document(user: User, document_id: str):
         try:
             pdf_document = PDFDocumentService.get_pdf_document_by_id(document_id)
             PDFDocumentService.check_user_access(pdf_document, user.id)
@@ -137,7 +137,7 @@ def create_document_bp(file_manager: IFileManager):
 
     @document_bp.route("/<document_id>/add_collaborator", methods=["POST"])
     @token_required
-    def add_collaborator(user: User, document_id: int):
+    def add_collaborator(user: User, document_id: str):
         data = request.get_json()
         email = data.get("email")
 
@@ -161,7 +161,7 @@ def create_document_bp(file_manager: IFileManager):
 
     @document_bp.route("/<document_id>/remove_collaborator", methods=["POST"])
     @token_required
-    def remove_collaborator(user: User, document_id: int):
+    def remove_collaborator(user: User, document_id: str):
         data = request.get_json()
         email = data.get("email")
 

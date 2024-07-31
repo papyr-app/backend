@@ -75,7 +75,7 @@ class PDFDocument(db.Model):
         "VirtualPath", backref="pdf_document", cascade="all, delete-orphan"
     )
 
-    def has_access(self, user_id: int) -> bool:
+    def has_access(self, user_id: str) -> bool:
         return self.owner.id == user_id or user_id in [
             collaborator.id for collaborator in self.collaborators
         ]

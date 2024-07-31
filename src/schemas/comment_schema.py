@@ -14,14 +14,14 @@ class CommentSchema(SQLAlchemyAutoSchema):
 
 
 class CreateCommentSchema(Schema):
-    document_id = fields.Str(required=True)
-    user_id = fields.Str(required=True)
-    text = fields.Str(required=True)
+    document_id = fields.String(required=True)
+    user_id = fields.String(required=True)
+    text = fields.String(required=True)
 
 
 class UpdateCommentSchema(Schema):
-    id = fields.Str(required=True)
-    text = fields.Str(required=False)
+    id = fields.String(required=True)
+    text = fields.String(required=False)
 
     @validates("id")
     def validate_id(self, value):

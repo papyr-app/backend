@@ -14,7 +14,7 @@ def create_invitation_bp():
 
     @invitation_bp.route("/<invitation_id>", methods=["GET"])
     @token_required
-    def get_invitation(user: User, invitation_id: int):
+    def get_invitation(user: User, invitation_id: str):
         try:
             invitation = InvitationService.get_invitation_by_id(invitation_id)
             InvitationService.check_user_access(invitation, user.id)

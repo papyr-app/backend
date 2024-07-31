@@ -10,10 +10,23 @@ from src.models import User
 
 
 def handle_annotations(socketio):
-    @socketio.on("get_annotations")
+    @socketio.on("fetch_annotations")
     @token_required_socket
-    def handle_get_annotations(user: User, room: str, data: Dict[str, Any]):
-        pass
+    def handle_fetch_annotations(user: User, room: str, data: Dict[str, Any]):
+        try:
+            annotations = AnnotationService.get_annotations_by_document(room)
+            emit(
+                "annotations",
+                AnnotationSchema(many=True).dump(annotations),
+                room=room,
+                broadcast=False,
+            )
+            return
+        except Exception as err:
+            logging.error("Error fetching annotation: %s", str(err))
+            logging.error("Exception", exc_info=True)
+            emit("error", {"errors": "Internal error"}, broadcast=False)
+            return
 
     @socketio.on("create_annotation")
     @token_required_socket
@@ -62,8 +75,8 @@ def handle_annotations(socketio):
 
         try:
             annotation = AnnotationService.get_annotation_by_id(annotation_id)
-            annotation = AnnotationService.delete_annotation(annotation)
-            emit("deleted_annotation", AnnotationSchema().dump(annotation), room=room)
+            AnnotationService.delete_annotation(annotation)
+            emit("deleted_annotation", {"annotation_id": annotation_id}, room=room)
         except ValidationError as err:
             emit("error", {"errors": err.messages}, broadcast=False)
             return

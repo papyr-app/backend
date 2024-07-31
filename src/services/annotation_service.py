@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Any
+from typing import Dict, Any, List
 from marshmallow import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -10,7 +10,7 @@ from src.schemas.annotation_schema import CreateAnnotationSchema, UpdateAnnotati
 
 class AnnotationService:
     @staticmethod
-    def create_annotation(data: Dict[str, Any], user_id: int):
+    def create_annotation(data: Dict[str, Any], user_id: str) -> HighlightAnnotation:
         schema = CreateAnnotationSchema()
         try:
             validated_data = schema.load(data)
@@ -29,7 +29,7 @@ class AnnotationService:
             raise
 
     @staticmethod
-    def update_annotation(annotation: HighlightAnnotation, data: Dict[str, Any]):
+    def update_annotation(annotation: HighlightAnnotation, data: Dict[str, Any]) -> HighlightAnnotation:
         schema = UpdateAnnotationSchema()
         try:
             validated_data = schema.load(data)
@@ -47,7 +47,7 @@ class AnnotationService:
             raise
 
     @staticmethod
-    def delete_annotation(annotation: HighlightAnnotation):
+    def delete_annotation(annotation: HighlightAnnotation) -> None:
         try:
             db.session.delete(annotation)
             db.session.commit()
@@ -58,12 +58,23 @@ class AnnotationService:
             raise
 
     @staticmethod
-    def get_annotation_by_id(annotation_id: int) -> HighlightAnnotation:
+    def get_annotation_by_id(annotation_id: str) -> HighlightAnnotation:
         try:
             annotation = HighlightAnnotation.query.get(annotation_id)
             if not annotation:
                 raise ValidationError("Annotation not found.")
             return annotation
+        except SQLAlchemyError as e:
+            logging.error("SQLAlchemy error: %s", str(e))
+            raise
+
+    @staticmethod
+    def get_annotations_by_document(document_id: str) -> List[HighlightAnnotation]:
+        try:
+            annotations = HighlightAnnotation.query.filter_by(
+                document_id=document_id
+            ).all()
+            return annotations
         except SQLAlchemyError as e:
             logging.error("SQLAlchemy error: %s", str(e))
             raise
