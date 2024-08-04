@@ -23,7 +23,7 @@ class InvitationService:
             validated_data = schema.load(data)
             invitee = UserService.get_user_by_email(validated_data["invitee"])
             document = PDFDocumentService.get_pdf_document_by_id(
-                validated_data["document_id"], user.id
+                validated_data["document_id"]
             )
 
             if user == invitee:
