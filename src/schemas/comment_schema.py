@@ -25,5 +25,5 @@ class UpdateCommentSchema(Schema):
 
     @validates("id")
     def validate_id(self, value):
-        if not Comment.query.get(value):
+        if not db.session.get(Comment, value):
             raise ValidationError("Comment not found.")

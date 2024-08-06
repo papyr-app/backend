@@ -17,8 +17,8 @@ def test_create_invite(client: FlaskClient, helpers):
     )
     assert response.status_code == 201
     assert len(Invitation.query.all()) == 1
-    assert Invitation.query.filter_by(invited_by_id=user1.id).first() is not None
-    assert Invitation.query.filter_by(invitee_id=user2.id).first() is not None
+    assert db.session.query(Invitation).filter_by(invited_by_id=user1.id).first() is not None
+    assert db.session.query(Invitation).filter_by(invitee_id=user2.id).first() is not None
 
 
 def test_get_invite(client: FlaskClient, helpers):

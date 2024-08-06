@@ -48,9 +48,7 @@ class PDFDocumentService:
 
             if "file_path" in validated_data and user_id:
                 file_path = validated_data.pop("file_path")
-                virtual_path = VirtualPath.query.filter_by(
-                    user_id=user_id, document_id=pdf_document.id
-                ).first()
+                virtual_path = db.session.query(VirtualPath).filter_by(user_id=user_id, document_id=pdf_document.id).first()
                 if virtual_path:
                     virtual_path.file_path = file_path
                 else:
@@ -89,7 +87,7 @@ class PDFDocumentService:
     @staticmethod
     def get_pdf_document_by_id(document_id: str) -> PDFDocument:
         try:
-            pdf_document = PDFDocument.query.get(document_id)
+            pdf_document = db.session.get(PDFDocument, document_id)
             if not pdf_document:
                 raise ValidationError("PDF Document not found.")
             return pdf_document
@@ -159,9 +157,7 @@ class PDFDocumentService:
             if collaborator not in pdf_document.collaborators:
                 raise ValidationError("User is not associated with the document.")
 
-            virtual_path = VirtualPath.query.filter_by(
-                user_id=collaborator.id, document_id=pdf_document.id
-            ).first()
+            virtual_path = db.session.query(VirtualPath).filter_by(user_id=collaborator.id, document_id=pdf_document.id).first()
             if virtual_path:
                 db.session.delete(virtual_path)
 

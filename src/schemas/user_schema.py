@@ -23,12 +23,12 @@ class CreateUserSchema(Schema):
 
     @validates("username")
     def validate_username(self, value):
-        if User.query.filter_by(username=value).first():
+        if db.session.query(User).filter_by(username=value).first():
             raise ValidationError("Username already exists.")
 
     @validates("email")
     def validate_email(self, value):
-        if User.query.filter_by(email=value).first():
+        if db.session.query(User).filter_by(email=value).first():
             raise ValidationError("Email already exists.")
 
     @validates("password")
@@ -45,10 +45,10 @@ class UpdateUserSchema(Schema):
 
     @validates("username")
     def validate_username(self, value):
-        if User.query.filter_by(username=value).first():
+        if db.session.query(User).filter_by(username=value).first():
             raise ValidationError("Username already exists.")
 
     @validates("email")
     def validate_email(self, value):
-        if User.query.filter_by(email=value).first():
+        if db.session.query(User).filter_by(email=value).first():
             raise ValidationError("Email already exists.")

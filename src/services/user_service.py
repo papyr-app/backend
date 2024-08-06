@@ -37,7 +37,7 @@ class UserService:
     def update_user(user_id: str, data: Dict[str, Any]) -> User:
         schema = UpdateUserSchema()
         try:
-            user = User.query.get(user_id)
+            user = db.session.get(User, user_id)
             if not user:
                 raise ValidationError("User not found.")
             validated_data = schema.load(data, partial=True)
@@ -70,7 +70,7 @@ class UserService:
     @staticmethod
     def get_user_by_id(user_id: str) -> User:
         try:
-            user = User.query.get(user_id)
+            user = db.session.get(User, user_id)
             if not user:
                 raise ValidationError("User not found.")
             return user
@@ -81,7 +81,7 @@ class UserService:
     @staticmethod
     def get_user_by_username(username: str) -> User:
         try:
-            user = User.query.filter_by(username=username).first()
+            user = db.session.query(User).filter_by(username=username).first()
             if not user:
                 raise ValidationError("User not found.")
             return user
@@ -92,7 +92,7 @@ class UserService:
     @staticmethod
     def get_user_by_email(email: str) -> User:
         try:
-            user = User.query.filter_by(email=email).first()
+            user = db.session.query(User).filter_by(email=email).first()
             if not user:
                 raise ValidationError("User not found.")
             return user

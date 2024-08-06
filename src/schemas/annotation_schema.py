@@ -23,7 +23,7 @@ class CreateAnnotationSchema(Schema):
 
     @validates("document_id")
     def validate_document(self, value):
-        if not PDFDocument.query.get(value):
+        if not db.session.get(PDFDocument, value):
             raise ValidationError("Document not found.")
 
     @validates("color")
