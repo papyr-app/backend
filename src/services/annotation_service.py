@@ -73,7 +73,11 @@ class AnnotationService:
     @staticmethod
     def get_annotations_by_document(document_id: str) -> List[HighlightAnnotation]:
         try:
-            annotations = db.session.query(HighlightAnnotation).filter_by(document_id=document_id).all()
+            annotations = (
+                db.session.query(HighlightAnnotation)
+                .filter_by(document_id=document_id)
+                .all()
+            )
             return annotations
         except SQLAlchemyError as e:
             logging.error("SQLAlchemy error: %s", str(e))

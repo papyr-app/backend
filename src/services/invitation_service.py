@@ -25,7 +25,11 @@ class InvitationService:
 
             PDFDocumentService.check_user_access(document, user.id)
 
-            if db.session.query(Invitation).filter_by(document=document, invitee=invitee).first():
+            if (
+                db.session.query(Invitation)
+                .filter_by(document=document, invitee=invitee)
+                .first()
+            ):
                 raise ValidationError("This invite already exists.")
 
             if user == invitee:
@@ -63,7 +67,9 @@ class InvitationService:
     @staticmethod
     def get_invitations_sent_by_user(user_id: str) -> List[Invitation]:
         try:
-            invitations = db.session.query(Invitation).filter_by(invited_by_id=user_id).all()
+            invitations = (
+                db.session.query(Invitation).filter_by(invited_by_id=user_id).all()
+            )
             return invitations
         except SQLAlchemyError as e:
             logging.error("SQLAlchemy error: %s", str(e))
@@ -72,7 +78,9 @@ class InvitationService:
     @staticmethod
     def get_invitations_received_by_user(user_id: str) -> List[Invitation]:
         try:
-            invitations = db.session.query(Invitation).filter_by(invitee_id=user_id).all()
+            invitations = (
+                db.session.query(Invitation).filter_by(invitee_id=user_id).all()
+            )
             return invitations
         except SQLAlchemyError as e:
             logging.error("SQLAlchemy error: %s", str(e))

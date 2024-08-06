@@ -48,7 +48,11 @@ class PDFDocumentService:
 
             if "file_path" in validated_data and user_id:
                 file_path = validated_data.pop("file_path")
-                virtual_path = db.session.query(VirtualPath).filter_by(user_id=user_id, document_id=pdf_document.id).first()
+                virtual_path = (
+                    db.session.query(VirtualPath)
+                    .filter_by(user_id=user_id, document_id=pdf_document.id)
+                    .first()
+                )
                 if virtual_path:
                     virtual_path.file_path = file_path
                 else:
@@ -157,7 +161,11 @@ class PDFDocumentService:
             if collaborator not in pdf_document.collaborators:
                 raise ValidationError("User is not associated with the document.")
 
-            virtual_path = db.session.query(VirtualPath).filter_by(user_id=collaborator.id, document_id=pdf_document.id).first()
+            virtual_path = (
+                db.session.query(VirtualPath)
+                .filter_by(user_id=collaborator.id, document_id=pdf_document.id)
+                .first()
+            )
             if virtual_path:
                 db.session.delete(virtual_path)
 
