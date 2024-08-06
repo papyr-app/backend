@@ -3,8 +3,8 @@ from typing import Dict, Any
 from sqlalchemy.exc import SQLAlchemyError
 from marshmallow import ValidationError
 
-from src.errors import AuthorizationError
 from src.app import db
+from src.errors import AuthorizationError
 from src.models import User
 from src.schemas.user_schema import CreateUserSchema, UpdateUserSchema
 from src.schemas.login_schema import LoginSchema

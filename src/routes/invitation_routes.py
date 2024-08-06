@@ -59,17 +59,18 @@ def create_invitation_bp():
             return jsonify({"data": InvitationSchema().dump(invitation)}), 201
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
+        except AuthorizationError as err:
+            return jsonify({"error": str(err)}), 403
         except Exception as err:
             logging.error("Error creating invitation: %s", str(err))
             logging.error("Exception", exc_info=True)
             return jsonify({"error": "Internal error"}), 500
 
-    @invitation_bp.route("/accept", methods=["POST"])
+    @invitation_bp.route("/accept/<invitation_id>", methods=["POST"])
     @token_required
-    def accept_invitation(user: User):
-        data = request.get_json()
+    def accept_invitation(user: User, invitation_id: str):
         try:
-            invitation = InvitationService.accept_invitation(data, user)
+            invitation = InvitationService.accept_invitation(invitation_id, user)
             return jsonify({"data": InvitationSchema().dump(invitation)}), 200
         except ValidationError as err:
             return jsonify({"error": str(err)}), 400
