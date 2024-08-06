@@ -41,7 +41,7 @@ class PDFDocumentSchema(SQLAlchemyAutoSchema):
 class CreatePDFDocumentSchema(Schema):
     title = fields.String(required=True, validate=validate.Length(min=1, max=40))
     description = fields.String(required=False, validate=validate.Length(max=300))
-    can_share = fields.Boolean(required=False, default=False)
+    can_share = fields.Boolean(required=False, dump_default=False)
     file_path = fields.String(required=True, validate=validate.Length(max=100))
 
     @pre_load

@@ -9,10 +9,7 @@ from src.app import db
 from src.models import User, Invitation
 from src.services.pdf_document_service import PDFDocumentService
 from src.services.user_service import UserService
-from src.schemas.invitation_schema import (
-    CreateInvitationSchema,
-    AcceptInvitationSchema,
-)
+from src.schemas.invitation_schema import CreateInvitationSchema
 
 
 class InvitationService:
@@ -23,8 +20,13 @@ class InvitationService:
             validated_data = schema.load(data)
             invitee = UserService.get_user_by_email(validated_data["invitee"])
             document = PDFDocumentService.get_pdf_document_by_id(
-                validated_data["document_id"], user.id
+                validated_data["document_id"]
             )
+
+            PDFDocumentService.check_user_access(document, user.id)
+
+            if Invitation.query.filter_by(document=document, invitee=invitee).first():
+                raise ValidationError("This invite already exists.")
 
             if user == invitee:
                 raise ValidationError("Cannot invite yourself.")
@@ -77,13 +79,9 @@ class InvitationService:
             raise
 
     @staticmethod
-    def accept_invitation(data: Dict[str, Any], user: User) -> Invitation:
-        schema = AcceptInvitationSchema()
+    def accept_invitation(invitation_id: str, user: User) -> Invitation:
         try:
-            validated_data = schema.load(data)
-            invitation = InvitationService.get_invitation_by_id(
-                validated_data["invitation_id"]
-            )
+            invitation = InvitationService.get_invitation_by_id(invitation_id)
 
             if invitation.invitee != user:
                 raise ValidationError("This is not your invite.")

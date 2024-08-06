@@ -1,3 +1,4 @@
+import logging
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from marshmallow import Schema, fields, validate, validates, ValidationError
 
@@ -26,12 +27,3 @@ class CreateInvitationSchema(Schema):
     def validate_invitee(self, value):
         if not User.query.filter_by(email=value).first():
             raise ValidationError("User with this email does not exist.")
-
-
-class AcceptInvitationSchema(Schema):
-    invitation_id = fields.String(required=True)
-
-    @validates("invitation_id")
-    def validate_invitation(self, value):
-        if not Invitation.query.get(value):
-            raise ValidationError("Invitation not found.")

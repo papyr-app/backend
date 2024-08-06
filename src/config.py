@@ -12,6 +12,8 @@ class Config:
     SECRET_KEY = getenv("SECRET_KEY")
     SQLALCHEMY_DATABASE_URI = getenv("DATABASE_URL")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    DEBUG = False
+    TESTING = False
 
 
 class DevelopmentConfig(Config):
@@ -20,6 +22,9 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
+    # Overwrite database URI and use in-memory database instead
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    SQLALCHEMY_ECHO = False
 
 
 class ProductionConfig(Config):
