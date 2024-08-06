@@ -30,9 +30,11 @@ class PDFDocumentSchema(SQLAlchemyAutoSchema):
     def add_file_path(self, data, many, **kwargs):
         user = self.context.get("user")
         if user:
-            virtual_path = VirtualPath.query.filter_by(
-                user_id=user.id, document_id=data["id"]
-            ).first()
+            virtual_path = (
+                db.session.query(VirtualPath)
+                .filter_by(user_id=user.id, document_id=data["id"])
+                .first()
+            )
             if virtual_path:
                 data["file_path"] = virtual_path.file_path
         return data

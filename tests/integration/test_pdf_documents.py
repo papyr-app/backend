@@ -24,7 +24,9 @@ def test_create_document(client: FlaskClient, helpers):
     )
     assert response.status_code == 201
     assert len(PDFDocument.query.all()) == 1
-    assert PDFDocument.query.filter_by(title="Test Title").first() is not None
+    assert (
+        db.session.query(PDFDocument).filter_by(title="Test Title").first() is not None
+    )
 
 
 @mock_aws
@@ -74,9 +76,10 @@ def test_update_document(client: FlaskClient, helpers):
         headers=user_auth,
     )
     assert response.status_code == 200
-    assert PDFDocument.query.get(document.id).title == "Updated Title"
+    assert db.session.get(PDFDocument, document.id).title == "Updated Title"
     assert (
-        VirtualPath.query.filter_by(document_id=document.id, user_id=user.id)
+        db.session.query(VirtualPath)
+        .filter_by(document_id=document.id, user_id=user.id)
         .first()
         .file_path
         == "/updated_path"

@@ -1,5 +1,6 @@
 from flask.testing import FlaskClient
 
+from src.app import db
 from src.models import User
 
 
@@ -15,9 +16,7 @@ def test_register_user(client: FlaskClient):
         },
     )
     assert response.status_code == 201
-
-    user = User.query.filter_by(username="test").first()
-    assert user is not None
+    assert db.session.query(User).filter_by(username="test").first() is not None
 
 
 def test_register_user_missing_fields(client: FlaskClient):
@@ -30,9 +29,7 @@ def test_register_user_missing_fields(client: FlaskClient):
         },
     )
     assert response.status_code == 400
-
-    user = User.query.filter_by(last_name="Mc. Test").first()
-    assert user is None
+    assert db.session.query(User).filter_by(last_name="Mc. Test").first() is None
 
 
 def test_register_user_short_password(client: FlaskClient):
@@ -47,9 +44,7 @@ def test_register_user_short_password(client: FlaskClient):
         },
     )
     assert response.status_code == 400
-
-    user = User.query.filter_by(username="test").first()
-    assert user is None
+    assert db.session.query(User).filter_by(username="test").first() is None
 
 
 def test_register_and_login_successfully(client: FlaskClient):
@@ -69,9 +64,7 @@ def test_register_and_login_successfully(client: FlaskClient):
         "/auth/login", json={"username": "test", "password": "123456"}
     )
     assert response.status_code == 200
-
-    access_token = response.json.get("data")
-    assert access_token is not None
+    assert response.json["data"] is not None
 
 
 def test_register_and_login_wrong_password(client: FlaskClient):

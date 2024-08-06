@@ -1,5 +1,6 @@
 from marshmallow import Schema, fields, validate, validates, ValidationError
 
+from src.app import db
 from src.models import User
 
 
@@ -11,5 +12,5 @@ class LoginSchema(Schema):
 
     @validates("username")
     def validate_username(self, value):
-        if User.query.filter_by(username=value).first() is None:
+        if db.session.query(User).filter_by(username=value).first() is None:
             raise ValidationError("Invalid username or password")

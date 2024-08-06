@@ -62,7 +62,7 @@ class AnnotationService:
     @staticmethod
     def get_annotation_by_id(annotation_id: str) -> HighlightAnnotation:
         try:
-            annotation = HighlightAnnotation.query.get(annotation_id)
+            annotation = db.session.get(HighlightAnnotation, annotation_id)
             if not annotation:
                 raise ValidationError("Annotation not found.")
             return annotation
@@ -73,9 +73,11 @@ class AnnotationService:
     @staticmethod
     def get_annotations_by_document(document_id: str) -> List[HighlightAnnotation]:
         try:
-            annotations = HighlightAnnotation.query.filter_by(
-                document_id=document_id
-            ).all()
+            annotations = (
+                db.session.query(HighlightAnnotation)
+                .filter_by(document_id=document_id)
+                .all()
+            )
             return annotations
         except SQLAlchemyError as e:
             logging.error("SQLAlchemy error: %s", str(e))

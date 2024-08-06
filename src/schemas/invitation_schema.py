@@ -20,10 +20,10 @@ class CreateInvitationSchema(Schema):
 
     @validates("document_id")
     def validate_document(self, value):
-        if not PDFDocument.query.get(value):
+        if not db.session.get(PDFDocument, value):
             raise ValidationError("Document not found.")
 
     @validates("invitee")
     def validate_invitee(self, value):
-        if not User.query.filter_by(email=value).first():
+        if not db.session.query(User).filter_by(email=value).first():
             raise ValidationError("User with this email does not exist.")

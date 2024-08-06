@@ -25,7 +25,11 @@ class InvitationService:
 
             PDFDocumentService.check_user_access(document, user.id)
 
-            if Invitation.query.filter_by(document=document, invitee=invitee).first():
+            if (
+                db.session.query(Invitation)
+                .filter_by(document=document, invitee=invitee)
+                .first()
+            ):
                 raise ValidationError("This invite already exists.")
 
             if user == invitee:
@@ -52,7 +56,7 @@ class InvitationService:
     @staticmethod
     def get_invitation_by_id(invitation_id: str) -> Invitation:
         try:
-            invitation = Invitation.query.get(invitation_id)
+            invitation = db.session.get(Invitation, invitation_id)
             if not invitation:
                 raise ValidationError("Invitation not found.")
             return invitation
@@ -63,7 +67,9 @@ class InvitationService:
     @staticmethod
     def get_invitations_sent_by_user(user_id: str) -> List[Invitation]:
         try:
-            invitations = Invitation.query.filter_by(invited_by_id=user_id).all()
+            invitations = (
+                db.session.query(Invitation).filter_by(invited_by_id=user_id).all()
+            )
             return invitations
         except SQLAlchemyError as e:
             logging.error("SQLAlchemy error: %s", str(e))
@@ -72,7 +78,9 @@ class InvitationService:
     @staticmethod
     def get_invitations_received_by_user(user_id: str) -> List[Invitation]:
         try:
-            invitations = Invitation.query.filter_by(invitee_id=user_id).all()
+            invitations = (
+                db.session.query(Invitation).filter_by(invitee_id=user_id).all()
+            )
             return invitations
         except SQLAlchemyError as e:
             logging.error("SQLAlchemy error: %s", str(e))
