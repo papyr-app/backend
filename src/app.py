@@ -10,17 +10,17 @@ from src.utils.log import set_up_logger
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
-socketio = SocketIO(async_mode="gevent")
+socketio = SocketIO(async_mode="gevent", logger=True, enginio_logger=True)
 
 
 def init_app(config_path: str):
     app = Flask(__name__, instance_relative_config=False)
     app.config.from_object(config_path)
+    CORS(app)
 
     socketio.init_app(app, cors_allowed_origins="*")
     bcrypt.init_app(app)
     db.init_app(app)
-    CORS(app)
 
     if not app.config.get("SECRET_KEY"):
         raise ValueError("SECRET_KEY must be set")

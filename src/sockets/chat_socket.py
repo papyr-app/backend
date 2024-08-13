@@ -20,7 +20,7 @@ def handle_chat(socketio):
                 "new_message",
                 {"username": user.username, "message": message},
                 room=room,
-                include_self=False,
+                include_self=True,
             )
             logging.debug("%s #%s: '%s'", user.username, room, message)
             return
